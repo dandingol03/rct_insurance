@@ -1,5 +1,6 @@
 /**
  * Created by dingyiming on 2017/2/15.
+ * android的面板可用内容实际上会少23
  */
 import React from 'react';
 
@@ -29,6 +30,7 @@ import {loginAction,setTimerAction} from '../action/actionCreator';
 var Proxy = require('../proxy/Proxy');
 
 var  Login =React.createClass({
+
     onLoginPressed:function () {
 
         const {dispatch} = this.props;
@@ -95,7 +97,7 @@ var  Login =React.createClass({
         return (
             <View style={[styles.container]}>
 
-                <Image resizeMode="stretch" source={require('../img/login_background@2x.png')} style={{width:width,height:height-23}}>
+                <Image resizeMode="stretch" source={require('../img/login_background@2x.png')} style={{width:width,height:height}}>
                     <View style={{justifyContent:'center',flexDirection:'row',padding:0,marginTop:40}}>
 
                         <View style={{
@@ -126,9 +128,11 @@ var  Login =React.createClass({
                                         <Icon size={26} name="user" color="#444"></Icon>
                                     </View>
 
-                                    <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+
+
+                                    <View style={{flex:6,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                         <TextInput
-                                            style={{height: 46,flex:1,paddingLeft:30,paddingRight:10,paddingTop:2,paddingBottom:2,fontSize:16,
+                                            style={{height: 46,flex:1,paddingLeft:10,paddingRight:10,paddingTop:2,paddingBottom:2,fontSize:16,
                                                         }}
                                             onChangeText={(username) => {
 
@@ -140,6 +144,11 @@ var  Login =React.createClass({
                                             placeholderTextColor="#aaa"
                                             underlineColorAndroid="transparent"
                                         />
+                                    </View>
+
+
+                                    <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',padding:6,
+                                        paddingLeft:10,paddingRight:15,marginLeft:0}}>
                                     </View>
                                 </View>
                             </View>
@@ -161,9 +170,9 @@ var  Login =React.createClass({
                                         <Icon size={26} name="lock" color="#444"></Icon>
                                     </View>
 
-                                    <View style={{flex:5,flexDirection:'row',alignItems:'center'}}>
+                                    <View style={{flex:6,flexDirection:'row',alignItems:'center'}}>
                                         <TextInput
-                                            style={{height: 46,flex:1,paddingLeft:30,paddingRight:10,paddingTop:2,paddingBottom:2,fontSize:16}}
+                                            style={{height: 46,flex:1,paddingLeft:10,paddingRight:10,paddingTop:2,paddingBottom:2,fontSize:16}}
                                             onChangeText={(password) => {
                                             this.state.user.password=password;
                                             this.setState({user:this.state.user});
@@ -175,6 +184,10 @@ var  Login =React.createClass({
                                             underlineColorAndroid="transparent"
                                         />
                                     </View>
+                                    <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',padding:6,
+                                        paddingLeft:10,paddingRight:15,marginLeft:0}}>
+                                    </View>
+
                                 </View>
                             </View>
 
@@ -183,10 +196,12 @@ var  Login =React.createClass({
 
                         <View style={{flexDirection:'row',justifyContent:'center'}}>
                             <View style={[styles.row,{borderBottomWidth:0,marginBottom:10,width:width*3/5}]}>
-                                <View style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10}}>
+                                <View style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10
+                                    ,backgroundColor:'transparent'}}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>注册</Text>
                                 </View>
-                                <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10}}>
+                                <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
+                                     backgroundColor:'transparent'}}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>忘记密码</Text>
                                 </View>
                             </View>
