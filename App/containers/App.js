@@ -27,8 +27,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 
 import Home from './home/index';
-//import My from './my/My';
-//import dym from './dym';
+import My from './my/My';
+import dym from './dym';
 
 
 const tabBarTintColor = '#f8f8f8';// 标签栏的背景颜色
@@ -85,10 +85,24 @@ class App extends React.Component {
     }
 
     render() {
+
         let auth=this.props.auth;
+        if(auth==true)
+        {
 
+
+
+
+            return (
+                <TabNavigator>
+                    {this._createNavigatorItem('home','home')}
+                    {this._createNavigatorItem('my','user-circle')}
+                    {this._createNavigatorItem('dym','car')}
+                </TabNavigator>
+            );
+        }else{
             return (<Login/>);
-
+        }
     }
 
     onBackAndroid()
