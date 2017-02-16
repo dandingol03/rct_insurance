@@ -22,7 +22,7 @@ import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
-
+import Video from 'react-native-video';
 
 
 class Maintain extends Component{
@@ -37,7 +37,6 @@ class Maintain extends Component{
     show(actionSheet) {
         this[actionSheet].show();
     }
-
 
     _onPress() {
         // Disable button while recording and playing back
