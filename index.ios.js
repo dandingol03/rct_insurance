@@ -12,6 +12,11 @@ import {
   View
 } from 'react-native';
 
+
+import App from './App/index';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import  TabNavigator from 'react-native-tab-navigator';
+
 export default class rct_insurance extends Component {
   render() {
     return (
@@ -50,4 +55,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('rct_insurance', () => rct_insurance);
+AppRegistry.registerComponent('rct_insurance', () => App);
