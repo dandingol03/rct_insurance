@@ -17,6 +17,7 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import Life from '../life/Life.js';
 import Maintain from '../maintain/Maintain.js';
 

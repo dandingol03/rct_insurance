@@ -156,7 +156,6 @@ class Life extends Component{
             this.setState({benefiter:lifeBenefiter,isLegalBenefiter:1});
         }
 
-
     }
 
 
