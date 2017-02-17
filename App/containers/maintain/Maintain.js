@@ -433,9 +433,10 @@ class Maintain extends Component{
                                     </View>
 
                                     {/*视频描述*/}
-                                    <View style={{flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#aaa',borderRadius:8}}>
-
-                                        <Image resizeMode="cover" source={require('../../img/sas@2x.png')} style={{flex:1}}></Image>
+                                    <View style={{height:102,flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#aaa',borderRadius:8}}>
+                                        <View>
+                                            <Image resizeMode="cover" source={require('../../img/sas@2x.png')}></Image>
+                                        </View>
                                     </View>
 
 
