@@ -8,6 +8,5 @@ import timer from './timer';
 
 export default rootReducer = combineReducers({
     user,
-    timer,
-
+    timer
 })

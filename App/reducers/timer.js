@@ -1,7 +1,6 @@
 /**
  * Created by dingyiming on 2017/2/16.
  */
-
 import * as types from '../action/types';
 
 const initialState = {
@@ -29,3 +28,4 @@ let timer = (state = initialState, action) => {
 }
 
 export default timer;
+

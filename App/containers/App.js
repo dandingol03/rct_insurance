@@ -85,9 +85,11 @@ class App extends React.Component {
     }
 
     render() {
+
         let auth=this.props.auth;
         if(auth==true)
         {
+
             return (
                 <TabNavigator>
                     {this._createNavigatorItem('home','home')}

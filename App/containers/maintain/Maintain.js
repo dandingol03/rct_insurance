@@ -21,6 +21,8 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import VideoPlayer from './VideoPlayer.js';
 import Audio from './Audio.js';
@@ -157,20 +159,23 @@ class Maintain extends Component{
         var dailyChecked = [];
         var selectedDailys = [];
         var description = '';
+        var babbadla= <Icon size={26} name="chevron-left" color="#fff" ></Icon>;
         return (
             <View style={{flex:1}}>
                 {/*body*/}
                 <Image resizeMode="stretch" source={require('../../img/bkg_old@2x.png')} style={{width:width,height:height}}>
 
                     <View style={[{padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:60,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
-                        <TouchableOpacity style={{flex:1,textAlign:'center',color:'#fff',paddingLeft:8}} onPress={()=>{
+                        <TouchableOpacity style={{flex:1,color:'#fff'}} onPress={()=>{
                         this.goBack();
-                    }}>
-                            <Icon size={26} name="chevron-left" color="#fff" ></Icon>
+                             }}>
+                            <Entypo size={40} name="chevron-left" color="#fff"></Entypo>
+
                         </TouchableOpacity>
-                        <Text style={{fontSize:20,flex:20,textAlign:'center',color:'#fff'}}>
+                        <Text style={{fontSize:19,flex:5,textAlign:'center',color:'#fff'}}>
                             维修服务
                         </Text>
+                        <View style={{flex:1,padding:0}}></View>
                     </View>
 
                     <View style={{flex:1,width:width,position:'relative',marginTop:10}}>
@@ -178,6 +183,7 @@ class Maintain extends Component{
                                            renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
                             <View tabLabel='日常保养' style={{flex:1,padding:8,fontSize:20}}>
+
                                 <ScrollView>
                                     <View style={{flex:1}}>
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center'}}>
@@ -190,6 +196,7 @@ class Maintain extends Component{
                                              }
                                              this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
                                             }}>
+
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain1.png')} style={{flex:5}}/>
                                                         <Text style={{flex:1,fontSize:14,color:'#222',marginTop:5}}>机油、机滤</Text>
@@ -214,6 +221,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[1]==true?<Text style={{flex:1,fontsize:14,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:14,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -232,6 +240,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[2]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                 </View>
                                             </TouchableOpacity>
@@ -252,6 +261,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[3]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -270,6 +280,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[4]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -288,6 +299,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[5]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -308,6 +320,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[6]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -326,6 +339,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[7]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -344,6 +358,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[8]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -364,6 +379,7 @@ class Maintain extends Component{
                                                         {
                                                             this.state.dailyChecked[9]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+
                                                         }
                                                     </View>
                                             </TouchableOpacity>
