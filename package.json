@@ -7,19 +7,18 @@
     "test": "jest"
   },
   "dependencies": {
-
     "react": "15.4.2",
     "react-native": "0.41.2",
     "react-native-actionsheet": "^2.0.5",
+    "react-native-audio": "^3.2.1",
     "react-native-check-box": "^1.0.4",
     "react-native-datepicker": "^1.4.4",
     "react-native-popupwindow": "^0.3.0",
     "react-native-scrollable-tab-view": "^0.7.2",
+    "react-native-sound": "^0.9.0",
     "react-native-tab-navigator": "^0.3.3",
     "react-native-vector-icons": "^4.0.0",
-
     "react-native-video": "^1.0.0",
-
     "react-redux": "^5.0.2",
     "redux": "^3.6.0",
     "redux-logger": "^2.8.1",
