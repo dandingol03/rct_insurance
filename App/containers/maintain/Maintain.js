@@ -427,16 +427,29 @@ class Maintain extends Component{
                                             <Text style={{color:'#fff',flex:1,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'center',textAlign:'center'}}>00:00</Text>
                                         </View>
                                         <View style={{flex:1,paddingRight:4}}>
-                                            <Image resizeMode="cover" source={require('../../img/maike-@2x.png')} style={{flex:1}}></Image>
+                                            <TouchableOpacity onPress={()=>{
+                                         this.navigate2Audio();
+                                      }}>
+                                                <View>
+                                                    <Image resizeMode="cover" source={require('../../img/maike-@2x.png')}></Image>
+                                                </View>
+                                            </TouchableOpacity>
+
                                             <Image resizeMode="cover" source={require('../../img/playAudio@2x.png')} style={{flex:1}}></Image>
                                         </View>
                                     </View>
 
                                     {/*视频描述*/}
                                     <View style={{height:102,flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#aaa',borderRadius:8}}>
-                                        <View>
-                                            <Image resizeMode="cover" source={require('../../img/sas@2x.png')}></Image>
-                                        </View>
+
+                                        <TouchableOpacity onPress={()=>{
+                                         this.navigate2VideoPlayer();
+                                      }}>
+                                            <View>
+                                                <Image resizeMode="cover" source={require('../../img/sas@2x.png')}></Image>
+                                            </View>
+                                        </TouchableOpacity>
+
                                     </View>
 
 
