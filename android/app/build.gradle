@@ -126,6 +126,7 @@ android {
 }
 
 dependencies {
+<<<<<<< HEAD
     compile project(':react-native-jpush')
     compile project(':react-native-popupwindow')
     compile project(':react-native-vector-icons')

@@ -142,6 +142,38 @@ let disableCarOrdersOnFresh=()=>{
     }
 }
 
+let setLifeOrdersInHistory=(orders)=>{
+    return {
+        type:types.SET_LIFE_HISTORY_ORDERS,
+        orders:orders
+    }
+}
+
+let setLifeOrdersInPriced=(orders)=>{
+    return {
+        type:types.SET_LIFE_PRICED_ORDERS,
+        orders:orders
+    }
+}
+
+let setLifeOrdersInApplyed=(orders)=>{
+    return {
+        type:types.SET_LIFE_APPLYED_ORDERS,
+        orders:orders
+    }
+}
+
+export let enableLifeOrdersOnFresh=()=>{
+    return {
+        type:types.ENABLE_LIFEORDERS_ONFRESH
+    }
+}
+
+let disableLifeOrdersOnFresh=()=>{
+    return {
+        type:types.DISABLE_LIFEORDERS_ONFRESH
+    }
+}
 
 
 
@@ -208,6 +240,66 @@ export let fetchCarOrders=function (accessToken,cb) {
             dispatch(disableCarOrdersOnFresh());
             if(cb)
                 cb();
+        }).catch(function (err) {
+            if(cb)
+                cb();
+            alert(err);
+        })
+    }
+
+}
+
+export let fetchLifeOrders=function (accessToken,cb) {
+
+    var orders = null;
+    var applyedOrders=[];
+    var pricedOrders=[];
+    var historyOrders=[];
+
+    return dispatch=> {
+        Proxy.postes({
+            url: Config.server + '/svr/request',
+            headers: {
+                'Authorization': "Bearer " + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request: 'getLifeOrders'
+            }
+        }).then(function (res) {
+
+            var json = res.data;
+            if (json.re == 1) {
+                orders = json.data;
+
+                if (orders !== undefined && orders !== null && $scope.orders.length > 0) {
+                    orders.map(function (order, i) {
+
+                        var date = new Date(order.applyTime);
+                        // order.applyTime = date.getFullYear().toString() + '-'
+                        //     + date.getMonth().toString() + '-' + date.getDate().toString();
+
+                        if (order.orderState == 3) {
+                            pricedOrders.push(order);
+                        }
+                        if (order.orderState == 5) {
+                            historyOrders.push(order);
+                        }
+                        if (order.orderState == 1||order.orderState == 2) {
+                            applyedOrders.push(order);
+                        }
+
+                    })
+
+                    dispatch(setLifeOrdersInHistory(historyOrders));
+                    dispatch(setLifeOrdersInPriced(pricedOrders));
+                    dispatch(setLifeOrdersInApplyed(applyedOrders));
+                    dispatch(disableLifeOrdersOnFresh());
+                    if(cb)
+                        cb();
+                }
+            }
+
         }).catch(function (err) {
             if(cb)
                 cb();

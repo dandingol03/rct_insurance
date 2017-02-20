@@ -1,5 +1,5 @@
 /**
- * Created by danding on 17/2/16.
+ * Created by dingyiming on 2017/2/16.
  */
 import * as types from '../action/types';
 
@@ -28,3 +28,4 @@ let timer = (state = initialState, action) => {
 }
 
 export default timer;
+

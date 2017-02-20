@@ -90,9 +90,6 @@ class App extends React.Component {
         if(auth==true)
         {
 
-
-
-
             return (
                 <TabNavigator>
                     {this._createNavigatorItem('home','home')}

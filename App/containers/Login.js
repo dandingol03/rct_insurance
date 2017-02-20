@@ -30,6 +30,7 @@ import {loginAction,setTimerAction} from '../action/actionCreator';
 var Proxy = require('../proxy/Proxy');
 
 var  Login =React.createClass({
+
     onLoginPressed:function () {
 
         const {dispatch} = this.props;
@@ -70,6 +71,7 @@ var  Login =React.createClass({
         const {dispatch} = this.props;
         dispatch(loginAction(form.username,form.password));
     },
+
     getInitialState:function(){
         return ({
             user:{},
@@ -91,7 +93,6 @@ var  Login =React.createClass({
             y:1.5,
             style:{marginVertical:5}
         }
-
 
         return (
             <View style={[styles.container]}>

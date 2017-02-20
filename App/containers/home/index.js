@@ -17,8 +17,10 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import Life from '../life/Life.js';
 import Maintain from '../maintain/Maintain.js';
+
 
 class Home extends Component{
 
@@ -167,7 +169,7 @@ class Home extends Component{
                         <View  style={[styles.row]}>
                             <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
                                               onPress={ ()=>{
-                                                  console.log('车险');
+                                                 console.log('车险');
 
                                               }}>
                                 <Image style={[styles.module]} source={require('../../img/car@2x.png')}/>
