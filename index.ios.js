@@ -13,9 +13,6 @@ import {
 } from 'react-native';
 
 import App from './App/index';
-
-import Icon from 'react-native-vector-icons/FontAwesome';
-import  TabNavigator from 'react-native-tab-navigator';
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
 
 
@@ -83,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('rct_insurance', () => Jpush);
+AppRegistry.registerComponent('rct_insurance', () => App);

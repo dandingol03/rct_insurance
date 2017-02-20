@@ -20,7 +20,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Life from '../life/Life.js';
 import Maintain from '../maintain/Maintain.js';
-
+import CarManage from '../car/CarManage';
 
 class Home extends Component{
 
@@ -42,6 +42,8 @@ class Home extends Component{
             })
         }
     }
+
+
 
     navigate2Life(){
         const { navigator } = this.props;
@@ -169,7 +171,7 @@ class Home extends Component{
                         <View  style={[styles.row]}>
                             <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
                                               onPress={ ()=>{
-                                                 console.log('车险');
+                                                       this.navigate2CarManage();
 
                                               }}>
                                 <Image style={[styles.module]} source={require('../../img/car@2x.png')}/>

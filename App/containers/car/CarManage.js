@@ -231,26 +231,37 @@ class CarManage extends Component{
             <View>
 
                 <View style={lineStyle}>
-                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                        {prefer}
-                    </View>
 
-                    <TouchableOpacity style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}
+                    {
+                        rowData.idle==true?
+                            <TouchableOpacity style={{width:55,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
+                                              onPress={()=>{
+                                     this.navigate2CarInsurance(rowData);
+                                }}>
+                                <Icon name="circle-thin" size={27} color="#555"/>
+                            </TouchableOpacity>:
+                        <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                            <Text style={{color:'#ff5c3c',fontSize:16}}>已申请</Text>
+                        </View>
+                    }
+
+                    <TouchableOpacity style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',
+                                padding:2,paddingLeft:12}}
                                       onPress={()=>{
                                            this.navigate2CarInsurance(rowData);
                                       }}>
                         <View>
-                            <Text style={{color:'#000',fontSize:18}}>
+                            <Text style={{color:'#000',fontSize:16}}>
                                 车牌号:{rowData.carNum}
                             </Text>
-                            <Text style={{color:'#000',fontSize:17}}>
+                            <Text style={{color:'#444',fontSize:15}}>
                                 车主姓名 :{rowData.ownerName}
                             </Text>
                         </View>
                     </TouchableOpacity>
 
                     <View style={{width:50,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Icon name="angle-right" size={52} color="#00c9ff"></Icon>
+                        <Icon name="angle-right" size={42} color="#00c9ff"></Icon>
                     </View>
                 </View>
 
@@ -339,17 +350,18 @@ class CarManage extends Component{
                     <TouchableOpacity onPress={()=>{
                         this.goBack();
                     }}>
-                        <Image source={require('../../images/icon_back.png')} style={{width:30,height:30}}/>
+
+                        <Icon name="angle-left" size={42} color="#666"></Icon>
                     </TouchableOpacity>
                     <Text style={{fontSize:17,flex:3,textAlign:'center'}}>
                         车辆管理
                     </Text>
                     <TouchableOpacity onPress={()=>{
-                        this.carSelect();
+                        this.fetchData();
                         }}>
-                        <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center',backgroundColor:'#11c1f3',
+                        <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center',
                                     borderRadius:8,paddingTop:8,paddingBottom:8,paddingLeft:10,paddingRight:10,alignItems:'center'}}>
-                            <Icon name="refresh" size={24} color="#fff"></Icon>
+                            <Icon name="refresh" size={24} color="#11c1f3"></Icon>
                         </View>
                     </TouchableOpacity>
 
@@ -357,12 +369,13 @@ class CarManage extends Component{
 
 
                 {/*body*/}
-                <View style={{padding:10,height:70}}>
+                <View style={{padding:10,height:60}}>
 
                     <View style={[styles.row,{borderBottomWidth:0}]}>
-                        <View style={{flex:1,borderWidth:1,borderColor:'#ddd'}}>
+                        <View style={{flex:1,borderWidth:1,borderColor:'#ddd',borderTopLeftRadius:8,borderBottomLeftRadius:8
+                                }}>
                             <TextInput
-                                style={{height: 46,paddingLeft:10,paddingRight:10,paddingTop:6,paddingBottom:6,fontSize:18}}
+                                style={{height: 46,paddingLeft:10,paddingRight:10,paddingTop:6,paddingBottom:6,fontSize:16}}
                                 onChangeText={(carNum) => {
                                   this.state.query.carNum=carNum;
                                   this.setState({query:this.state.query});
@@ -373,7 +386,8 @@ class CarManage extends Component{
                                 underlineColorAndroid="transparent"
                             />
                         </View>
-                        <View style={{width:60,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#00c9ff'}}>
+                        <View style={{width:60,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#00c9ff',
+                                borderTopRightRadius:8,borderBottomRightRadius:8}}>
                             <Icon size={21} color="#fff" name="search"></Icon>
                         </View>
                     </View>
@@ -382,7 +396,7 @@ class CarManage extends Component{
                 </View>
 
 
-                <View style={{padding:15,height:height-274}}>
+                <View style={{padding:8,paddingLeft:0,paddingRight:0,height:height-274}}>
                     {listView}
                 </View>
 
@@ -392,7 +406,7 @@ class CarManage extends Component{
                                          this.setState({modalVisible:true});
                                       }}>
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{color:'#fff',fontSize:19}}>创建新车</Text>
+                        <Text style={{color:'#fff',fontSize:13}}>创建新车</Text>
                     </View>
                 </TouchableOpacity>
 

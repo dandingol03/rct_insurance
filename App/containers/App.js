@@ -20,10 +20,8 @@ import { connect } from 'react-redux';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
-
-
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 
 import Home from './home/index';
@@ -124,6 +122,23 @@ class App extends React.Component {
         if (Platform.OS === 'android') {
             BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid.bind(this));
         }
+        this.pushlisteners.forEach(listener=> {
+            JPush.removeEventListener(listener);
+        });
+    }
+
+    componentDidMount() {
+        JPush.requestPermissions()
+        this.pushlisteners = [
+            JPush.addEventListener(JpushEventReceiveMessage, this.onReceiveMessage.bind(this)),
+            JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
+        ]
+    }
+    onReceiveMessage(message) {
+        alert(message);
+    }
+    onOpenMessage(message) {
+        alert(message);
     }
 
 }

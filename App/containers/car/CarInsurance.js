@@ -122,7 +122,7 @@ class CarInsurance extends Component{
                         this.setState({meals:meals});
                     }.bind(this)}>
                         <View style={lineStyle}>
-                            <View style={{flex:7,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
+                            <View style={{flex:7,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:10}}>
                                 <View>
                                     <Text style={{color:'#000',fontSize:18}}>
                                         {rowData.productName}
@@ -132,7 +132,7 @@ class CarInsurance extends Component{
                             <View style={{flex:3,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 {
                                     rowData.checked==true?
-                                        <Icon name="check-circle" size={35} color="#11c1f3"/>:
+                                        <Icon name="check-square-o" size={35} color="#11c1f3"/>:
                                         <Icon name="circle-thin" size={35} color="#555"/>
                                 }
                             </View>
@@ -145,7 +145,7 @@ class CarInsurance extends Component{
                 <View>
                     <View>
                         <View style={lineStyle}>
-                            <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
+                            <TouchableOpacity style={{width:40,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:4}}
                                               onPress={()=>{
                                     rowData.checked=!rowData.checked;
                                     this.setState({meals:this.state.meals})
@@ -159,27 +159,31 @@ class CarInsurance extends Component{
 
                             <View style={{flex:5,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
                                 <View>
-                                    <Text style={{color:'#000',fontSize:18}}>
+                                    <Text style={{color:'#000',fontSize:13}}>
                                         {rowData.productName}
                                     </Text>
                                 </View>
                             </View>
 
-                            <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                                {
-                                    rowData.isIrrespectable!=1?null:rowData.irrespective==true?
-                                        <View style={{flex:1,borderWidth:1,borderRadius:6,borderColor:'red',justifyContent:'center',
-                                            flexDirection:'row',alignItems:'center'}}>
-                                            <Text style={{fontSize:14,color:'#222'}}>不计免赔</Text>
-                                        </View>:
-                                        <View style={{flex:1,borderWidth:1,borderRadius:6,borderColor:'#444',justifyContent:'center',
-                                            flexDirection:'row',alignItems:'center'}}>
-                                            <Text style={{fontSize:14,color:'#222'}}>不计免赔</Text>
-                                        </View>
-                                }
-                            </View>
+                            {
+                                rowData.isIrrespectable!=1?null:
+                                    <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:4}}>
+                                        {
+                                            rowData.irrespective==true?
+                                                <View style={{flex:1,borderWidth:1,borderRadius:6,borderColor:'red',justifyContent:'center',
+                                                    flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{fontSize:14,color:'#222'}}>不计免赔</Text>
+                                                </View>:
+                                                <View style={{flex:1,borderWidth:1,borderRadius:6,borderColor:'#444',justifyContent:'center',
+                                                    flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{fontSize:14,color:'#222'}}>不计免赔</Text>
+                                                </View>
+                                        }
+                                    </View>
+                            }
 
-                            <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+
+                            <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:4}}>
                                 {
                                     rowData.insuranceTypes!==undefined&&rowData.insuranceTypes!==null?
                                         <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
@@ -200,11 +204,11 @@ class CarInsurance extends Component{
                                                                         this.ActionSheet.show();
                                                                   }.bind(this),300);
                                                               }}>
-                                            <Text style={{fontSize:18,color:'#222'}}>{rowData.insuranceType}</Text>
+                                            <Text style={{fontSize:16,color:'#222'}}>{rowData.insuranceType}</Text>
                                             <Icon name="angle-down" color="#222" size={30}/>
                                         </TouchableOpacity>:
                                         <View style={{flex:1,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                            <Text style={{fontSize:18,color:'#222'}}>{rowData.insuranceType}</Text>
+                                            <Text style={{fontSize:16,color:'#222'}}>{rowData.insuranceType}</Text>
                                         </View>
                                 }
                             </View>
@@ -345,27 +349,26 @@ class CarInsurance extends Component{
 
         return (
 
-
-
             <View style={{flex:1,position:'relative'}}>
 
-                <View style={[{padding: 10,marginTop:0,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
-                        height:44,backgroundColor:'#888'}]}>
+                <View style={[{padding: 10,marginTop:0,height:55,backgroundColor:'#888'}]}>
 
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}} onPress={()=>{
+                    <View style={{flex:1,marginTop:14,flexDirection:'row'}}>
+                        <TouchableOpacity style={{width:50,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                                          onPress={()=>{
                             this.goBack();
                             }}>
-                        <Icon name="angle-left" size={40}  color="#fff"/>
-                    </TouchableOpacity>
+                            <Icon name="angle-left" size={40}  color="#fff"/>
+                        </TouchableOpacity>
 
-                    <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{fontSize:18,color:'#fff'}}>
-                            险种选择
-                        </Text>
+                        <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10}}>
+                            <Text style={{fontSize:18,color:'#fff'}}>
+                                险种选择
+                            </Text>
+                        </View>
+
+                        <View style={{flex:1}}></View>
                     </View>
-
-                    <View style={{flex:1}}></View>
-
                 </View>
 
 
@@ -388,7 +391,7 @@ class CarInsurance extends Component{
                     <View tabLabel='基础套餐' style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
                         {/*body*/}
 
-                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-274}}>
+                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
                             {listView}
                         </View>
 
@@ -398,14 +401,14 @@ class CarInsurance extends Component{
                                           this.insuranceMealConfirm();
                                       }}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>确认套餐选择</Text>
+                                <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    <View tabLabel="建议套餐"  style={{flex:1,padding:12}}>
+                    <View tabLabel="建议套餐"  style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
 
-                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-274}}>
+                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
                             {advisedListView}
                         </View>
 
@@ -415,14 +418,14 @@ class CarInsurance extends Component{
                                           this.insuranceMealConfirm();
                                       }}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>确认套餐选择</Text>
+                                <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    <View tabLabel="自定义套餐"  style={{flex:1,padding:12}}>
+                    <View tabLabel="自定义套餐"  style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
 
-                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-274}}>
+                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
                             {customListView}
                         </View>
 
@@ -432,7 +435,7 @@ class CarInsurance extends Component{
                                          this.insuranceMealConfirm();
                                       }}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>确认套餐选择</Text>
+                                <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
