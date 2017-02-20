@@ -23,12 +23,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import {fetchCarOrders,enableCarOrdersOnFresh} from '../../action/actionCreator';
+import {fetchLifeOrders,enableLifeOrdersOnFresh} from '../../action/actionCreator';
 import DateFilter from '../../filter/DateFilter';
 
-
 class LifeOrders extends Component{
-
     goBack(){
         const { navigator } = this.props;
         if(navigator) {
@@ -125,10 +123,8 @@ class LifeOrders extends Component{
                 </View>
             </TouchableOpacity>
         );
-
         return row;
     }
-
 
     fetchData(){
         const { accessToken } = this.props;
@@ -138,7 +134,6 @@ class LifeOrders extends Component{
         }.bind(this)));
         this.state.doingFetch=true;
     }
-
 
     constructor(props)
     {
@@ -204,16 +199,16 @@ class LifeOrders extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50},styles.card]}>
+                <View style={[{flex:1,padding:5,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={45} color="#222"/>
+                        <Icon name="angle-left" size={30} color="#222"/>
                     </TouchableOpacity>
 
-                    <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:23,color:'#222',marginLeft:10}}>
+                    <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <Text style={{fontSize:15,color:'#222',marginLeft:10}}>
                             寿险订单
                         </Text>
                     </View>
@@ -223,11 +218,11 @@ class LifeOrders extends Component{
                                            const {dispatch} = this.props;
                                            dispatch(enableLifeOrdersOnFresh());
                                       }}>
-                        <Icon name='repeat' size={24} color='#222'/>
+                        <Icon name='repeat' size={20} color='#222'/>
                     </TouchableOpacity>
                 </View>
 
-                <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
+                <ScrollableTabView style={{flex:25,padding:0,margin:0}} onChangeTab={(data)=>{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;
                     }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}

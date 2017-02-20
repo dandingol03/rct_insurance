@@ -16,7 +16,7 @@ import  {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-
+import LifeOrders from '../life/LifeOrders';
 
 
 
@@ -27,6 +27,19 @@ var {height, width} = Dimensions.get('window');
 class My extends Component{
 
 
+    navigate2LifeOrders(){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'life_orders',
+                component: LifeOrders,
+                params: {
+
+                }
+            })
+        }
+    }
+
     constructor(props) {
         super(props);
         this.state={
@@ -36,7 +49,14 @@ class My extends Component{
     render() {
         return (
             <View style={styles.container}>
-                <Text>My</Text>
+
+                <TouchableOpacity onPress={()=>{
+                                         this.navigate2LifeOrders();
+                                      }}>
+                    <Text>My</Text>
+
+                </TouchableOpacity>
+
             </View>
         )
 
@@ -45,7 +65,10 @@ class My extends Component{
 
 var styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        marginTop: 80,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     tabContainer:{
         marginTop: 30

@@ -9,17 +9,17 @@
 
 #import "AppDelegate.h"
 
-#import <RCTJPush/RCTJPush.h>
-
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import "RCTBaiduMapViewManager.h"
+
+#import <RCTJPush/RCTJPush.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
+  
+  
   NSURL *jsCodeLocation;
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
@@ -36,17 +36,14 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
-   [RCTBaiduMapViewManager initSDK:@"by2il5VcPlnVL7LR2GDFWBlXRqTcGZXC"];
-  
   [RCTJPush application:application didFinishLaunchingWithOptions:launchOptions];
+  
   return YES;
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   [RCTJPush application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-  NSString *result=[[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding];
-  
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
@@ -58,7 +55,6 @@
   [RCTJPush application:application didReceiveRemoteNotification:notification];
   completionHandler(UIBackgroundFetchResultNewData);
 }
-
 
 
 @end
