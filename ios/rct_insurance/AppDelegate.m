@@ -44,6 +44,8 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   [RCTJPush application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+  NSString *result=[[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding];
+  NSLog(@"data length:%@",result);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
