@@ -85,7 +85,7 @@ class CarCompany extends Component{
                     rowData.checked=!rowData.checked;
                     this.setState({companys:this.state.companys});
                 }}>
-                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                    <View style={{width:50,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:4}}>
                         {
                             rowData.checked==true?
                                 <Icon name="check-square-o" size={30} color="#00c9ff"/>:
@@ -95,7 +95,7 @@ class CarCompany extends Component{
 
                     <View style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
                         <View>
-                            <Text style={{color:'#000',fontSize:17}}>
+                            <Text style={{color:'#000',fontSize:15}}>
                                 {rowData.companyName}
                             </Text>
                         </View>
@@ -188,16 +188,16 @@ class CarCompany extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
+                <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:50},styles.card]}>
+                    <TouchableOpacity style={{width:50,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={45} color="#222"/>
+                        <Icon name="angle-left" size={40} color="#444"/>
                     </TouchableOpacity>
 
                     <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:23,color:'#222',marginLeft:10}}>
+                        <Text style={{fontSize:21,color:'#222',marginLeft:20}}>
                             车险公司选择
                         </Text>
                     </View>
@@ -207,7 +207,7 @@ class CarCompany extends Component{
                 </View>
 
                 {/*body*/}
-                <View style={{padding:15,height:height-264}}>
+                <View style={{padding:15,height:height-220,paddingLeft:0,paddingRight:0}}>
                     {listView}
                 </View>
 
@@ -217,7 +217,7 @@ class CarCompany extends Component{
                                          this.companyConfirm();
                                       }}>
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{color:'#fff',fontSize:19}}>确认公司选择</Text>
+                        <Text style={{color:'#fff',fontSize:16}}>确认公司选择</Text>
                     </View>
                 </TouchableOpacity>
 

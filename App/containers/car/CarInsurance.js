@@ -78,7 +78,10 @@ class CarInsurance extends Component{
         {
             this.navigate2CarCompany(products);
         }else{
-
+            Alert.alert(
+                'error',
+                '请再勾选险种后再点击套餐确认'
+            );
         }
 
     }

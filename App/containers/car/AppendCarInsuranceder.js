@@ -250,16 +250,16 @@ class AppendCarInsuranceder extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
+                <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:50},styles.card]}>
+                    <TouchableOpacity style={{width:40,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',padding:10}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
                         <Icon name="angle-left" size={45} color="#222"/>
                     </TouchableOpacity>
 
-                    <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:23,color:'#222',marginLeft:10}}>
+                    <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
+                        <Text style={{fontSize:16,color:'#222',marginLeft:0}}>
                             选择被保险人
                         </Text>
                     </View>
