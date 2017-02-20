@@ -1,6 +1,7 @@
 package com.rct_insurance;
 
 import com.facebook.react.ReactActivity;
+import cn.reactnative.modules.jpush.JPushPackage;
 
 public class MainActivity extends ReactActivity {
 

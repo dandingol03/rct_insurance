@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "configureJPush": "node node_modules/jpush-react-native/JPushConfiguration.js",
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
@@ -10,6 +11,10 @@
     "react": "^15.4.2",
     "react-native": "0.41.2",
     "react-native-actionsheet": "^2.0.5",
+    "react-native-amap-view": "^0.4.0",
+    "react-native-baidu-map": "^0.5.0",
+    "react-native-file-upload": "^1.0.4",
+    "react-native-jpush": "^1.0.9",
     "react-native-popupwindow": "^0.3.0",
     "react-native-scrollable-tab-view": "^0.7.2",
     "react-native-tab-navigator": "^0.3.3",
