@@ -143,19 +143,33 @@ class AppendCarInsuranceder extends Component{
                       });
                  }
                  this.setState({relativePersons:this.state.relativePersons,insuranceder:rowData});   }}>
-                <View style={{flex:1}}></View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
-                    <View>
-                        <Text style={{color:'#000',fontSize:18}}>
+                <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',
+                        padding:2,paddingLeft:12}}>
+                    <View style={{flex:1}}>
+                        <Text style={{color:'#000',fontSize:14}}>
                             {rowData.perName}
                         </Text>
                     </View>
+
+                    {
+                        rowData.abundant==true?
+                            <View style={{paddingLeft:0,flex:3,flexDirection:'row'}}>
+                                <Text style={{color:'rgba(220, 11, 35, 0.6)',fontSize:14,alignItems:'center'}}>
+                                    身份证:
+                                </Text>
+                                <Text style={{color:'#222',fontSize:12,alignItems:'center',marginLeft:10}}>
+                                    {rowData.perIdCard}
+                                </Text>
+                            </View>:
+                            null
+
+                    }
                 </View>
-                <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                <View style={{width:40,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
                     {
                         rowData.checked==true?
-                            <Icon name="check-square-o" size={30} color="#00c9ff"/>:
-                            <Icon name="hand-pointer-o" size={30} color="#888"/>
+                            <Icon name="check-square-o" size={24} color="#00c9ff"/>:
+                            <Icon name="square-o" size={24} color="#888"/>
                     }
                 </View>
             </TouchableOpacity>
@@ -188,7 +202,18 @@ class AppendCarInsuranceder extends Component{
                 {
 
                     var insuranceder= null;
+                    //对于人员来说凡是重复的人员都显示身份证号
+                    var abundant={};
                     json.data.map(function (person,i) {
+
+                        if(abundant[person.perName]!==undefined&&abundant[person.perName]!==null)
+                            abundant[person.perName].count++;
+                        else{
+                            abundant[person.perName]={
+                                count:1
+                            };
+                        }
+                        person.abundant=false;
 
                         //当新增完被保险人后,自动刷新被保险人列表并选中
                         if(personId!==undefined&&personId!==null&&person.personId==personId)
@@ -197,7 +222,15 @@ class AppendCarInsuranceder extends Component{
                             insuranceder = person;
                         }
                     });
-                    var  relativePersons=json.data;
+
+                    //迭代重复人员
+                    json.data.map(function (person,i) {
+                        if(abundant[person.perName].count>1)
+                            person.abundant=true;
+                    })
+
+
+                    var relativePersons=json.data;
                     this.setState({insuranceder: insuranceder, relativePersons: relativePersons});
                 }
             }
@@ -219,6 +252,29 @@ class AppendCarInsuranceder extends Component{
             selectedTab:0,
             accessToken: accessToken
         };
+    }
+
+    getPlaceHolder()
+    {
+
+        switch(this.state.selectedTab)
+        {
+            case 0:
+                return (
+                    <View style={{flex:1}}>
+                    </View>);
+                break;
+            case 1:
+                return (
+                    <TouchableOpacity style={{width:70,flexDirection:'row',alignItems:'center',borderRadius:6,
+                                            backgroundColor:'#ef473a',padding:2,justifyContent:'center'}}>
+                        <Icon name="hand-pointer-o" size={18} color="#fff"></Icon>
+                        <Text style={{color:'#fff'}}>保存</Text>
+                    </TouchableOpacity>);
+                break;
+        }
+
+
     }
 
 
@@ -248,10 +304,12 @@ class AppendCarInsuranceder extends Component{
         }
 
 
+
         return (
             <View style={{flex:1}}>
                 <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:50},styles.card]}>
-                    <TouchableOpacity style={{width:40,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',padding:10}}
+                    <TouchableOpacity style={{width:20,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',
+                        padding:10,paddingLeft:0,paddingRight:0}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
@@ -259,33 +317,36 @@ class AppendCarInsuranceder extends Component{
                     </TouchableOpacity>
 
                     <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
-                        <Text style={{fontSize:16,color:'#222',marginLeft:0}}>
+                        <Text style={{fontSize:16,color:'#222',marginLeft:5}}>
                             选择被保险人
                         </Text>
                     </View>
 
-                    <View style={{flex:1}}></View>
+
+                    {this.getPlaceHolder(this.state.selectedTab)}
+
 
                 </View>
 
                 <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
                         var tabIndex=data.i;
-                        this.state.selectedTab=tabIndex;
+                        this.setState({selectedTab:tabIndex});
+                        //this.state.selectedTab=tabIndex;
                     }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
                 >
                     <View tabLabel='已有被保险人' style={{flex:1}}>
                         {/*body*/}
-                        <View style={{padding:20,height:height-264}}>
+                        <View style={{padding:20,paddingLeft:0,paddingRight:0,height:height-234}}>
                             {listView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
+                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/6,marginLeft:width/4,
+                                    padding:8,borderRadius:10,justifyContent:'center'}]}
                                           onPress={()=>{
                                         this.applyCarInsurance();
                                       }}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>提交车险意向</Text>
+                                <Text style={{color:'#fff',fontSize:15}}>提交车险意向</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
