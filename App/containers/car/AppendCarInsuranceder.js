@@ -22,14 +22,15 @@ import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
-
+import ActionSheet from 'react-native-actionsheet';
 import _ from 'lodash';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import CarOrders from './CarOrders';
 
 
-
+const CANCEL_INDEX = 0;
+const DESTRUCTIVE_INDEX = 1;
 
 class AppendCarInsuranceder extends Component{
 
@@ -54,6 +55,21 @@ class AppendCarInsuranceder extends Component{
             })
         }
     }
+
+
+
+    _handlePress(index)
+    {
+        //如果回调队列不为空
+        if(this.state.actionSheetCallbacks!==undefined&&this.state.actionSheetCallbacks!==null)
+        {
+            this.state.actionSheetCallbacks.map(function (callback,i) {
+                callback(index-1);
+            });
+        }
+        this.state.actionSheetCallbacks=[];
+    }
+
 
     applyCarInsurance()
     {
@@ -201,7 +217,7 @@ class AppendCarInsuranceder extends Component{
                 if(json.data!==undefined&&json.data!==null)
                 {
 
-                    var insuranceder= null;
+                    var insuranceder= this.state.insuranceder;
                     //对于人员来说凡是重复的人员都显示身份证号
                     var abundant={};
                     json.data.map(function (person,i) {
@@ -248,9 +264,11 @@ class AppendCarInsuranceder extends Component{
             companys:props.companys,
             products:props.products,
             relativePersons:null,
-            insuranceder:null,
+            insuranceder:{},
             selectedTab:0,
-            accessToken: accessToken
+            accessToken: accessToken,
+            relations:['所有人','管理人','使用人'],
+            actionSheetCallbacks:[]
         };
     }
 
@@ -305,6 +323,9 @@ class AppendCarInsuranceder extends Component{
 
 
 
+        var lineStyle={height:45,flexDirection:'row',padding:4,borderBottomWidth:1,
+             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
+
         return (
             <View style={{flex:1}}>
                 <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:50},styles.card]}>
@@ -353,9 +374,63 @@ class AppendCarInsuranceder extends Component{
 
                     <View tabLabel='新建被保险人' style={{flex:1}}>
 
+                        {/*输入被保险人姓名*/}
+                        <View style={lineStyle}>
+                            <View style={{width:60,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                                <Text style={{color:'#444',marginRight:10}}>姓名:</Text>
+                            </View>
+
+                            <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
+                                <TextInput
+                                    style={{flex:1,height: 35,paddingLeft:10,paddingRight:10,paddingTop:2,
+                                            paddingBottom:2,fontSize:14,alignItems:'center',flexDirection:'row'}}
+                                    onChangeText={(perName) => {
+                                      this.state.insuranceder.perName=perName;
+                                      this.setState({insuranceder:this.state.insuranceder});
+                                    }}
+                                    value={this.state.insuranceder.perName}
+                                    placeholder='输入被保险人姓名'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+                        </View>
+
+                        {/*被保险人与车辆关系*/}
+                        <View style={lineStyle}>
+                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                                <Text style={{color:'#444',marginRight:10}}>被保险人与车辆关系:</Text>
+                            </View>
+
+
+                            <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
+                                onPress={
+                                    ()=>{
+                                          this.state.actionSheetCallbacks.push(function(index) {
+
+                                                  if(index>=0)
+                                                  {
+                                                      alert(index)
+                                                  }
+
+                                              }.bind(this));
+                                           this.ActionSheet.show();
+                                    }
+                                }>
+                                <Icon name="angle-down" size={24} color="#888"/>
+                            </TouchableOpacity>
+                        </View>
+
+
+                        <ActionSheet
+                            ref={(o) => this.ActionSheet = o}
+                            title="选择关系？"
+                            options={['取消'].concat(this.state.relations)}
+                            cancelButtonIndex={CANCEL_INDEX}
+                            onPress={this._handlePress.bind(this)}
+                        />
+
                     </View>
-
-
 
                 </ScrollableTabView>
 
