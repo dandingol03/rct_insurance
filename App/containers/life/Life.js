@@ -1,9 +1,6 @@
 /**
  * Created by dingyiming on 2017/2/15.
  */
-/**
- * Created by dingyiming on 2017/2/15.
- */
 import React,{Component} from 'react';
 
 import  {
@@ -31,9 +28,8 @@ import ActionSheet from 'react-native-actionsheet';
 import AppendLifeInsurer from './AppendLifeInsurer.js';
 import AppendLifeInsuranceder from './AppendLifeInsuranceder.js';
 import AppendLifeBenefiter from './AppendLifeBenefiter.js';
+import LifeOrders from './LifeOrders';
 import MyPop from 'react-native-popupwindow';
-import ConfirmModal from '../../components/modal/ConfirmModal.js';
-
 
 class Life extends Component{
 
