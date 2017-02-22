@@ -5,10 +5,10 @@ import { combineReducers } from 'redux';
 
 import user from './user';
 import timer from './timer';
-import lifeOrders from './lifeOrders';
+import life from './life';
 
 export default rootReducer = combineReducers({
     user,
     timer,
-    lifeOrders
+    life
 })

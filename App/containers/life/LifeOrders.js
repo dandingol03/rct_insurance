@@ -25,6 +25,8 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import {fetchLifeOrders,enableLifeOrdersOnFresh} from '../../action/actionCreator';
 import DateFilter from '../../filter/DateFilter';
+import ApplyedLifeOrderDetails from './ApplyedLifeOrderDetails'
+import PricedLifeOrderDetails from './PricedLifeOrderDetails'
 
 class LifeOrders extends Component{
     goBack(){
@@ -34,94 +36,117 @@ class LifeOrders extends Component{
         }
     }
 
+    navigate2ApplyedLifeOrderDetail(order){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'applyed_life_order_details',
+                component: ApplyedLifeOrderDetails,
+                params: {
+                    order:order,
+                }
+            })
+        }
+    }
+
+    navigate2PricedLifeOrderDetail(order){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'priced_life_order_details',
+                component: PricedLifeOrderDetails,
+                params: {
+                    order:order,
+                }
+            })
+        }
+    }
+
     renderRow(rowData,sectionId,rowId){
 
         var lineStyle=null;
-
-        lineStyle={flex:1,flexDirection:'row',padding:4,paddingLeft:0,paddingRight:0,borderBottomWidth:1,
+        lineStyle={flex:1,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,borderBottomWidth:1,
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
-
         var row=(
-            <TouchableOpacity style={lineStyle} onPress={()=>{
-                 rowData.checked=!rowData.checked;
-                 var relativePersons=this.state.relativePersons;
-                 if(rowData.checked==true)
-                 {
-                     relativePersons.map(function(person,i) {
-                         if(person.personId!=rowData.personId)
-                             person.checked=false;
-                      });
-                 }
-                 this.setState({relativePersons:this.state.relativePersons,insuranceder:rowData});   }}>
-                <View style={{flex:1,alignItems:'center'}}>
-                    <Text style={{fontSize:18,color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
-                    <Text style={{fontSize:18,color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
+            <View style={lineStyle}>
+                <View style={{flex:2,justifyContent:'flex-start',alignItems:'center',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
+                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6}}>
                     <View>
-                        <Text style={{color:'#000',fontSize:18}}>
+                        <Text style={{color:'#000',fontSize:12,padding:2}}>
                             {rowData.orderNum}
                         </Text>
+                        {
+                            rowData.orderState==1?
+                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                    已申请
+                                </Text>:
+                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                    正在报价
+                                </Text>
+                        }
                     </View>
                 </View>
-                <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                    {
-                        rowData.checked==true?
-                            <Icon name="check-square-o" size={30} color="#00c9ff"/>:
-                            <Icon name="hand-pointer-o" size={30} color="#888"/>
-                    }
-                </View>
-            </TouchableOpacity>
+
+                <TouchableOpacity style={{flex:2,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,
+            borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}}
+                                  onPress={()=>{
+                                      this.navigate2ApplyedLifeOrderDetail(rowData);
+                 }}>
+                  <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                    <Text style={{color:'#222',fontSize:12,marginRight:5}}>
+                        详细
+                    </Text>
+                    <Icon name="angle-right" size={30} color="#222"/>
+                  </View>
+                </TouchableOpacity>
+            </View>
         );
         return row;
     }
 
     renderPricedRow(rowData,sectionId,rowId){
         var lineStyle=null;
-
-        lineStyle={flex:1,flexDirection:'row',justifyContent:'flex-start',backgroundColor:'transparent'};
-
+        lineStyle={flex:1,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,borderBottomWidth:1,
+            borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
         var row=(
-            <TouchableOpacity style={lineStyle} onPress={()=>{
-                 rowData.checked=!rowData.checked;
-                 var relativePersons=this.state.relativePersons;
-                 if(rowData.checked==true)
-                 {
-                      relativePersons.map(function(person,i) {
-                          if(person.personId!=rowData.personId)
-                              person.checked=false;
-                      });
-                 }
-                 this.setState({relativePersons:this.state.relativePersons,insuranceder:rowData});   }}>
-                <View style={{flex:2,flexDirection:'row',alignItems:'center',justifyContent:'center',borderRightWidth:1,borderColor:'#888'}}>
-                    <View style={{flex:1,alignItems:'center'}}>
-                        <Text style={{fontSize:18,color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
-                        <Text style={{fontSize:18,color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
-                    </View>
+            <View style={lineStyle}>
+                <View style={{flex:2,justifyContent:'flex-start',alignItems:'center',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
-                    <View style={{flex:1,marginLeft:20}}>
-                        <Text style={{color:'#222',fontSize:18}}>
+                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6}}>
+                    <View>
+                        <Text style={{color:'#000',fontSize:12,padding:2}}>
                             {rowData.orderNum}
                         </Text>
                         {
                             rowData.orderState==3?
-                                <Text style={{color:'#222',fontSize:16}}>
+                                <Text style={{color:'#222',fontSize:12,padding:2}}>
                                     报价完成
                                 </Text>:
-                                <Text style={{color:'#222',fontSize:16}}>
-                                    报价中
+                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                     用户确认
                                 </Text>
                         }
                     </View>
                 </View>
-                <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                    <Text style={{color:'#222',fontSize:18,marginRight:5}}>
-                        详细
-                    </Text>
-                    <Icon name="angle-right" size={30} color="#222"/>
-                </View>
-            </TouchableOpacity>
+
+                <TouchableOpacity style={{flex:2,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,
+            borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}}
+                                  onPress={()=>{
+                                      this.navigate2PricedLifeOrderDetail(rowData);
+                 }}>
+                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                        <Text style={{color:'#222',fontSize:12,marginRight:5}}>
+                            详细
+                        </Text>
+                        <Icon name="angle-right" size={30} color="#222"/>
+                    </View>
+                </TouchableOpacity>
+            </View>
         );
         return row;
     }
@@ -142,7 +167,7 @@ class LifeOrders extends Component{
         this.state = {
             selectedTab:0,
             accessToken: accessToken,
-            doingFetch:false
+            doingFetch:false,
         };
     }
 
@@ -199,16 +224,17 @@ class LifeOrders extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{flex:1,padding:5,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                <View style={[{flex:1,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={30} color="#222"/>
+                        <Icon name="angle-left" size={30} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:15,color:'#222',marginLeft:10}}>
+                        <Text style={{fontSize:15,color:'#fff',marginLeft:4}}>
                             寿险订单
                         </Text>
                     </View>
@@ -218,18 +244,19 @@ class LifeOrders extends Component{
                                            const {dispatch} = this.props;
                                            dispatch(enableLifeOrdersOnFresh());
                                       }}>
-                        <Icon name='repeat' size={20} color='#222'/>
+                        <Icon name='repeat' size={20} color='#fff'/>
                     </TouchableOpacity>
                 </View>
 
                 <ScrollableTabView style={{flex:25,padding:0,margin:0}} onChangeTab={(data)=>{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
+                    }} renderTabBar={() => <DefaultTabBar
+                    style={{borderBottomWidth:0,padding:5}} activeTextColor="#00c9ff" inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
                 >
                     <View tabLabel='已申请' style={{flex:1}}>
                         {/*body*/}
-                        <View style={{padding:20,height:height-264}}>
+                        <View style={{padding:10,height:height-264}}>
                             {applyedListView}
                         </View>
 
@@ -237,7 +264,7 @@ class LifeOrders extends Component{
 
                     <View tabLabel='寿险方案' style={{flex:1}}>
 
-                        <View style={{padding:20,height:height-264}}>
+                        <View style={{padding:10,height:height-264}}>
                             {pricedListView}
                         </View>
 
@@ -245,7 +272,7 @@ class LifeOrders extends Component{
 
                     <View tabLabel='已完成' style={{flex:1}}>
 
-                        <View style={{padding:20,height:height-264}}>
+                        <View style={{padding:10,height:height-264}}>
                             {historyListView}
                         </View>
 
@@ -253,7 +280,7 @@ class LifeOrders extends Component{
 
                 </ScrollableTabView>
 
-
+                </Image>
             </View>);
     }
 }
@@ -293,9 +320,9 @@ var styles = StyleSheet.create({
 
 module.exports = connect(state=>({
         accessToken:state.user.accessToken,
-        historyOrders:state.lifeOrders.historyOrders,
-        pricedOrders:state.lifeOrders.pricedOrders,
-        applyedOrders:state.lifeOrders.applyedOrders,//已申请和正在报价
-        onFresh:state.lifeOrders.onFresh
+        historyOrders:state.life.historyOrders,
+        pricedOrders:state.life.pricedOrders,
+        applyedOrders:state.life.applyedOrders,//已申请和正在报价
+        onFresh:state.life.onFresh
     })
 )(LifeOrders);

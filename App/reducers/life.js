@@ -11,8 +11,7 @@ const initialState = {
     onFresh:true
 };
 
-let user = (state = initialState, action) => {
-
+let lifeOrders = (state = initialState, action) => {
     switch (action.type) {
         case types.SET_LIFE_HISTORY_ORDERS:
             return Object.assign({}, state, {
@@ -40,4 +39,4 @@ let user = (state = initialState, action) => {
     }
 }
 
-export default user;
+export default lifeOrders;
