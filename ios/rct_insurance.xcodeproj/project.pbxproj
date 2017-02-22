@@ -27,7 +27,6 @@
 		2A27E7A11E5AF9CA001DB835 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A27E7A01E5AF9CA001DB835 /* libz.tbd */; };
 		2A27E7A31E5AF9DA001DB835 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A27E7A21E5AF9DA001DB835 /* CoreTelephony.framework */; };
 		2A27E7A51E5AF9F6001DB835 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A27E7A41E5AF9F6001DB835 /* Security.framework */; };
-		2A27E7A71E5AFA35001DB835 /* PushConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A27E7A61E5AFA35001DB835 /* PushConfig.plist */; };
 		2A7315731E5B04CF00353913 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A7315721E5B04CF00353913 /* CFNetwork.framework */; };
 		2A7315941E5B04E500353913 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A7315931E5B04E500353913 /* CoreFoundation.framework */; };
 		2A7315961E5B052000353913 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A7315951E5B052000353913 /* UserNotifications.framework */; };
@@ -304,7 +303,6 @@
 		2A27E7A01E5AF9CA001DB835 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		2A27E7A21E5AF9DA001DB835 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		2A27E7A41E5AF9F6001DB835 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		2A27E7A61E5AFA35001DB835 /* PushConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PushConfig.plist; sourceTree = "<group>"; };
 		2A27E7A91E5AFD15001DB835 /* rct_insurance.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = rct_insurance.entitlements; path = rct_insurance/rct_insurance.entitlements; sourceTree = "<group>"; };
 		2A7315721E5B04CF00353913 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2A7315931E5B04E500353913 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -464,7 +462,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				2A27E7A61E5AFA35001DB835 /* PushConfig.plist */,
 			);
 			name = rct_insurance;
 			sourceTree = "<group>";
@@ -1021,7 +1018,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				2A27E7A71E5AFA35001DB835 /* PushConfig.plist in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				A9E40A8AFD7A48308F4219EF /* Entypo.ttf in Resources */,
 				89E1B27AC6174B9FBC78A0A2 /* EvilIcons.ttf in Resources */,
