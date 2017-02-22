@@ -43,6 +43,7 @@
 		A7D1485B529642D485D1CF8B /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D6BD804CE6E4DB8AC085BFC /* SimpleLineIcons.ttf */; };
 		A9E40A8AFD7A48308F4219EF /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F06837008A334F208CFD7BA1 /* Entypo.ttf */; };
 		ACCAEE085564486F9C22A4BE /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51F01700CDE7499FABD952E8 /* libRNSound.a */; };
+		AD14F8101E5BCFA300F40A05 /* PushConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = AD14F80F1E5BCFA300F40A05 /* PushConfig.plist */; };
 		C548EEC000744AE28E1D607B /* libRNAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7505ED961C774CB98CF449BA /* libRNAudio.a */; };
 		C8044F3F60374A9F90CDAF18 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B4053431DDC47B7B061C84A /* Zocial.ttf */; };
 		CEF973C63979499181CA7AC2 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EEFFA1CC03C4B4A98BB1DF0 /* MaterialCommunityIcons.ttf */; };
@@ -324,6 +325,7 @@
 		8D6BD804CE6E4DB8AC085BFC /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		9EEFFA1CC03C4B4A98BB1DF0 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		A77279DACBAB40FFBFF526D0 /* RCTJPush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTJPush.xcodeproj; path = "../node_modules/react-native-jpush/ios/RCTJPush.xcodeproj"; sourceTree = "<group>"; };
+		AD14F80F1E5BCFA300F40A05 /* PushConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PushConfig.plist; path = "../node_modules/react-native-vector-icons/PushConfig.plist"; sourceTree = "<group>"; };
 		B6FA12A4D2C34EC887C2370B /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		B82C6BFDEE434A21BF1838F4 /* RNSound.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSound.xcodeproj; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; };
 		CDC226A3CF06445FB53F8A8E /* RCTCamera.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RCTCamera.xcodeproj"; sourceTree = "<group>"; };
@@ -614,6 +616,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				AD14F80F1E5BCFA300F40A05 /* PushConfig.plist */,
 				13B07FAE1A68108700A75B9A /* rct_insurance */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* rct_insuranceTests */,
@@ -1018,6 +1021,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+
+				AD14F8101E5BCFA300F40A05 /* PushConfig.plist in Resources */,
+
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				A9E40A8AFD7A48308F4219EF /* Entypo.ttf in Resources */,
 				89E1B27AC6174B9FBC78A0A2 /* EvilIcons.ttf in Resources */,
