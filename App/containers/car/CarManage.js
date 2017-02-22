@@ -369,13 +369,13 @@ class CarManage extends Component{
 
 
                 {/*body*/}
-                <View style={{padding:10,height:60}}>
+                <View style={{padding:12,height:55}}>
 
                     <View style={[styles.row,{borderBottomWidth:0}]}>
                         <View style={{flex:1,borderWidth:1,borderColor:'#ddd',borderTopLeftRadius:8,borderBottomLeftRadius:8
                                 }}>
                             <TextInput
-                                style={{height: 46,paddingLeft:10,paddingRight:10,paddingTop:6,paddingBottom:6,fontSize:16}}
+                                style={{height: 40,paddingLeft:10,paddingRight:10,paddingTop:2,paddingBottom:2,fontSize:16}}
                                 onChangeText={(carNum) => {
                                   this.state.query.carNum=carNum;
                                   this.setState({query:this.state.query});
