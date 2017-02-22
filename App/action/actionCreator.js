@@ -250,7 +250,6 @@ export let fetchCarOrders=function (accessToken,cb) {
 }
 
 export let fetchLifeOrders=function (accessToken,cb) {
-
     var orders = null;
     var applyedOrders=[];
     var pricedOrders=[];
@@ -268,17 +267,28 @@ export let fetchLifeOrders=function (accessToken,cb) {
             }
         }).then(function (res) {
 
-            var json = res.data;
+            var json = res;
             if (json.re == 1) {
                 orders = json.data;
 
-                if (orders !== undefined && orders !== null && $scope.orders.length > 0) {
+                if (orders !== undefined && orders !== null &&orders.length > 0) {
+                     // for(order in orders){
+                     //     var date = new Date(order.applyTime);
+                     //     if (order.orderState == 3) {
+                     //         pricedOrders.push(order);
+                     //     }
+                     //     if (order.orderState == 5) {
+                     //         historyOrders.push(order);
+                     //     }
+                     //     if (order.orderState == 1||order.orderState == 2) {
+                     //         applyedOrders.push(order);
+                     //     }
+                     //
+                     // }
                     orders.map(function (order, i) {
-
                         var date = new Date(order.applyTime);
                         // order.applyTime = date.getFullYear().toString() + '-'
                         //     + date.getMonth().toString() + '-' + date.getDate().toString();
-
                         if (order.orderState == 3) {
                             pricedOrders.push(order);
                         }
@@ -291,9 +301,12 @@ export let fetchLifeOrders=function (accessToken,cb) {
 
                     })
 
-                    dispatch(setLifeOrdersInHistory(historyOrders));
-                    dispatch(setLifeOrdersInPriced(pricedOrders));
-                    dispatch(setLifeOrdersInApplyed(applyedOrders));
+                    if(historyOrders !== undefined && historyOrders !== null &&historyOrders.length > 0)
+                       dispatch(setLifeOrdersInHistory(historyOrders));
+                    if(pricedOrders !== undefined && pricedOrders !== null &&pricedOrders.length > 0)
+                       dispatch(setLifeOrdersInPriced(pricedOrders));
+                    if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
+                        dispatch(setLifeOrdersInApplyed(applyedOrders));
                     dispatch(disableLifeOrdersOnFresh());
                     if(cb)
                         cb();

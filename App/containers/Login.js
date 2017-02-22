@@ -30,9 +30,7 @@ import {loginAction,setTimerAction} from '../action/actionCreator';
 var Proxy = require('../proxy/Proxy');
 
 var  Login =React.createClass({
-
     onLoginPressed:function () {
-
         const {dispatch} = this.props;
         var {user}=this.state;
         if(user.username!==undefined&&user.username!==null)

@@ -62,26 +62,19 @@ class AppendLifeInsurer extends Component{
         var row=(
             <TouchableOpacity style={lineStyle} onPress={()=>{
                  rowData.checked=!rowData.checked;
-                 {/*var relativePersons=this.state.relativePersons;*/}
-                 {/*if(rowData.checked==true)*/}
-                 {/*{*/}
-                      {/*relativePersons.map(function(person,i) {*/}
-                          {/*if(person.personId!=rowData.personId)*/}
-                              {/*person.checked=false;*/}
-                      {/*});*/}
+                 var relativePersons=this.state.relativePersons;
+                 if(rowData.checked==true)
+                 {
+                    relativePersons.map(function(person,i) {
+                       if(person.personId!=rowData.personId)
+                           person.checked=false;
+                    });
 
-                 {/*}*/}
-                 {/*this.setState({relativePersons:this.state.relativePersons,insurer:rowData});*/}
+                 }
+                 this.setState({relativePersons:this.state.relativePersons,insurer:rowData});
 
             }}>
                 <View style={{flex:1}}></View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
-                    <View>
-                        <Text style={{color:'#000',fontSize:18}}>
-                            {rowData.perName}
-                        </Text>
-                    </View>
-                </View>
                 <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2}}>
                     <View>
                         <Text style={{color:'#000',fontSize:18}}>
@@ -94,7 +87,6 @@ class AppendLifeInsurer extends Component{
                         rowData.checked==true?
                             <Icon name="check-square-o" size={30} color="#00c9ff"/>:
                             <Icon name="hand-pointer-o" size={30} color="#888"/>
-
                     }
                 </View>
             </TouchableOpacity>
