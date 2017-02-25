@@ -272,19 +272,6 @@ export let fetchLifeOrders=function (accessToken,cb) {
                 orders = json.data;
 
                 if (orders !== undefined && orders !== null &&orders.length > 0) {
-                     // for(order in orders){
-                     //     var date = new Date(order.applyTime);
-                     //     if (order.orderState == 3) {
-                     //         pricedOrders.push(order);
-                     //     }
-                     //     if (order.orderState == 5) {
-                     //         historyOrders.push(order);
-                     //     }
-                     //     if (order.orderState == 1||order.orderState == 2) {
-                     //         applyedOrders.push(order);
-                     //     }
-                     //
-                     // }
                     orders.map(function (order, i) {
                         var date = new Date(order.applyTime);
                         // order.applyTime = date.getFullYear().toString() + '-'
@@ -318,6 +305,34 @@ export let fetchLifeOrders=function (accessToken,cb) {
                 cb();
             alert(err);
         })
+    }
+
+}
+
+export let setLifePlans=(plans)=>{
+    return {
+        type:types.SET_LIFE_PLANS,
+        plans:plans
+    }
+}
+
+export let setLifePlanDetail=(plan)=>{
+    return {
+        type:types.SET_LIFE_PLAN_DETAIL,
+        planDetail:plan
+    }
+}
+
+
+export let updateLifeModified=function(plans,modifiedPlan){
+    return dispatch=> {
+        plans.map(function(item,i){
+            if(item.planId==modifiedPlan.planId){
+                item = modifiedPlan;
+            }
+
+        })
+        dispatch(setLifePlans(plans));
     }
 
 }

@@ -570,7 +570,7 @@ class Life extends Component{
                                     onChangeText={(planFee) =>
                                     {
                                        this.state.planInsuranceFee=planFee;
-                                       var planInsuranceFee =  this.state.planInsuranceFee;
+                                       var planInsuranceFee = this.state.planInsuranceFee;
                                        this.setState({planInsuranceFee:planInsuranceFee});
                                 }}
                                     value={this.state.planInsuranceFee}

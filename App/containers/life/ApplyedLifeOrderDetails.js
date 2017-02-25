@@ -60,7 +60,6 @@ class ApplyedLifeOrderDetails extends Component{
 
     }
 
-
     constructor(props)
     {
         super(props);

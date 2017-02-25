@@ -23,10 +23,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import {fetchLifeOrders,enableLifeOrdersOnFresh} from '../../action/actionCreator';
+import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans} from '../../action/actionCreator';
 import DateFilter from '../../filter/DateFilter';
 import ApplyedLifeOrderDetails from './ApplyedLifeOrderDetails'
-import PricedLifeOrderDetails from './PricedLifeOrderDetails'
+import LifePlan from './LifePlan'
 
 class LifeOrders extends Component{
     goBack(){
@@ -49,12 +49,15 @@ class LifeOrders extends Component{
         }
     }
 
-    navigate2PricedLifeOrderDetail(order){
+    navigate2LifePlan(order){
         const { navigator } = this.props;
+        const {dispatch} = this.props;
+        dispatch(setLifePlans(order.plans));
+
         if(navigator) {
             navigator.push({
-                name: 'priced_life_order_details',
-                component: PricedLifeOrderDetails,
+                name: 'life_plan',
+                component: LifePlan,
                 params: {
                     order:order,
                 }
@@ -137,7 +140,7 @@ class LifeOrders extends Component{
                 <TouchableOpacity style={{flex:2,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}}
                                   onPress={()=>{
-                                      this.navigate2PricedLifeOrderDetail(rowData);
+                                      this.navigate2LifePlan(rowData);
                  }}>
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
                         <Text style={{color:'#222',fontSize:12,marginRight:5}}>
