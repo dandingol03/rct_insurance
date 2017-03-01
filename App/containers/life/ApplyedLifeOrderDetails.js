@@ -33,54 +33,19 @@ class ApplyedLifeOrderDetails extends Component{
         }
     }
 
-    fetchAppliedLifeOrderDetail(orderId){
-        Proxy.post({
-            url:Config.server+'/svr/request',
-            headers: {
-                'Authorization': "Bearer " + this.state.accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: {
-                request:'getAppliedLifeOrderByOrderId',
-                info: {
-                    orderId:orderId
-                }
-            }
-        },(json)=> {
-            if(json.re==1) {
-                if(json.data!==undefined&&json.data!==null)
-                {
-                    var applyedOrder = json.data;
-                    this.setState({applyedOrder:applyedOrder});
-                }
-            }
-
-        }, (err) =>{
-        });
-
-    }
-
-
     constructor(props)
     {
         super(props);
         const { accessToken } = this.props;
         this.state = {
             accessToken: accessToken,
-            applyedOrder:null,
+            applyedOrder:this.props.applyedOrder,
         };
     }
 
-
     render(){
 
-        var orderId = this.props.order.orderId;
-
-        if(this.state.applyedOrder==null||this.state.applyedOrder==undefined){
-            this.fetchAppliedLifeOrderDetail(orderId);
-        }
-
-        var order = this.state.applyedOrder;
+        var order = this.props.applyedOrder;
 
         return (
             <View style={{flex:1}}>
@@ -98,54 +63,54 @@ class ApplyedLifeOrderDetails extends Component{
 
                 <View style={{flex:2,marginTop:10,borderColor:'#aaa',alignItems:'flex-start',justifyContent: 'center'}}>
 
-                    <View style={{flex:1,width:width,padding:5,paddingLeft:8,borderWidth:1,borderColor:'#aaa',flexDirection:'row',backgroundColor:'#f5f5f5',alignItems:'center',justifyContent: 'flex-start'}}>
+                    <View style={{flex:1,width:width,padding:5,paddingLeft:8,borderWidth:1,borderColor:'#ddd',flexDirection:'row',backgroundColor:'#f5f5f5',alignItems:'center',justifyContent: 'flex-start'}}>
                         <Text>编号</Text>
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>订单号：</Text>
-                        <Text style={{flex:7}}>{order.orderNum}</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>订单号：</Text>
+                        <Text style={{flex:7,color:'#343434'}}>{order.orderNum}</Text>
                     </View>
 
                 </View>
 
-                <View style={{flex:8,marginTop:10,borderColor:'#aaa',alignItems:'flex-start',justifyContent: 'center'}}>
-                    <View style={{flex:1,width:width,padding:5,paddingLeft:8,borderWidth:1,borderColor:'#aaa',flexDirection:'row',backgroundColor:'#f5f5f5',alignItems:'center',justifyContent: 'flex-start'}}>
+                <View style={{flex:7,marginTop:10,borderColor:'#ddd',alignItems:'flex-start',justifyContent: 'center'}}>
+                    <View style={{flex:1,width:width,padding:5,paddingLeft:8,borderWidth:1,borderColor:'#ddd',flexDirection:'row',backgroundColor:'#f5f5f5',alignItems:'center',justifyContent: 'flex-start'}}>
                         <Text>订单信息</Text>
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>投保人：</Text>
-                        <Text style={{flex:7}}>{order.insurer.perName}</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>投保人：</Text>
+                        <Text style={{flex:7,color:'#343434'}}>{order.insurer.perName}</Text>
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>被保险人：</Text>
-                        <Text style={{flex:7}}>{order.insuranceder.perName}</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>被保险人：</Text>
+                        <Text style={{flex:7,color:'#343434'}}>{order.insuranceder.perName}</Text>
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>受益人：</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>受益人：</Text>
                         {
                             order.isLegalBenefiter==1?
-                                <Text style={{flex:7}}>法定</Text>:
-                                <Text style={{flex:7}}>{order.benefiter.perName}</Text>
-
+                                <Text style={{flex:7,color:'#343434'}}>法定</Text>:
+                                <Text style={{flex:7,color:'#343434'}}>{order.benefiter.perName}</Text>
                         }
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>保障类型：</Text>
-                        <Text style={{flex:7}}>{order.insuranceType}</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>保障类型：</Text>
+                        <Text style={{flex:7,color:'#343434'}}>{order.insuranceType}</Text>
                     </View>
-                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
-                        <Text style={{flex:3}}>计划保费：</Text>
-                        <Text style={{flex:7}}>{order.planInsuranceFee}</Text>
+                    <View style={{flex:2,width:width,paddingLeft:8,flexDirection:'row',borderBottomWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
+                        <Text style={{flex:3,color:'#343434'}}>计划保费：</Text>
+                        <Text style={{flex:7,color:'#343434'}}>{order.planInsuranceFee}</Text>
                     </View>
 
                 </View>
 
-                <View style={{flex:2,marginTop:10,borderColor:'#aaa',alignItems:'flex-start',justifyContent: 'center'}}>
-                    <View style={{flex:1,width:width,paddingLeft:8,flexDirection:'row',borderWidth:1,borderColor:'#aaa',alignItems:'center',justifyContent: 'flex-start'}}>
+                <View style={{flex:3,marginTop:15,paddingTop:5,paddingBottom:25,borderWidth:0,alignItems:'flex-start',justifyContent: 'center'}}>
+                    <View style={{flex:1,width:width,flexDirection:'row',borderWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
                         <Text style={{flex:3,color:'rgba(228, 93, 46, 0.87)'}}>申请日期：</Text>
                         <Text style={{flex:7,color:'rgba(228, 93, 46, 0.87)'}}>{order.applyTime}</Text>
                     </View>
-
+                    <View style={{flex:1,width:width,flexDirection:'row'}}>
+                    </View>
                 </View>
 
             </View>

@@ -1,12 +1,4 @@
-/**
- * Created by danding on 17/2/27.
- */
-/**
- * Created by danding on 17/2/27.
- */
-/**
- * Created by dingyiming on 2017/2/15.
- */
+
 import React,{Component} from 'react';
 
 import  {

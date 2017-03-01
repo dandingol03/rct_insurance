@@ -201,7 +201,6 @@ let disableLifeOrdersOnFresh=()=>{
 }
 
 
-
 export let fetchCarOrders=function (accessToken,cb) {
 
     return dispatch=> {
@@ -334,3 +333,33 @@ export let fetchLifeOrders=function (accessToken,cb) {
     }
 
 }
+
+
+export let setLifePlans=(plans)=>{
+    return {
+        type:types.SET_LIFE_PLANS,
+        plans:plans
+    }
+}
+
+export let setLifePlanDetail=(plan)=>{
+    return {
+        type:types.SET_LIFE_PLAN_DETAIL,
+        planDetail:plan
+    }
+}
+
+
+export let updateLifeModified=function(plans,modifiedPlan){
+    return dispatch=> {
+        plans.map(function(item,i){
+            if(item.planId==modifiedPlan.planId){
+                item = modifiedPlan;
+            }
+
+        })
+        dispatch(setLifePlans(plans));
+    }
+
+}
+

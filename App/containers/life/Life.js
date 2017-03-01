@@ -168,35 +168,6 @@ class Life extends Component{
                 var orderId=json.data.orderId;
                 if(orderId!==undefined&&orderId!==null)
                 {
-                    // if($rootScope.lifeInsurance==undefined||$rootScope.lifeInsurance==null)
-                    //     $rootScope.lifeInsurance={};
-                    // $rootScope.lifeInsurance.orderId=orderId;
-
-                    //TODO:校验
-                    // if(this.state.modifiedFlag)
-                    // {
-                    //     Alert.alert(
-                    //         '信息',
-                    //         '您有已改动的寿险报价方案,是否取消改动并拉取新的订单数据',
-                    //         [
-                    //             {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                    //             {text: 'OK', onPress: () => this.navigate2LifeOrders()},
-                    //         ]
-                    //     )
-                    //
-                    //     var myConfirm = $ionicPopup.confirm({
-                    //         title: '信息',
-                    //         template: '您有已改动的寿险报价方案,是否取消改动并拉取新的订单数据'
-                    //     });
-                    //     myConfirm.then(function (res) {
-                    //         if(res)
-                    //         {
-                    //             $rootScope.flags.lifeOrders.onFresh=true;
-                    //             $state.go('life_insurance_orders',{tabIndex:0});
-                    //         }else{
-                    //         }
-                    //     })
-                    // }else{
                     Alert.alert(
                         '您的订单',
                         '您的寿险意向已提交,请等待工作人员配置方案后在"我的寿险订单"中进行查询',
@@ -205,8 +176,6 @@ class Life extends Component{
                             {text: 'OK', onPress: () => this.navigate2LifeOrders()},
                         ]
                     )
-
-                    //  }
 
                 }
             }
@@ -570,7 +539,7 @@ class Life extends Component{
                                     onChangeText={(planFee) =>
                                     {
                                        this.state.planInsuranceFee=planFee;
-                                       var planInsuranceFee =  this.state.planInsuranceFee;
+                                       var planInsuranceFee = this.state.planInsuranceFee;
                                        this.setState({planInsuranceFee:planInsuranceFee});
                                 }}
                                     value={this.state.planInsuranceFee}

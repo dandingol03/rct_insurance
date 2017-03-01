@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * Created by danding on 17/2/27.
  */
 /**
@@ -304,4 +305,3 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 module.exports = connect(mapStateToProps)(Contact);
-

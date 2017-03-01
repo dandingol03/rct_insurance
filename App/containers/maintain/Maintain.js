@@ -26,10 +26,13 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import VideoPlayer from './VideoPlayer.js';
 import Audio from './Audio.js';
-var Sound = require('react-native-sound');
+import MaintainPlan from './MaintainPlan';
+import Config from '../../../config';
+import Proxy from '../../proxy/Proxy';
+import Camera from 'react-native-camera';
 
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-
+var Sound = require('react-native-sound');
 var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
     if (error) {
         console.log('failed to load the sound', error);
@@ -38,6 +41,7 @@ var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
     // loaded successfully
     console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
 });
+
 
 class Maintain extends Component{
 
@@ -48,14 +52,28 @@ class Maintain extends Component{
         }
     }
 
-    navigate2VideoPlayer(){
+    navigate2MaintainPlan(){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'maintain_plan',
+                component: MaintainPlan,
+                params: {
+                    miles:this.state.miles,
+                    routineName:this.state.routineName,
+                }
+            })
+        }
+    }
+
+    navigate2VideoPlayer(videoPath){
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
                 name: 'videoPlayer',
                 component: VideoPlayer,
                 params: {
-
+                    videoPath:videoPath
                 }
             })
         }
@@ -72,6 +90,63 @@ class Maintain extends Component{
                 }
             })
         }
+    }
+
+    getMaintainPlan(miles){
+
+        var miles = miles;
+        var reg=/\D/;
+        if(miles==undefined||miles==null||reg.exec(miles)!=null)
+        {
+            Alert.alert(
+                '保养计划',
+                '您输入的公里数格式有误',
+                [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                    {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                ]
+            )
+        }else{
+            if(miles<5000||miles>200000){
+
+                Alert.alert(
+                    '保养计划',
+                    '请输入5000至200000公里范围内的里程',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                        {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                    ]
+                )
+
+            }else{
+                var miles= parseInt(miles/5000)*5000;
+
+                Proxy.post({
+                    url:Config.server+'/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + this.state.accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request:'getMaintainPlan',
+                        info:{
+                            miles:miles
+                        }
+                    }
+                }, (res)=> {
+                    var json=res;
+                    if(json.re==1){
+                        var routineName=json.data;
+                        this.navigate2MaintainPlan();
+                        //this.setState({routineName:routineName,modalVisible:true});
+                    }
+
+                }, (err) =>{
+                });
+
+            }
+        }
+
     }
 
     show(actionSheet) {
@@ -120,7 +195,6 @@ class Maintain extends Component{
             console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
         });
 
-
     }
 
     _onPress2() {
@@ -136,6 +210,93 @@ class Maintain extends Component{
 
     }
 
+    takePicture = () => {
+        if (this.camera) {
+            this.camera.capture()
+                .then((json) => {
+                    var data=json.data;
+                    var path=json.path;
+                    //the comment below is to make we can get path from the callback
+                    setTimeout(function () {
+                        Alert.alert(
+                            'info',
+                            'photo path='+path);
+                    },1000)
+                    this.setState({cameraModalVisible:false,portrait:path});
+                    this.storePicture(path);
+                })
+                .catch(err => console.error(err));
+        }
+    }
+
+
+
+    storePicture(portrait){
+
+        var {accessToken}=this.props;
+        if (portrait) {
+            // Create the form data object
+            var data = new FormData();
+            data.append('file', {uri: portrait, name: 'portrait.jpg', type: 'multipart/form-data'});
+
+            //限定为jpg后缀
+            Proxy.post({
+                url:Config.server+'/svr/request?request=uploadPortrait&suffix=jpg',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type':'multipart/form-data',
+                },
+                body: data,
+            },(json)=> {
+                if(json.re==1) {
+                    if(json.data!==undefined&&json.data!==null)
+                    {
+                        console.log('...');
+                    }
+                }
+
+            }, (err) =>{
+                Alert.alert(
+                    'error',
+                    err
+                );
+            });
+        }
+    }
+
+
+    startRecording = () => {
+        if (this.camera) {
+            this.camera.capture({mode: Camera.constants.CaptureMode.video})
+                .then((data) => {
+                    var path=data.path;
+                    console.log(data);
+                    this.state.videoPath=path;
+                    setTimeout(function () {
+                        Alert.alert(
+                            'info',
+                            'videoPath='+path);
+                    },1000)
+                    this.setState({cameraModalVisible:false,videoPath:path});
+
+                })
+                .catch(err => console.error(err));
+            this.setState({
+                isRecording: true
+            });
+        }
+    }
+
+
+    stopRecording = () => {
+        if (this.camera) {
+            this.camera.stopCapture()
+            this.setState({
+                isRecording: false,cameraModalVisible:false
+            });
+        }
+    }
+
 
     constructor(props)
     {
@@ -148,9 +309,22 @@ class Maintain extends Component{
             accidentType:'',
             disabled: false,
             description:'',
+            miles:0,
+            routineName:'',
             audio:null,
             video:null,
-            audioPath: 'AudioUtils.DocumentDirectoryPath'+ '/test.aac',
+            audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
+            videoPath:'',
+            cameraModalVisible:false,
+            camera: {
+                aspect: Camera.constants.Aspect.fill,
+                captureTarget: Camera.constants.CaptureTarget.disk,
+                type: Camera.constants.Type.back,
+                orientation: Camera.constants.Orientation.auto,
+                flashMode: Camera.constants.FlashMode.auto,
+
+            },
+            portrait:null,
         };
     }
 
@@ -158,8 +332,13 @@ class Maintain extends Component{
 
         var dailyChecked = [];
         var selectedDailys = [];
-        var description = '';
-        var babbadla= <Icon size={26} name="chevron-left" color="#fff" ></Icon>;
+
+        var miles = this.state.miles;
+
+        var props=this.props;
+        var state=this.state;
+        var displayArea = {x: 5, y: 20, width:width, height: height - 25};
+
         return (
             <View style={{flex:1}}>
                 {/*body*/}
@@ -172,7 +351,7 @@ class Maintain extends Component{
                             <Entypo size={40} name="chevron-left" color="#fff"></Entypo>
 
                         </TouchableOpacity>
-                        <Text style={{fontSize:19,flex:5,textAlign:'center',color:'#fff'}}>
+                        <Text style={{fontSize:15,flex:5,textAlign:'center',color:'#fff'}}>
                             维修服务
                         </Text>
                         <View style={{flex:1,padding:0}}></View>
@@ -185,7 +364,7 @@ class Maintain extends Component{
                             <View tabLabel='日常保养' style={{flex:1,padding:8,fontSize:20}}>
 
                                 <ScrollView>
-                                    <View style={{flex:1}}>
+                                    <View style={{flex:8}}>
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center'}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}}
                                                               onPress={()=>{
@@ -199,10 +378,10 @@ class Maintain extends Component{
 
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain1.png')} style={{flex:5}}/>
-                                                        <Text style={{flex:1,fontSize:14,color:'#222',marginTop:5}}>机油、机滤</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>机油、机滤</Text>
                                                         {
-                                                            this.state.dailyChecked[0]==true?<Text style={{flex:1,fontSize:14,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:14,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                            this.state.dailyChecked[0]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -216,12 +395,11 @@ class Maintain extends Component{
                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain2.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:14,color:'#222',marginTop:5}}>更换刹车片</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain2.png')} style={{flex:5}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换刹车片</Text>
                                                         {
-                                                            this.state.dailyChecked[1]==true?<Text style={{flex:1,fontsize:14,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:14,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[1]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -235,12 +413,11 @@ class Maintain extends Component{
                                          this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain3.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>雨刷片更换</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain3.png')} style={{flex:5}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>雨刷片更换</Text>
                                                         {
-                                                            this.state.dailyChecked[2]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[2]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                 </View>
                                             </TouchableOpacity>
@@ -257,11 +434,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain4.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>轮胎更换</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>轮胎更换</Text>
                                                         {
-                                                            this.state.dailyChecked[3]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[3]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -276,11 +452,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain5.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>燃油添加剂</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>燃油添加剂</Text>
                                                         {
-                                                            this.state.dailyChecked[4]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[4]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -295,11 +470,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain6.png')} style={{flex:4}}/>
-                                                        <Text style={{fontsize:15,color:'#222',marginTop:5}}>空气滤清器</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>空气滤清器</Text>
                                                         {
-                                                            this.state.dailyChecked[5]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[5]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -316,11 +490,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain7.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>检查火花塞</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查火花塞</Text>
                                                         {
-                                                            this.state.dailyChecked[6]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[6]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -335,11 +508,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain8.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>检查驱动片</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查驱动片</Text>
                                                         {
-                                                            this.state.dailyChecked[7]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[7]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -354,11 +526,10 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain9.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>换空调滤芯</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>换空调滤芯</Text>
                                                         {
-                                                            this.state.dailyChecked[8]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[8]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -375,16 +546,47 @@ class Maintain extends Component{
                                      }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain10.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontsize:15,color:'#222',marginTop:5}}>更换蓄电池防冻液</Text>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换蓄电池防冻液</Text>
                                                         {
-                                                            this.state.dailyChecked[9]==true?<Text style={{flex:1,fontsize:15,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontsize:15,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-
+                                                            this.state.dailyChecked[9]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
+
+                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa'}}>
+                                        <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
+                                            <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
+                                            <TextInput
+                                                style={{flex:2,fontSize:12,color:'#343434'}}
+                                                onChangeText={(miles) =>
+                                            {
+                                              this.state.miles=miles;
+                                              this.setState({miles:miles});
+                                            }}
+                                                value={
+                                                miles+''
+                                            }
+                                                placeholder='请输入里程...'
+                                                placeholderTextColor="#aaa"
+                                                underlineColorAndroid="transparent"
+                                            />
+                                            <View style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                                                <TouchableOpacity onPress={()=>{
+                                                    this.getMaintainPlan(miles);
+
+                                            }}>
+                                                    <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+
+                                    </View>
+
+
 
                                 </ScrollView>
 
@@ -440,15 +642,32 @@ class Maintain extends Component{
                                     </View>
 
                                     {/*视频描述*/}
-                                    <View style={{height:102,flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#aaa',borderRadius:8}}>
+                                    <View style={{height:102,flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                                  backgroundColor:'#aaa',borderRadius:8}}>
 
-                                        <TouchableOpacity onPress={()=>{
-                                         this.navigate2VideoPlayer();
+                                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
+                                            {/*录制视频*/}
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                              onPress={() => {
+                                                                  this.setState({cameraModalVisible:true})
+                                                              }}>
+
+                                                        <Image style={{height:30,width:30,borderRadius:10}} source={require('../../img/sas@2x.png')}/>
+
+                                            </TouchableOpacity>
+
+
+                                            {/*播放视频*/}
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}} onPress={()=>{
+                                         this.navigate2VideoPlayer(this.state.videoPath);
                                       }}>
-                                            <View>
-                                                <Image resizeMode="cover" source={require('../../img/sas@2x.png')}></Image>
-                                            </View>
-                                        </TouchableOpacity>
+                                                <View>
+                                                    <Icon name="play-circle" color="#fff" size={35}></Icon>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                        </View>
 
                                     </View>
 
@@ -571,9 +790,84 @@ class Maintain extends Component{
 
                         </ScrollableTabView>
                     </View>
-
-
                 </Image>
+
+                {/*camera part*/}
+                <Modal
+                    animationType={"slide"}
+                    transparent={false}
+                    visible={this.state.cameraModalVisible}
+                >
+                    <Camera
+                        ref={(cam) => {
+                            this.camera = cam;
+                          }}
+                        style={styles.preview}
+
+                        captureTarget={this.state.camera.captureTarget}
+                        type={this.state.camera.type}
+                        flashMode={this.state.camera.flashMode}
+                        defaultTouchToFocus
+                        mirrorImage={false}
+                    />
+                    <View style={[styles.overlay, styles.topOverlay]}>
+                        <TouchableOpacity
+                            style={styles.typeButton}
+                            onPress={this.switchType}
+                        >
+                            <Image
+                                source={this.typeIcon}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.flashButton}
+                            onPress={this.switchFlash}
+                        >
+                            <Image
+                                source={this.flashIcon}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={[styles.overlay, styles.bottomOverlay]}>
+                        {
+                            !this.state.isRecording
+                            &&
+                            <TouchableOpacity
+                                style={styles.captureButton}
+                                onPress={this.takePicture}
+                            >
+                                <Image
+                                    source={require('../../../assets/ic_photo_camera_36pt.png')}
+                                />
+                            </TouchableOpacity>
+                            ||
+                            null
+                        }
+                        <View style={styles.buttonsSpace} />
+                        {
+                            !this.state.isRecording
+                            &&
+                            <TouchableOpacity
+                                style={styles.captureButton}
+                                onPress={this.startRecording}
+                            >
+                                <Image
+                                    source={require('../../../assets/ic_videocam_36pt.png')}
+                                />
+                            </TouchableOpacity>
+                            ||
+                            <TouchableOpacity
+                                style={styles.captureButton}
+                                onPress={this.stopRecording}
+                            >
+                                <Image
+                                    source={require('../../../assets/ic_stop_36pt.png')}
+                                />
+                            </TouchableOpacity>
+                        }
+                    </View>
+
+                </Modal>
 
             </View>);
     }
@@ -619,6 +913,46 @@ var styles = StyleSheet.create({
         height:60,
         borderBottomWidth:0,
         borderBottomColor:'#222'
+    },
+    preview: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
+    overlay: {
+        position: 'absolute',
+        padding: 16,
+        right: 0,
+        left: 0,
+        alignItems: 'center',
+    },
+    topOverlay: {
+        top: 0,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    bottomOverlay: {
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    captureButton: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 40,
+    },
+    typeButton: {
+        padding: 5,
+    },
+    flashButton: {
+        padding: 5,
+    },
+    buttonsSpace: {
+        width: 10,
     },
 
 

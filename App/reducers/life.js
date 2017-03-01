@@ -8,10 +8,13 @@ const initialState = {
     historyOrders:[],
     pricedOrders:[],
     applyedOrders:[],
-    onFresh:true
+    onFresh:true,
+    plans:[],
+    planDetail:{},
+
 };
 
-let lifeOrders = (state = initialState, action) => {
+let life = (state = initialState, action) => {
     switch (action.type) {
         case types.SET_LIFE_HISTORY_ORDERS:
             return Object.assign({}, state, {
@@ -34,9 +37,18 @@ let lifeOrders = (state = initialState, action) => {
                 onFresh:false
             })
 
+        case types.SET_LIFE_PLANS:
+            return Object.assign({}, state, {
+                plans:action.plans
+            })
+        case types.SET_LIFE_PLAN_DETAIL:
+            return Object.assign({}, state, {
+                planDetail:action.planDetail
+            })
+
         default:
             return state;
     }
 }
 
-export default lifeOrders;
+export default life;
