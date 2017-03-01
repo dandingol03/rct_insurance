@@ -23,15 +23,11 @@ import Login from '../containers/Login';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
-
 import Home from './home/index';
 import My from './my/My';
 import dym from './dym';
 
-
-const tabBarTintColor = '#f8f8f8';// 标签栏的背景颜色
-const tabTintColor = '#3393F2'; // 被选中图标颜色
-
+var WeChat = require('react-native-wechat');
 
 
 class App extends React.Component {
@@ -66,9 +62,14 @@ class App extends React.Component {
             <TabNavigator.Item
                 selected={this.state.selectedTab === route}
                 title={route}
-                renderIcon={() => <Icon name={icon} size={25}/>}
-                renderSelectedIcon={() => <Icon name={icon} size={25} color='#00f' />}
-                onPress={() => this.setState({ selectedTab: route })}>
+                titleStyle={{color:'#fff'}}
+                selectedTitleStyle={{color:'#00c9ff'}}
+                renderIcon={() => <Icon name={icon} size={25} color="#fff"/>}
+                renderSelectedIcon={() => <Icon name={icon} size={25} color='#00c9ff' />}
+                onPress={() => this.setState({ selectedTab: route })}
+                tabStyle={{backgroundColor:'transparent'}}
+                onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
+            >
                 <Navigator
                     initialRoute={{ name: route, component:component }}
                     configureScene={(route) => {
@@ -88,7 +89,7 @@ class App extends React.Component {
         if(auth==true)
         {
             return (
-                <TabNavigator>
+                <TabNavigator tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     {this._createNavigatorItem('home','home')}
                     {this._createNavigatorItem('my','user-circle')}
                     {this._createNavigatorItem('dym','car')}
@@ -132,6 +133,29 @@ class App extends React.Component {
             JPush.addEventListener(JpushEventReceiveMessage, this.onReceiveMessage.bind(this)),
             JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
         ]
+        WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
+
+        })
+        // setTimeout(function () {
+        //     WeChat.isWXAppInstalled().then(function (json) {
+        //         alert(json);
+        //     })
+        // }.bind(this),1000);
+        // setTimeout(function () {
+        //     WeChat.shareToTimeline({
+        //         type: 'text',
+        //         description: 'hello, wechat'
+        //     });
+        // }.bind(this),2000);
+
+        setTimeout(function () {
+            JPush.getRegistrationID().then(function (res) {
+                if(res)
+                    alert(res);
+            })
+
+        },1000);
+
     }
     onReceiveMessage(message) {
         alert(message);

@@ -1,6 +1,3 @@
-/**
- * Created by dingyiming on 2017/3/1.
- */
 import React,{Component} from 'react';
 
 import  {
@@ -25,15 +22,33 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import DateFilter from '../../filter/DateFilter';
+import ServiceOrderDetail from './ServiceOrderDetail';
 import {fetchServiceOrders} from '../../action/ServiceActions';
 import _ from 'lodash';
 
+
 class ServiceOrders extends Component{
+
 
     goBack(){
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2ServiceOrderDetail(order)
+    {
+
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'ServiceOrderDetail',
+                component: ServiceOrderDetail,
+                params: {
+                    order:order
+                }
+            })
         }
     }
 
@@ -58,8 +73,11 @@ class ServiceOrders extends Component{
 
             <View style={lineStyle}>
 
-                <View style={{flexDirection:'row',borderBottomWidth:1,borderColor:'rgba(210,210,210,0.4)',borderLeftWidth:1,borderRightWidth:1,
-                            justifyContent:'flex-start',padding:10}}>
+                <TouchableOpacity style={{flexDirection:'row',borderBottomWidth:1,borderColor:'rgba(210,210,210,0.4)',borderLeftWidth:1,borderRightWidth:1,
+                            justifyContent:'flex-start',padding:10}}
+                                  onPress={()=>{
+                                          this.navigate2ServiceOrderDetail(rowData);
+                                      }}>
 
 
                     <View style={{flex:1,alignItems:'center'}}>
@@ -99,7 +117,7 @@ class ServiceOrders extends Component{
                                 </Text>
                         }
                     </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             </View>;
 
         return row;
@@ -261,6 +279,9 @@ class ServiceOrders extends Component{
                 if(order.orderState==3)
                     orders3.push(order);
             })
+
+
+
 
 
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});

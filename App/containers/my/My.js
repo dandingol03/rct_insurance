@@ -209,6 +209,10 @@ class My extends Component{
         }
     }
 
+
+
+
+
     constructor(props) {
         super(props);
         this.state={
@@ -254,7 +258,7 @@ class My extends Component{
                                        <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
                                               source={{uri:state.portrait}}/>:
                                        <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
-                                              source={require('../../img/my_face@2x.png')}/>
+                                              source={require('../../img/zack.png')}/>
                                }
 
                            </TouchableOpacity>
@@ -401,6 +405,8 @@ class My extends Component{
                     <View style={{flex:1,width:width,backgroundColor:'#fff'}}></View>
 
                 </View>
+
+
 
                 {/*popover part*/}
                 <Popover
