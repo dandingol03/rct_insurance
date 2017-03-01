@@ -26,6 +26,7 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans} from '../../action/actionCreator';
 import DateFilter from '../../filter/DateFilter';
+import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import ApplyedLifeOrderDetails from './ApplyedLifeOrderDetails'
 import LifePlan from './LifePlan'
 
@@ -275,12 +276,14 @@ class LifeOrders extends Component{
                     </TouchableOpacity>
                 </View>
 
-                <ScrollableTabView style={{flex:25,padding:0,margin:0}} onChangeTab={(data)=>{
+                <ScrollableTabView
+                    style={{flex:25,padding:0,margin:0}}
+                    onChangeTab={(data)=>{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar
-                    style={{borderBottomWidth:0,padding:5,paddingRight:0}} activeTextColor="#00c9ff" inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
-                >
+                    }}
+                    renderTabBar={() =>  <FacebookTabBar />}>
+
                     <View tabLabel='已申请' style={{flex:1,margin:10}}>
                         {/*body*/}
                         <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>

@@ -39,9 +39,9 @@ const FacebookTabBar = React.createClass({
                {
                    return (
                        <TouchableOpacity key={tab} onPress={() => this.props.goToPage(i)}
-                                         style={[styles.tab,{backgroundColor:'rgb(17, 193, 243)'},appended]}>
+                                         style={[styles.tab,{backgroundColor:'rgba(17, 17, 17, 0.6)'},appended]}>
 
-                           <Text style={{color:'#fff',fontWeight:'bold'}}>
+                           <Text style={{color:'#fff',fontWeight:'bold',fontSize:12}}>
                                {tab}
                            </Text>
                        </TouchableOpacity>
@@ -52,7 +52,7 @@ const FacebookTabBar = React.createClass({
                        <TouchableOpacity key={tab} onPress={() => this.props.goToPage(i)}
                             style={[styles.tab,appended]}>
 
-                           <Text style={{color:'#888',fontWeight:'bold'}}>
+                           <Text style={{color:'#888',fontWeight:'bold',fontSize:12}}>
                                {tab}
                            </Text>
                        </TouchableOpacity>
@@ -70,11 +70,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingBottom: 0,
+        marginTop:3,
         borderWidth:1,
-        borderColor:'rgb(17, 193, 243)',
+        borderColor:'rgba(17, 17, 17, 0.6)',
     },
     tabs: {
-        height: 36,
+        height: 30,
         flexDirection: 'row'
     },
 });

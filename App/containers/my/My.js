@@ -26,6 +26,7 @@ import Contact from './Contact';
 import Credit from './Credit';
 import CarManage from '../car/CarManage';
 import ServiceOrders from '../service/ServiceOrders';
+import LifeOrders from '../life/LifeOrders';
 import Camera from 'react-native-camera';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
@@ -99,6 +100,19 @@ class My extends Component{
         }
     }
 
+    navigate2LifeOrders()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'LifeOrders',
+                component: LifeOrders,
+                params: {
+
+                }
+            })
+        }
+    }
 
 
     showPopover(ref){
@@ -328,14 +342,16 @@ class My extends Component{
                         </View>
 
                         {/*寿险订单*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',
-                            marginRight:1}}>
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                                          onPress={()=>{
+                                              this.navigate2LifeOrders();
+                                          }}
+                        >
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_life.png')}></Image>
-                            <Text style={{color:'#666',fontWeight:'bold',marginTop:10}}>
+                            <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 寿险订单
                             </Text>
-                        </View>
-
+                        </TouchableOpacity>
                         {/*服务订单*/}
                         <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{

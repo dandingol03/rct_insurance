@@ -105,6 +105,7 @@ class ServiceOrders extends Component{
         return row;
     }
 
+
     handlingRender(rowData,sectionId,rowId)
     {
         var lineStyle=null;
@@ -152,6 +153,7 @@ class ServiceOrders extends Component{
 
         return row;
     }
+
 
     finishedRender(rowData,sectionId,rowId)
     {
