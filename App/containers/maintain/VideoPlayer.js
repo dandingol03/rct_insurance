@@ -143,7 +143,7 @@ class VideoPlayer extends Component{
                 </View>
                 <TouchableOpacity style={styles.fullScreen} onPress={() => {this.setState({paused: !this.state.paused})}}>
                     <Video
-                        source={require('../../../broadchurch.mp4')}
+                        source={{uri:this.props.videoPath}}
                         style={styles.fullScreen}
                         rate={this.state.rate}
                         paused={this.state.paused}
@@ -153,7 +153,7 @@ class VideoPlayer extends Component{
                         onLoad={this.onLoad}
                         onBuffer={this.onBuffer}
                         onProgress={this.onProgress}
-                        onEnd={() => { AlertIOS.alert('Done!') }}
+                        onEnd={() => { Alert.alert('Done!') }}
                         repeat={true}
                     />
                 </TouchableOpacity>
@@ -213,7 +213,8 @@ class VideoPlayer extends Component{
 
                 <View style={styles.fullScreen}>
                     <Video
-                        source={require('../../../broadchurch.mp4')}
+
+                        source={{uri:this.props.videoPath}}
                         style={videoStyle}
                         rate={this.state.rate}
                         paused={this.state.paused}
@@ -223,7 +224,7 @@ class VideoPlayer extends Component{
                         onLoad={this.onLoad}
                         onBuffer={this.onBuffer}
                         onProgress={this.onProgress}
-                        onEnd={() => { AlertIOS.alert('Done!') }}
+                        onEnd={() => {  Alert.alert('Done!'); }}
                         repeat={true}
                         controls={this.state.controls}
                     />
@@ -263,6 +264,8 @@ class VideoPlayer extends Component{
 
 
     render(){
+
+        var videoPath = this.props.videoPath;
 
         return this.state.controls ? this.renderNativeSkin() : this.renderCustomSkin();
     }

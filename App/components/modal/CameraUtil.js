@@ -31,8 +31,6 @@ class CameraUtil extends Component{
 
     takePicture() {
 
-
-
         var onClose=this.props.onClose;
         this.camera.capture()
             .then((json)=>{

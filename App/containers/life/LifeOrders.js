@@ -3,6 +3,7 @@
  */
 import React,{Component} from 'react';
 import {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -37,16 +38,38 @@ class LifeOrders extends Component{
     }
 
     navigate2ApplyedLifeOrderDetail(order){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'applyed_life_order_details',
-                component: ApplyedLifeOrderDetails,
-                params: {
-                    order:order,
+
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.state.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'getAppliedLifeOrderByOrderId',
+                info:{
+                    orderId:order.orderId
                 }
-            })
-        }
+            }
+        }, (res)=> {
+            var json=res;
+            if(json.re==1){
+                var applyedOrder = json.data;
+                const { navigator } = this.props;
+                if(navigator) {
+                    navigator.push({
+                        name: 'applyed_life_order_details',
+                        component: ApplyedLifeOrderDetails,
+                        params: {
+                            applyedOrder:applyedOrder,
+                        }
+                    })
+                }
+            }
+
+        }, (err) =>{
+        });
+
     }
 
     navigate2LifePlan(order){
@@ -72,21 +95,21 @@ class LifeOrders extends Component{
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
         var row=(
             <View style={lineStyle}>
-                <View style={{flex:2,justifyContent:'flex-start',alignItems:'center',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
+                <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:12,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6}}>
+                <View style={{flex:5,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:6,paddingLeft:10}}>
                     <View>
                         <Text style={{color:'#000',fontSize:12,padding:2}}>
                             {rowData.orderNum}
                         </Text>
                         {
                             rowData.orderState==1?
-                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                <Text style={{color:'#222',fontSize:11,padding:2}}>
                                     已申请
                                 </Text>:
-                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                <Text style={{color:'#222',fontSize:11,padding:2}}>
                                     正在报价
                                 </Text>
                         }
@@ -116,21 +139,21 @@ class LifeOrders extends Component{
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
         var row=(
             <View style={lineStyle}>
-                <View style={{flex:2,justifyContent:'flex-start',alignItems:'center',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'center',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
+                <View style={{flex:2,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
+                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:12,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6}}>
+                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6,paddingLeft:10}}>
                     <View>
                         <Text style={{color:'#000',fontSize:12,padding:2}}>
                             {rowData.orderNum}
                         </Text>
                         {
                             rowData.orderState==3?
-                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                <Text style={{color:'#222',fontSize:11,padding:2}}>
                                     报价完成
                                 </Text>:
-                                <Text style={{color:'#222',fontSize:12,padding:2}}>
+                                <Text style={{color:'#222',fontSize:11,padding:2}}>
                                      用户确认
                                 </Text>
                         }
@@ -171,6 +194,7 @@ class LifeOrders extends Component{
             selectedTab:0,
             accessToken: accessToken,
             doingFetch:false,
+
         };
     }
 
@@ -255,27 +279,27 @@ class LifeOrders extends Component{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;
                     }} renderTabBar={() => <DefaultTabBar
-                    style={{borderBottomWidth:0,padding:5}} activeTextColor="#00c9ff" inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
+                    style={{borderBottomWidth:0,padding:5,paddingRight:0}} activeTextColor="#00c9ff" inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
                 >
-                    <View tabLabel='已申请' style={{flex:1}}>
+                    <View tabLabel='已申请' style={{flex:1,margin:10}}>
                         {/*body*/}
-                        <View style={{padding:10,height:height-264}}>
+                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
                             {applyedListView}
                         </View>
 
                     </View>
 
-                    <View tabLabel='寿险方案' style={{flex:1}}>
+                    <View tabLabel='寿险方案' style={{flex:1,margin:10}}>
 
-                        <View style={{padding:10,height:height-264}}>
+                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
                             {pricedListView}
                         </View>
 
                     </View>
 
-                    <View tabLabel='已完成' style={{flex:1}}>
+                    <View tabLabel='已完成' style={{flex:1,margin:10}}>
 
-                        <View style={{padding:10,height:height-264}}>
+                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
                             {historyListView}
                         </View>
 
@@ -293,6 +317,17 @@ var styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
+    loader: {
+        marginTop: 10
     },
     card: {
         borderBottomWidth: 0,

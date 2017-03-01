@@ -24,7 +24,9 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LifePlanDetail from './LifePlanDetail';
+import LifeOrderPay from './LifeOrderPay'
 import {setLifePlans,setLifePlanDetail} from '../../action/actionCreator';
+
 
 class LifePlan extends Component{
 
@@ -38,7 +40,7 @@ class LifePlan extends Component{
     setLifePlans(plans){
         const {dispatch} = this.props;
         dispatch(setLifePlans(plans));
-        this.setState({selectedPlans:null});
+        this.setState({render:null});
     }
 
     navigate2LifePlanDetail(plan){
@@ -58,6 +60,70 @@ class LifePlan extends Component{
         }
     }
 
+    navigate2LifeOrderPay(info){
+        var info = info;
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'life_order_pay',
+                component: LifeOrderPay,
+                params: {
+                    insurerId:info.insurerId,
+                    planIds:info.plans,
+                    orderId:info.orderId,
+                }
+            })
+        }
+    }
+
+
+    apply(){
+
+        var {plans}=this.props;
+        var order = this.props.order;
+        var selectedPlans = [];
+        var selectedPlanIds = [];
+        //var flag = false;
+        plans.map(function (plan, i) {
+            if (plan.userSelect == true) {
+                selectedPlans.push(plan);
+                selectedPlanIds.push(plan.planId);
+                // if (plan.modified == true)
+                //     flag = true;
+            }
+        });
+
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.state.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'commitLifePlan',
+                info:{
+                    planIds:selectedPlanIds,
+                    orderId:order.orderId
+                }
+            }
+        }, (res)=> {
+            var json=res;
+            if(json.re==1){
+                var info = {insurerId:order.insurerId,planIds:selectedPlanIds,orderId:order.orderId};
+                Alert.alert(
+                    '您的订单',
+                    '下一步进入寿险支付页面',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                        {text: 'OK', onPress: () =>  this.navigate2LifeOrderPay(info)},
+                    ]
+                )
+            }
+        }, (err) =>{
+        });
+
+    }
+
 
     renderRow(rowData,sectionId,rowId){
 
@@ -73,9 +139,26 @@ class LifePlan extends Component{
 
                     <Text style={{flex:9}}>{rowData.companyName}</Text>
                     <TouchableOpacity style={{flex:1}} onPress={()=>{
-                         console.log('...');
+                         if(rowData.userSelect!==undefined&&rowData.userSelect!==null){
+                             if(rowData.userSelect==0){
+                                 rowData.userSelect=1;
+                                 const {dispatch} = this.props;
+                                 dispatch(setLifePlanDetail(rowData));
+                                 this.setState({render:null});//selectedPlans无实际意义，只是为了重新刷新页面
+                             }else{
+                                 rowData.userSelect=0;
+                                 const {dispatch} = this.props;
+                                 dispatch(setLifePlanDetail(rowData));
+                                 this.setState({render:null});
+                             }
+                         }
                      }}>
-                        <Icon name="check-circle-o"  size={23}></Icon>
+                        {
+                            rowData.userSelect==1?
+                                <Icon name="check-circle"  size={23}></Icon>:
+                                <Icon name="check-circle-o"  size={23}></Icon>
+                        }
+
                     </TouchableOpacity>
 
                 </View>
@@ -110,7 +193,7 @@ class LifePlan extends Component{
         const { accessToken } = this.props;
         this.state = {
             accessToken: accessToken,
-            selectedPlans:null,
+            render:null,
         };
     }
 
@@ -157,11 +240,16 @@ class LifePlan extends Component{
                       {listView}
                     </View>
 
-                    <View style={{flex:1,margin:20,backgroundColor:'#ef473a',alignItems:'center',justifyContent:'center',borderRadius:8}}>
-                        <Text style={{color:'#fff'}}>
-                            提交已选方案
-                        </Text>
-                    </View>
+                    <TouchableOpacity style={{flex:1,margin:20,backgroundColor:'#ef473a',alignItems:'center',justifyContent:'center',borderRadius:8}}
+                                      onPress={()=>{
+                                          this.apply();
+                                      }}>
+                      <View>
+                          <Text style={{color:'#fff'}}>
+                              提交已选方案
+                          </Text>
+                      </View>
+                    </TouchableOpacity>
                 </Image>
 
             </View>

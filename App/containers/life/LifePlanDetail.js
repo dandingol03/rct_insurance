@@ -85,11 +85,9 @@ class LifePlanDetails extends Component{
         }, (res)=> {
             var json=res;
             if(json.re==1){
-                var json = res.data;
-                if(json.re == 1){
-                    alert('寿险方案修改成功！');
-                    this.goBack();
-                }
+
+                alert('寿险方案修改成功！');
+                this.goBack();
             }
 
         }, (err) =>{
@@ -121,6 +119,7 @@ class LifePlanDetails extends Component{
                 var cur=new Date();
                 age=cur.getFullYear()-perBirthday.getFullYear();
 
+                feeYearType = parseInt(feeYearType);
                 switch(feeYearType){
                     case 1:
                         feeYear=1;
