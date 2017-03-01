@@ -9,15 +9,14 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
 import App from './App/index';
-import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
-
-
-
-
+import CameraExample from './Example';
+import AudioExample from './AudioExample';
+import {AudioRecorder, AudioUtils} from 'react-native-audio';
+let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
 
 import BaiduMapDemo from './BaiduMapDemo';
 
@@ -27,35 +26,6 @@ export class rn extends Component {
         return (
             <BaiduMapDemo />
         );
-    }
-}
-
-export class Jpush extends Component{
-  render()
-  {
-    return (
-      <View style={{flex:1}}>
-        <Text style={{color:'#222',fontSize:18}}>jpush</Text>
-      </View>
-    );
-  }
-    componentDidMount() {
-        JPush.requestPermissions()
-        this.pushlisteners = [
-            JPush.addEventListener(JpushEventReceiveMessage, this.onReceiveMessage.bind(this)),
-            JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
-        ]
-    }
-    componentWillUnmount() {
-        this.pushlisteners.forEach(listener=> {
-            JPush.removeEventListener(listener);
-        });
-    }
-    onReceiveMessage(message) {
-      alert(message);
-    }
-    onOpenMessage(message) {
-      alert(message);
     }
 }
 

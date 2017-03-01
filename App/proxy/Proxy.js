@@ -33,8 +33,13 @@ let Proxy={
         if(url!==undefined&&url!==null)
         {
 
-            if(Object.prototype.toString.call(params.body)=='[object Object]')
-                params.body = JSON.stringify(params.body);
+
+            if(params.headers&&params.headers['Content-Type']&&params.headers['Content-Type']=='multipart/form-data')
+            {}
+            else{
+                if(Object.prototype.toString.call(params.body)=='[object Object]')
+                    params.body = JSON.stringify(params.body);
+            }
 
             var options={
                 method:'POST',

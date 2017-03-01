@@ -77,6 +77,11 @@ export default class BaiduMapDemo extends Component {
     }
 
     componentDidMount() {
+        Geolocation.getMetersBetweenTowPoints({lng:106.486654,lat:29.490295},{lng:106.581515,lat:29.615467}).then(function (json) {
+            alert(json.distance);
+        })
+
+
     }
 
     render() {

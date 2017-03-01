@@ -3,8 +3,9 @@
  */
 import * as types from './types';
 import Config from '../../config';
+import {updateScoreInfo} from './ScoreActions';
+import {updatePersonInfo,updateScore} from './UserActions';
 var Proxy = require('../proxy/Proxy');
-
 
 export let loginAction=function(username,password,cb){
 
@@ -34,12 +35,41 @@ export let loginAction=function(username,password,cb){
             }).then(function (json) {
 
                 if(json.re==1) {
-                    dispatch(getPersonInfo(json.data));
+                    dispatch(updatePersonInfo({data:json.data}));
                 }
-                dispatch(getAccessToken(accessToken));
-                dispatch(clearTimerAction());
-                if (cb)
-                    cb();
+                Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'fetchScoreBalance'
+                    }
+                }).then(function (json) {
+
+                    if(json.re==1) {
+                        dispatch(updateScore({data:json.data}));
+                    }
+                    Proxy.postes({
+                        url: Config.server + '/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request: 'getPersonalContactInfo'
+                        }
+                    }).then(function (json) {
+
+
+                        dispatch(getAccessToken(accessToken));
+                        dispatch(clearTimerAction());
+                        if (cb)
+                            cb();
+                    })
+                })
+
             });
         }).catch(function (err) {
             dispatch(getAccessToken(null));
@@ -93,12 +123,7 @@ let getAccessToken= (accessToken)=>{
         }
 }
 
-let getPersonInfo=(personInfo)=>{
-    return {
-        type:types.GET_PERSON_INFO,
-        personInfo:personInfo
-    }
-}
+
 
 export let selectCarAction=function(car){
     return {
@@ -272,19 +297,7 @@ export let fetchLifeOrders=function (accessToken,cb) {
                 orders = json.data;
 
                 if (orders !== undefined && orders !== null &&orders.length > 0) {
-                     // for(order in orders){
-                     //     var date = new Date(order.applyTime);
-                     //     if (order.orderState == 3) {
-                     //         pricedOrders.push(order);
-                     //     }
-                     //     if (order.orderState == 5) {
-                     //         historyOrders.push(order);
-                     //     }
-                     //     if (order.orderState == 1||order.orderState == 2) {
-                     //         applyedOrders.push(order);
-                     //     }
-                     //
-                     // }
+
                     orders.map(function (order, i) {
                         var date = new Date(order.applyTime);
                         // order.applyTime = date.getFullYear().toString() + '-'

@@ -31,8 +31,6 @@ class CameraUtil extends Component{
 
     takePicture() {
 
-
-
         var onClose=this.props.onClose;
         this.camera.capture()
             .then((json)=>{
@@ -40,8 +38,8 @@ class CameraUtil extends Component{
                 var path=json.path;
                 Alert.alert(
                     'info',
-                    'image path='+path
-                );
+                    'photo path='+path);
+
                 if(onClose!==undefined&&onClose!==null)
                     onClose(path);
             })
