@@ -5,7 +5,7 @@ import {
     View,
     TouchableOpacity
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 
@@ -41,6 +41,10 @@ const FacebookTabBar = React.createClass({
                        <TouchableOpacity key={tab} onPress={() => this.props.goToPage(i)}
                                          style={[styles.tab,{backgroundColor:'rgb(17, 193, 243)'},appended]}>
 
+                           {
+                               this.props.tabIcons&&this.props.tabIcons[i]?
+                                   <Icon name={this.props.tabIcons[i]} size={24} color="#fff"/>:null
+                           }
                            <Text style={{color:'#fff',fontWeight:'bold'}}>
                                {tab}
                            </Text>
@@ -52,6 +56,10 @@ const FacebookTabBar = React.createClass({
                        <TouchableOpacity key={tab} onPress={() => this.props.goToPage(i)}
                             style={[styles.tab,appended]}>
 
+                           {
+                               this.props.tabIcons&&this.props.tabIcons[i]?
+                                   <Icon name={this.props.tabIcons[i]} size={24} color="#888"/>:null
+                           }
                            <Text style={{color:'#888',fontWeight:'bold'}}>
                                {tab}
                            </Text>
@@ -69,12 +77,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 0,
+        paddingBottom: 4,
         borderWidth:1,
         borderColor:'rgb(17, 193, 243)',
+        padding:2
     },
     tabs: {
-        height: 36,
+
         flexDirection: 'row'
     },
 });

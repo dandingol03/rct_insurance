@@ -22,6 +22,7 @@ import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
+import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import ActionSheet from 'react-native-actionsheet';
 import _ from 'lodash';
 import Config from '../../../config';
@@ -353,9 +354,9 @@ class AppendCarInsuranceder extends Component{
                         var tabIndex=data.i;
                         this.setState({selectedTab:tabIndex});
                         //this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
+                    }} renderTabBar={() => <FacebookTabBar/>}
                 >
-                    <View tabLabel='已有被保险人' style={{flex:1}}>
+                    <View tabLabel='已有被保险人' tabIcon="user" style={{flex:1}}>
                         {/*body*/}
                         <View style={{padding:20,paddingLeft:0,paddingRight:0,height:height-234}}>
                             {listView}
@@ -372,7 +373,7 @@ class AppendCarInsuranceder extends Component{
                         </TouchableOpacity>
                     </View>
 
-                    <View tabLabel='新建被保险人' style={{flex:1}}>
+                    <View tabLabel='新建被保险人' tabIcon="user-plus" style={{flex:1}}>
 
                         {/*输入被保险人姓名*/}
                         <View style={lineStyle}>
@@ -420,6 +421,51 @@ class AppendCarInsuranceder extends Component{
                                 <Icon name="angle-down" size={24} color="#888"/>
                             </TouchableOpacity>
                         </View>
+
+
+
+                        {/*身份证正面*/}
+                        <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,backgroundColor:'rgba(200,200,200,0.3)',
+                                borderRadius:8,position:'relative'}}>
+                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                <View style={{width:70,height:70,borderWidth:2,borderColor:'#fff',borderRadius:35,
+                                        borderStyle:'dashed',alignItems:'center',justifyContent:'center',position:'relative'}}>
+                                    <Icon name="id-card-o" size={35} color="#fff"/>
+
+                                    <View style={{position:'absolute',bottom:10,right:2}}>
+                                        <Icon name="camera" size={20} color="#fff"/>
+                                    </View>
+
+                                </View>
+                            </View>
+
+                            <View style={{position:'absolute',bottom:2,width:width*2/3,left:0,alignItems:'center'}}>
+                                <Text style={{fontSize:13,color:'#666'}}>上传身份证正面</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        {/*身份证反面*/}
+                        <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,backgroundColor:'rgba(200,200,200,0.3)',
+                                borderRadius:8,position:'relative'}}>
+                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                <View style={{width:70,height:70,borderWidth:2,borderColor:'#fff',borderRadius:35,
+                                        borderStyle:'dashed',alignItems:'center',justifyContent:'center',position:'relative'}}>
+                                    <Icon name="id-card-o" size={35} color="#fff"/>
+
+                                    <View style={{position:'absolute',bottom:10,right:2}}>
+                                        <Icon name="camera" size={20} color="#fff"/>
+                                    </View>
+
+                                </View>
+                            </View>
+
+                            <View style={{position:'absolute',bottom:2,width:width*2/3,left:0,alignItems:'center'}}>
+                                <Text style={{fontSize:13,color:'#666'}}>上传身份证反面</Text>
+                            </View>
+                        </TouchableOpacity>
+
+
+
 
 
                         <ActionSheet
