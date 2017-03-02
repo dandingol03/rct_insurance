@@ -97,20 +97,20 @@ class LifeOrders extends Component{
         var row=(
             <View style={lineStyle}>
                 <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'yyyy-mm-dd')}</Text>
-                    <Text style={{fontSize:12,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'hh:mm')}</Text>
+                    <Text style={{fontSize:13,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:13,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:5,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:6,paddingLeft:10}}>
+                <View style={{flex:5,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:6,paddingLeft:15}}>
                     <View>
-                        <Text style={{color:'#000',fontSize:12,padding:2}}>
+                        <Text style={{color:'#000',fontSize:14,padding:2}}>
                             {rowData.orderNum}
                         </Text>
                         {
                             rowData.orderState==1?
-                                <Text style={{color:'#222',fontSize:11,padding:2}}>
+                                <Text style={{color:'#222',fontSize:13,padding:2}}>
                                     已申请
                                 </Text>:
-                                <Text style={{color:'#222',fontSize:11,padding:2}}>
+                                <Text style={{color:'#222',fontSize:13,padding:2}}>
                                     正在报价
                                 </Text>
                         }
@@ -123,7 +123,7 @@ class LifeOrders extends Component{
                                       this.navigate2ApplyedLifeOrderDetail(rowData);
                  }}>
                   <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                    <Text style={{color:'#222',fontSize:12,marginRight:5}}>
+                    <Text style={{color:'#222',fontSize:13,marginRight:5}}>
                         详细
                     </Text>
                     <Icon name="angle-right" size={30} color="#222"/>
@@ -140,21 +140,21 @@ class LifeOrders extends Component{
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
         var row=(
             <View style={lineStyle}>
-                <View style={{flex:2,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
-                    <Text style={{fontSize:12,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
-                    <Text style={{fontSize:12,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
+                <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:3,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
+                    <Text style={{fontSize:13,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:13,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.modifyTime,'hh:mm')}</Text>
                 </View>
-                <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:6,paddingLeft:10}}>
+                <View style={{flex:5,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:6,paddingLeft:15}}>
                     <View>
-                        <Text style={{color:'#000',fontSize:12,padding:2}}>
+                        <Text style={{color:'#000',fontSize:14,padding:2}}>
                             {rowData.orderNum}
                         </Text>
                         {
                             rowData.orderState==3?
-                                <Text style={{color:'#222',fontSize:11,padding:2}}>
+                                <Text style={{color:'#222',fontSize:13,padding:2}}>
                                     报价完成
                                 </Text>:
-                                <Text style={{color:'#222',fontSize:11,padding:2}}>
+                                <Text style={{color:'#222',fontSize:13,padding:2}}>
                                      用户确认
                                 </Text>
                         }
@@ -166,8 +166,8 @@ class LifeOrders extends Component{
                                   onPress={()=>{
                                       this.navigate2LifePlan(rowData);
                  }}>
-                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
-                        <Text style={{color:'#222',fontSize:12,marginRight:5}}>
+                    <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
+                        <Text style={{color:'#222',fontSize:13,marginRight:5}}>
                             详细
                         </Text>
                         <Icon name="angle-right" size={30} color="#222"/>
@@ -253,16 +253,16 @@ class LifeOrders extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{flex:1,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                <View style={[{flex:1,height:60,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={30} color="#fff"/>
+                        <Icon name="angle-left" size={40} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:15,color:'#fff',marginLeft:4}}>
+                        <Text style={{fontSize:17,color:'#fff',marginLeft:4}}>
                             寿险订单
                         </Text>
                     </View>
@@ -272,12 +272,12 @@ class LifeOrders extends Component{
                                            const {dispatch} = this.props;
                                            dispatch(enableLifeOrdersOnFresh());
                                       }}>
-                        <Icon name='repeat' size={20} color='#fff'/>
+                        <Icon name='repeat' size={22} color='#fff'/>
                     </TouchableOpacity>
                 </View>
 
                 <ScrollableTabView
-                    style={{flex:25,padding:0,margin:0}}
+                    style={{flex:25,padding:0,marginTop: 10}}
                     onChangeTab={(data)=>{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;

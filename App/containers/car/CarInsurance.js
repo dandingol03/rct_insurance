@@ -355,17 +355,17 @@ class CarInsurance extends Component{
 
             <View style={{flex:1,position:'relative'}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{padding: 10,marginTop:20,height:44,backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
+                <View style={[{padding: 10,height:54,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
 
                     <View style={{flex:1,marginTop:14,flexDirection:'row'}}>
-                        <TouchableOpacity style={{width:50,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                        <TouchableOpacity
                                           onPress={()=>{
                             this.goBack();
                             }}>
                             <Icon name="angle-left" size={40}  color="#fff"/>
                         </TouchableOpacity>
 
-                        <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:5}}>
+                        <View style={{flex:10,flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:15}}>
                             <Text style={{fontSize:17,color:'#fff'}}>
                                 险种选择
                             </Text>

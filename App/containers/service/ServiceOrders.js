@@ -335,11 +335,11 @@ class ServiceOrders extends Component{
                                           this.goBack();
                                       }}
                         >
-                            <Icon name="angle-left" size={30} color="#fff"></Icon>
+                            <Icon name="angle-left" size={40} color="#fff"></Icon>
                         </TouchableOpacity>
 
                         <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#fff'}}>我的积分</Text>
+                            <Text style={{color:'#fff',fontSize:17}}>我的积分</Text>
                         </View>
 
                         <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
@@ -354,7 +354,7 @@ class ServiceOrders extends Component{
 
                 {/*scroll tab pages*/}
                 <ScrollableTabView
-                    style={{marginTop: 20, }}
+                    style={{marginTop: 10, }}
                     initialPage={1}
                     renderTabBar={() =>  <FacebookTabBar />}
                 >

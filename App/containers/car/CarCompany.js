@@ -189,16 +189,16 @@ class CarCompany extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:44,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                <View style={[{padding: 10,paddingTop:20,flexDirection:'row',height:54,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity style={{width:50,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={30} color="#fff"/>
+                        <Icon name="angle-left" size={40} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:15,color:'#fff',marginLeft:20}}>
+                        <Text style={{fontSize:17,color:'#fff',marginLeft:20}}>
                             车险公司选择
                         </Text>
                     </View>

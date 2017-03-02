@@ -173,17 +173,17 @@ class UpdateCarInfo extends Component{
 
         return (
             <View style={{flex:1}}>
+                <Image resizeMode="stretch" source={require('../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-
-                <View style={[{backgroundColor:'#444',padding: 4,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
+                <View style={[{flex:1,backgroundColor:'rgba(17, 17, 17, 0.6)',padding:4,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
                     <View style={{flex:1}}>
                         <TouchableOpacity onPress={()=>{
                         this.goBack();
                             }}>
-                            <Icon name='chevron-left' size={30} color="#222"/>
+                            <Icon name="angle-left" size={40} color="#fff"/>
                         </TouchableOpacity>
                     </View>
-                    <Text style={{fontSize:17,flex:3,textAlign:'center',color:'#444'}}>
+                    <Text style={{fontSize:17,flex:3,textAlign:'center',color:'#fff'}}>
                         创建新车
                     </Text>
                     <TouchableOpacity style={{flex:2,marginRight:10,flexDirection:'row',justifyContent:'center',backgroundColor:'#ef473a',
@@ -197,42 +197,42 @@ class UpdateCarInfo extends Component{
                     </TouchableOpacity>
                 </View>
 
-                <View style={{padding:10}}>
+                <View style={{flex:5,padding:10}}>
 
                     {/*用车城市*/}
-                    <View style={[styles.row,{alignItems:'center',padding:10,paddingLeft:0,paddingRight:0}]}>
+                    <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
                         <View style={{flex:1,marginRight:20,marginLeft:10}}>
-                            <Icon name="map-marker" size={24} color="#222"/>
+                            <Icon name="map-marker" size={20} color="#343434"/>
                         </View>
                         <View style={{flex:4,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>用车城市:</Text>
+                            <Text style={{'fontSize':16,color:'#343434'}}>用车城市:</Text>
                         </View>
-                        <View style={{flex:3,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>{this.state.city}</Text>
+                        <View style={{flex:4,flexDirection:'row',alignItems:'center'}}>
+                            <Text style={{'fontSize':16,color:'#343434'}}>{this.state.city}</Text>
                         </View>
                         <View style={{flex:1,flexDirection:'row',alignItems:'center'}}>
                             <TouchableOpacity onPress={
                                     ()=>{
                                         this.appendCarNumPrefixByCity(!this.state.modalVisible)
                                     }}>
-                                <Icon name="chevron-right" size={29} color="#222"/>
+                                <Icon name="chevron-right" size={22} color="#343434"/>
                             </TouchableOpacity>
                         </View>
                     </View>
 
                     {/*车牌*/}
-                    <View style={[styles.row,{alignItems:'center',padding:10,paddingLeft:0,paddingRight:0}]}>
+                    <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
 
                         <View style={{flex:1,marginRight:25,justifyContent:'center',marginLeft:5}}>
-                            <Icon name="car" size={24} color="#222"/>
+                            <Icon name="car" size={20} color="#222"/>
                         </View>
 
-                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>车牌:</Text>
+                        <View style={{flex:3,flexDirection:'row',alignItems:'center'}}>
+                            <Text style={{'fontSize':16,color:'#222'}}>车牌:</Text>
                         </View>
                         <View style={{flex:6}}>
                             <TextInput
-                                style={{height: 40,fontSize:18,color:'#222'}}
+                                style={{height: 30,fontSize:16,color:'#222'}}
                                 onChangeText={(carNum) => this.setState({carNum})}
                                 value={this.state.carNum}
                                 placeholder='请输入您的车牌号'
@@ -243,16 +243,16 @@ class UpdateCarInfo extends Component{
                     </View>
 
                     {/*姓名*/}
-                    <View style={[styles.row,{alignItems:'center',padding:10,paddingLeft:0,paddingRight:0}]}>
+                    <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
                         <View style={{flex:1,marginRight:25,justifyContent:'center',marginLeft:5}}>
-                            <Icon name="id-card" size={24} color='#222'/>
+                            <Icon name="id-card" size={20} color='#222'/>
                         </View>
-                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>姓名:</Text>
+                        <View style={{flex:3,flexDirection:'row',alignItems:'center'}}>
+                            <Text style={{'fontSize':16,color:'#222'}}>姓名:</Text>
                         </View>
                         <View style={{flex:6}}>
                             <TextInput
-                                style={{height: 40,fontSize:18,coloor:'#222'}}
+                                style={{height: 30,fontSize:16,color:'#222'}}
                                 onChangeText={(ownerName) => this.setState({ownerName})}
                                 value={this.state.ownerName}
                                 placeholder='请输入姓名'
@@ -263,19 +263,19 @@ class UpdateCarInfo extends Component{
                     </View>
 
                     {/*注册日期*/}
-                    <View style={[styles.row,{alignItems:'center',padding:10,paddingLeft:0,paddingRight:0}]}>
+                    <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
 
                         <View style={{flex:1,marginRight:20,justifyContent:'center',marginLeft:5,marginRight:25}}>
-                            <Icon name="calendar" size={24} color="#222"/>
+                            <Icon name="calendar" size={20} color="#222"/>
                         </View>
 
-                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>注册日期:</Text>
+                        <View style={{flex:3,flexDirection:'row',alignItems:'center'}}>
+                            <Text style={{'fontSize':16,color:'#222'}}>注册日期:</Text>
                         </View>
 
-                        <View style={{flex:6,flexDirection:'row',marginLeft:8}}>
+                        <View style={{flex:6,flexDirection:'row',marginLeft:2}}>
                             <DatePicker
-                                style={{width:200,marginLeft:10}}
+                                style={{width:150}}
                                 date={this.state.issueDate}
                                 mode="datetime"
                                 placeholder="点击选择日期"
@@ -291,12 +291,12 @@ class UpdateCarInfo extends Component{
                     </View>
 
                     {/*是否过户*/}
-                    <View style={[styles.row,{alignItems:'center',padding:10,paddingLeft:0,paddingRight:0}]}>
+                    <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
                         <View style={{flex:1,justifyContent:'center',marginLeft:5,marginRight:30}}>
-                            <Icon name="info-circle" size={28} color="#ef473a"/>
+                            <Icon name="info-circle" size={20} color="#ef473a"/>
                         </View>
                         <View style={{flex:8}}>
-                            <Text style={{'fontSize':18,color:'#222'}}>是一年内过户的二手车吗:</Text>
+                            <Text style={{'fontSize':16,color:'#222'}}>是一年内过户的二手车吗:</Text>
                         </View>
                         <View style={{flex:1,marginRight:20}}>
                             <TouchableOpacity onPress={
@@ -305,7 +305,7 @@ class UpdateCarInfo extends Component{
                                     }}>
                                 {
                                     this.state.carTransferred==true?
-                                        <Icon name="check-circle" size={34} color='#00c9ff'/>:<Icon name="circle-o" size={34}/>
+                                        <Icon name="check-circle" size={25} color='#00c9ff'/>:<Icon name="circle-o" size={25}/>
                                 }
                             </TouchableOpacity>
                         </View>
@@ -347,22 +347,22 @@ class UpdateCarInfo extends Component{
 
                 </View>
 
-                <View style={{flex:1,width:width,position:'relative',marginTop:10}}>
+                <View style={{flex:5,width:width,position:'relative',marginTop:10}}>
                     <ScrollableTabView style={{flex:1}}
                                        renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
                     >
-                        <View tabLabel='填写信息' style={{flex:1,padding:12}}>
+                        <View tabLabel='填写信息' style={{flex:1,padding:10}}>
 
                             {/*厂牌型号*/}
                             <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
 
-                                <View style={{flex:2,flexDirection:'row',alignItems:'center',marginLeft:10}}>
-                                    <Text style={{'fontSize':17,color:'#222'}}>厂牌型号:</Text>
+                                <View style={{flex:3,flexDirection:'row',alignItems:'center',marginLeft:10}}>
+                                    <Text style={{fontSize:16,color:'#343434'}}>厂牌型号:</Text>
                                 </View>
                                 <View style={{flex:1}}></View>
                                 <View style={{flex:6}}>
                                     <TextInput
-                                        style={{height: 40,borderWidth:0,fontSize:16}}
+                                        style={{height: 30,borderWidth:0,fontSize:15}}
                                         onChangeText={(factoryNum) => this.setState({factoryNum})}
                                         value={this.state.factoryNum}
                                         placeholder='请输入厂牌型号'
@@ -375,13 +375,13 @@ class UpdateCarInfo extends Component{
 
                             {/*发动机号*/}
                             <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
-                                <View style={{flex:2,flexDirection:'row',alignItems:'center',marginLeft:10}}>
-                                    <Text style={{'fontSize':17,color:'#222'}}>发动机号:</Text>
+                                <View style={{flex:3,flexDirection:'row',alignItems:'center',marginLeft:10}}>
+                                    <Text style={{fontSize:16,color:'#343434'}}>发动机号:</Text>
                                 </View>
                                 <View style={{flex:1}}></View>
                                 <View style={{flex:6}}>
                                     <TextInput
-                                        style={{height: 40,fontSize:16}}
+                                        style={{height: 30,fontSize:15}}
                                         onChangeText={(engineNum) => this.setState({engineNum})}
                                         value={this.state.engineNum}
                                         placeholder='请输入发动机号'
@@ -394,13 +394,13 @@ class UpdateCarInfo extends Component{
 
                             {/*车架号*/}
                             <View style={[styles.row,{alignItems:'center',padding:8,paddingLeft:0,paddingRight:0}]}>
-                                <View style={{flex:2,flexDirection:'row',alignItems:'center',marginLeft:10}}>
-                                    <Text style={{'fontSize':17,color:'#222'}}>车架号:</Text>
+                                <View style={{flex:3,flexDirection:'row',alignItems:'center',marginLeft:10}}>
+                                    <Text style={{fontSize:16,color:'#343434'}}>车架号:</Text>
                                 </View>
                                 <View style={{flex:1}}></View>
                                 <View style={{flex:6}}>
                                     <TextInput
-                                        style={{height: 40,fontSize:16}}
+                                        style={{height: 30,fontSize:15}}
                                         onChangeText={(frameNum) => this.setState({frameNum})}
                                         value={this.state.frameNum}
                                         placeholder='请输入车架号'
@@ -429,7 +429,7 @@ class UpdateCarInfo extends Component{
                     </ScrollableTabView>
                 </View>
 
-
+                </Image>
             </View>);
     }
 }
@@ -444,7 +444,6 @@ var styles = StyleSheet.create({
     card: {
         borderTopWidth:0,
         borderBottomWidth: 1,
-        backgroundColor: '#fff',
         borderBottomColor: 'rgba(0,0,0,0.1)',
         shadowColor: '#ccc',
         shadowOffset: { width: 2, height: 2, },

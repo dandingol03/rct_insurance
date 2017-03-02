@@ -250,17 +250,17 @@ class CarManage extends Component{
                                            this.navigate2CarInsurance(rowData);
                                       }}>
                         <View>
-                            <Text style={{color:'#000',fontSize:16}}>
+                            <Text style={{color:'#343434',fontSize:16}}>
                                 车牌号:{rowData.carNum}
                             </Text>
-                            <Text style={{color:'#444',fontSize:15}}>
+                            <Text style={{color:'#343434',fontSize:15}}>
                                 车主姓名 :{rowData.ownerName}
                             </Text>
                         </View>
                     </TouchableOpacity>
 
                     <View style={{width:50,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Icon name="angle-right" size={42} color="#00c9ff"></Icon>
+                        <Icon name="angle-right" size={42} color="#343434"></Icon>
                     </View>
                 </View>
 
@@ -346,7 +346,7 @@ class CarManage extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:44,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                <View style={[{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:54,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity onPress={()=>{
                         this.goBack();
                     }}>

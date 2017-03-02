@@ -20,7 +20,7 @@ const FacebookTabBar = React.createClass({
     },
 
     render() {
-        return <View style={[styles.tabs, this.props.style,{width:width*3/4,marginLeft:width/8}]}>
+        return <View style={[styles.tabs, this.props.style,{width:width*4/5,marginLeft:width/10}]}>
             {this.props.tabs.map((tab, i) => {
 
                 var appended=null;
@@ -80,11 +80,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-
+        marginTop:8,
         paddingBottom: 4,
         borderWidth:1,
-        borderColor:'rgb(17, 193, 243)',
-        padding:2
+        borderColor:'rgba(17, 17, 17, 0.6)',
+        padding:5
     },
     tabs: {
         flexDirection: 'row'

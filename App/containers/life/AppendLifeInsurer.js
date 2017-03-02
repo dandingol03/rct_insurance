@@ -48,7 +48,6 @@ class AppendLifeInsurer extends Component{
             }
         }
 
-
     }
 
 
@@ -171,16 +170,16 @@ class AppendLifeInsurer extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
+                <View style={[{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:50},styles.card]}>
+                    <TouchableOpacity style={{flex:1}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={45} color="#222"/>
+                        <Icon name="angle-left" size={40} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:23,color:'#222',marginLeft:10}}>
+                        <Text style={{fontSize:17,color:'#fff',marginLeft:10}}>
                             选择投保人
                         </Text>
                     </View>
