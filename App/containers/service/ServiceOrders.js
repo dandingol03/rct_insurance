@@ -323,9 +323,10 @@ class ServiceOrders extends Component{
 
         return (
             <View style={styles.container}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:60,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
                     <View style={[styles.row,{marginTop:20}]}>
 
@@ -334,11 +335,11 @@ class ServiceOrders extends Component{
                                           this.goBack();
                                       }}
                         >
-                            <Icon name="angle-left" size={40} color="#fff"></Icon>
+                            <Icon name="angle-left" size={30} color="#fff"></Icon>
                         </TouchableOpacity>
 
                         <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#888'}}>我的积分</Text>
+                            <Text style={{color:'#fff'}}>我的积分</Text>
                         </View>
 
                         <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
@@ -422,9 +423,7 @@ class ServiceOrders extends Component{
                     </View>
 
                 </ScrollableTabView>
-
-
-
+                </Image>
 
             </View>
         )

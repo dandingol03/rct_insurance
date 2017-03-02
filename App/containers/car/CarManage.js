@@ -180,7 +180,6 @@ class CarManage extends Component{
         lineStyle={flex:1,flexDirection:'row',padding:4,borderBottomWidth:1,
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}
 
-
         var prefer=null;
 
         if(rowData.idle==true)
@@ -234,7 +233,7 @@ class CarManage extends Component{
 
                     {
                         rowData.idle==true?
-                            <TouchableOpacity style={{width:55,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
+                            <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
                                               onPress={()=>{
                                      this.navigate2CarInsurance(rowData);
                                 }}>
@@ -346,14 +345,15 @@ class CarManage extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:44},styles.card]}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:44,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity onPress={()=>{
                         this.goBack();
                     }}>
 
-                        <Icon name="angle-left" size={42} color="#666"></Icon>
+                        <Icon name="angle-left" size={40} color="#fff"></Icon>
                     </TouchableOpacity>
-                    <Text style={{fontSize:17,flex:3,textAlign:'center'}}>
+                    <Text style={{fontSize:17,flex:3,paddingLeft:40,textAlign:'center',color:'#fff'}}>
                         车辆管理
                     </Text>
                     <TouchableOpacity onPress={()=>{
@@ -361,7 +361,7 @@ class CarManage extends Component{
                         }}>
                         <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center',
                                     borderRadius:8,paddingTop:8,paddingBottom:8,paddingLeft:10,paddingRight:10,alignItems:'center'}}>
-                            <Icon name="refresh" size={24} color="#11c1f3"></Icon>
+                            <Icon name="refresh" size={20} color="#fff"></Icon>
                         </View>
                     </TouchableOpacity>
 
@@ -406,7 +406,7 @@ class CarManage extends Component{
                                          this.setState({modalVisible:true});
                                       }}>
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{color:'#fff',fontSize:13}}>创建新车</Text>
+                        <Text style={{color:'#fff',fontSize:15}}>创建新车</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -440,7 +440,7 @@ class CarManage extends Component{
                     />
 
                 </Modal>
-
+                </Image>
 
             </View>);
     }

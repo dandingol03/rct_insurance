@@ -348,7 +348,7 @@ class Maintain extends Component{
                         <TouchableOpacity style={{flex:1,color:'#fff'}} onPress={()=>{
                         this.goBack();
                              }}>
-                            <Entypo size={40} name="chevron-left" color="#fff"></Entypo>
+                            <Icon name="angle-left" size={30} color="#fff"/>
 
                         </TouchableOpacity>
                         <Text style={{fontSize:15,flex:5,textAlign:'center',color:'#fff'}}>

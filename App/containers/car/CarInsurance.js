@@ -31,6 +31,7 @@ import Proxy from '../../proxy/Proxy';
 import NewCarBind from '../../components/modal/NewCarBind';
 import UpdateCarInfo from '../../components/UpdateCarInfo';
 import CarCompany from './CarCompany';
+import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
@@ -353,8 +354,8 @@ class CarInsurance extends Component{
         return (
 
             <View style={{flex:1,position:'relative'}}>
-
-                <View style={[{padding: 10,marginTop:0,height:55,backgroundColor:'#888'}]}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                <View style={[{padding: 10,marginTop:20,height:44,backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
 
                     <View style={{flex:1,marginTop:14,flexDirection:'row'}}>
                         <TouchableOpacity style={{width:50,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
@@ -364,8 +365,8 @@ class CarInsurance extends Component{
                             <Icon name="angle-left" size={40}  color="#fff"/>
                         </TouchableOpacity>
 
-                        <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10}}>
-                            <Text style={{fontSize:18,color:'#fff'}}>
+                        <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:5}}>
+                            <Text style={{fontSize:17,color:'#fff'}}>
                                 险种选择
                             </Text>
                         </View>
@@ -385,11 +386,11 @@ class CarInsurance extends Component{
                 />
 
 
-                <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
-                        var tabIndex=data.i;
-                        this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
-                >
+                <ScrollableTabView style={{flex:1,padding:0,margin:0}}
+                                   onChangeTab={(data)=>{
+                                        var tabIndex=data.i;
+                                        this.state.selectedTab=tabIndex;}}
+                                   renderTabBar={() =>  <FacebookTabBar />}>
 
                     <View tabLabel='基础套餐' style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
                         {/*body*/}
@@ -443,6 +444,7 @@ class CarInsurance extends Component{
                         </TouchableOpacity>
                     </View>
                 </ScrollableTabView>
+                </Image>
             </View>
 
 

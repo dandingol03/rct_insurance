@@ -307,11 +307,11 @@ class Life extends Component{
         return (
 
             <View style={{flex:1}}>
-                <View style={[{flex:1,padding: 10,justifyContent: 'center',alignItems: 'flex-end',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                <View style={[{flex:1,padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity onPress={()=>{
                         this.goBack();
                     }}>
-                        <Image source={require('../../images/icon_back.png')} style={{width:20,height:30,color:'#fff'}}/>
+                        <Icon name="angle-left" size={30} color="#fff" />
                     </TouchableOpacity>
                     <Text style={{fontSize:15,flex:3,textAlign:'center',color:'#fff'}}>
                         填写寿险意向
