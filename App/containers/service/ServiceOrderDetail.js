@@ -765,7 +765,7 @@ class ServiceOrderDetail extends Component{
                             <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
                                         alignItems:'center'}}
                                               onPress={()=>{
-                                          this.navigate2Evaluate(props.order);
+                                          this.navigate2Evaluate(state.detail);
                                       }}
                             >
                                 <View>
