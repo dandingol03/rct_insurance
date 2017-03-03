@@ -148,10 +148,7 @@ class My extends Component{
         }
     }
 
-
-
     storePicture(portrait){
-
 
         var {accessToken}=this.props;
 
@@ -183,7 +180,6 @@ class My extends Component{
                 );
             });
 
-
         }
     }
 
@@ -209,10 +205,6 @@ class My extends Component{
         }
     }
 
-
-
-
-
     constructor(props) {
         super(props);
         this.state={
@@ -233,8 +225,6 @@ class My extends Component{
         var props=this.props;
         var state=this.state;
         var displayArea = {x: 5, y: 20, width:width, height: height - 25};
-
-
 
         return (
             <View style={styles.container}>

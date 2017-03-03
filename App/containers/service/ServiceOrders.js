@@ -46,7 +46,8 @@ class ServiceOrders extends Component{
                 name: 'ServiceOrderDetail',
                 component: ServiceOrderDetail,
                 params: {
-                    order:order
+                    order:order,
+                    fetchData:this.fetchData.bind(this),
                 }
             })
         }
@@ -58,6 +59,7 @@ class ServiceOrders extends Component{
             if(json.re==1)
             {
                 console.log('...');
+                this.setState({selectedTab:0});
             }
         });
 
@@ -102,7 +104,10 @@ class ServiceOrders extends Component{
 
                     </View>
 
-                    <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                    <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}}
+                                      onPress={()=>{
+                                          this.navigate2ServiceOrderDetail(rowData);
+                                      }}>
 
                         {
                             rowData.candidateState==true?
@@ -160,7 +165,10 @@ class ServiceOrders extends Component{
 
                     </View>
 
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}}
+                                      onPress={()=>{
+                                          this.navigate2ServiceOrderDetail(rowData);
+                                      }}>
                         <Text style={{color:'#222',fontSize:13}}>
                             详细
                         </Text>
@@ -183,37 +191,48 @@ class ServiceOrders extends Component{
 
             <View style={lineStyle}>
 
-                <View style={{flexDirection:'row',borderBottomWidth:1,borderColor:'rgba(210,210,210,0.4)',borderLeftWidth:1,borderRightWidth:1,
-                            justifyContent:'flex-start',padding:10}}>
+                <View style={{borderBottomWidth:1,borderColor:'rgba(210,210,210,0.4)',borderLeftWidth:1,borderRightWidth:1,
+                            justifyContent:'flex-start',padding:5}}>
 
-
-                    <View style={{flex:1,alignItems:'center'}}>
+                    <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:5}}>
+                        <Text style={{flex:3,color:'#343434',fontSize:13}}>
+                            订单号:{rowData.orderNum}
+                        </Text>
                         {
-                            rowData.estimateTime !== undefined && rowData.estimateTime !== null && rowData.estimateTime !== '' ?
-                                <Text style={{color:'#222',fontSize:13}}>
-                                    {DateFilter.filter(rowData.estimateTime, 'yyyy-mm-dd') }
-                                </Text>:
-                                <Text style={{color:'#222',fontSize:13}}>
-                                    ----
-                                </Text>
+                            rowData.evaluate==undefined||rowData.evaluate==null?
+                                <View style={{flex:1,borderWidth:1,borderColor:'rgb(255, 82, 0)',borderRadius:4,
+                                    paddingVertical:4,paddingHorizontal:6,}}>
+                                    <Text style={{color:'rgb(255, 82, 0)',fontSize:12}}>
+                                        等待评价
+                                    </Text>
+                                </View>:null
                         }
                     </View>
 
-                    <View style={{flex:3,alignItems:'center'}}>
-                        <Text style={{color:'#222',fontSize:13}}>
-                            订单号:{rowData.orderNum}
-                        </Text>
-                        <Text style={{color:'#222',fontSize:13}}>
-                            类型:{rowData.serviceName}
-                        </Text>
+                    <TouchableOpacity style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:5}}
+                                      onPress={()=>{
+                                          this.navigate2ServiceOrderDetail(rowData);
+                                      }}>
+                        <View style={{flex:9}}>
+                            {
+                                rowData.estimateTime !== undefined && rowData.estimateTime !== null && rowData.estimateTime !== '' ?
+                                    <Text style={{color:'#343434',fontSize:13}}>
+                                        预约时间:{DateFilter.filter(rowData.estimateTime, 'yyyy-mm-dd') }
+                                    </Text>:
+                                    <Text style={{color:'#343434',fontSize:13}}>
+                                        预约时间:----
+                                    </Text>
+                            }
 
-                    </View>
-
-                    <TouchableOpacity style={{flex:1,alignItems:'center'}}>
-                        <Text style={{color:'#222'}}>
-                            详细
-                        </Text>
+                            <Text style={{color:'#343434',fontSize:13}}>
+                                类型:{rowData.serviceName}
+                            </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <Icon name="angle-right" size={30} color="#343434"/>
+                        </View>
                     </TouchableOpacity>
+
                 </View>
             </View>;
 
@@ -279,9 +298,6 @@ class ServiceOrders extends Component{
                 if(order.orderState==3)
                     orders3.push(order);
             })
-
-
-
 
 
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -350,8 +366,6 @@ class ServiceOrders extends Component{
                     </View>
                 </View>
 
-
-
                 {/*scroll tab pages*/}
                 <ScrollableTabView
                     style={{marginTop: 10, }}
@@ -369,10 +383,11 @@ class ServiceOrders extends Component{
                                     <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
                                 </View>
 
-                                <View style={{flex:2,alignItems:'center',justifyContent:'center'}}>
+                                <View style={{flex:3,alignItems:'center',justifyContent:'center'}}>
                                     <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
                                 </View>
 
+                                <View style={{width:50}}></View>
 
                             </View>
                         </View>

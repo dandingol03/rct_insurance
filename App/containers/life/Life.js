@@ -187,9 +187,6 @@ class Life extends Component{
         });
     }
 
-    setConfirmModalVisible(val){
-        this.setState({redundancyConfirmModal: val});
-    }
 
     navigate2LifeOrders(){
         const { navigator } = this.props;
