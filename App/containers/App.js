@@ -15,8 +15,6 @@ import {
 
 
 import { connect } from 'react-redux';
-
-
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
@@ -26,17 +24,117 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import Home from './home/index';
 import My from './my/My';
 import dym from './dym';
+import {fetchAccessToken} from '../action/UserActions';
+import {createNotification,downloadGeneratedTTS} from '../action/JpushActions';
+import {enableCarOrderRefresh} from '../action/CarActions';
+
+
+
+
 
 var WeChat = require('react-native-wechat');
 
 
 class App extends React.Component {
 
+
+    onNotificationRecv(payload)
+    {
+        var {kind}=payload;
+        switch(kind)
+        {
+            case 'from-service':
+                var {orderId,servicePersonId,date}=payload;
+                var content='工号为'+servicePersonId+'的服务人员发出接单请求';
+                var user={};
+                date=new Date(date);
+
+                this.props.dispatch(fetchAccessToken())
+                .then((json)=>{
+
+                   if(json.re==1)
+                   {
+                        //获取accessToken并进行页面跳转
+                       this.props.dispatch(createNotification(payload,'service'))
+                           .then(function (json) {
+                                //TODO:下载音频文件
+                                return this.props.dispatch(downloadGeneratedTTS({content:content}));
+                           })
+                           .then(function (json) {
+                                if(json.re==1)
+                                {
+                                    var path=json.data;
+                                    //TODO:播放音频文件
+
+
+                                    //TODO:popup插件
+
+                                }
+                           });
+
+                   }else{
+                   }
+                }).catch(function (e) {
+                    alert(e);
+                })
+
+                break;
+            case 'from-background':
+                var {orderState}=payload;
+                switch(orderState)
+                {
+                    case 3:
+                        //报价完成
+                        var {orderId,orderNum,orderType,date}=payload;
+                        date=new Date(date);
+                        var content='订单号为'+orderNum+'的车险订单已报价完成';
+                        var msg=null;
+                        if(orderType==1)
+                        {
+                            msg='订单号为'+orderNum+'的车险订单已报价完成\r\n'+'是否现在进入车险订单页面查看';
+                            this.props.dispatch(enableCarOrderRefresh());
+                        }
+                        else if(orderType==2)
+                        {
+                            msg='订单号为'+orderNum+'的寿险订单已报价完成\r\n'+'是否现在进入寿险订单页面查看';
+                            this.props.dispatch(enableCarOrderRefresh());
+                        }
+
+                        this.props.dispatch(fetchAccessToken())
+                            .then(function (json) {
+                                if(json.re==1)
+                                {
+                                    //获取accesToken
+                                    this.props.dispatch(createNotification(payload,orderType==1?'car':'life'))
+                                        .then(function (json) {
+                                            return this.props.dispatch(downloadGeneratedTTS({content:msg}));
+                                        })
+                                        .then(function (json) {
+                                            if(json.re==1)
+                                            {
+                                                var path=json.data;
+                                                //TODO:播放文件
+
+                                                //TODO:popup插件
+                                            }
+                                        })
+                                }
+                            })
+
+
+                        break;
+                }
+                break;
+        }
+
+    }
+
     constructor(props) {
         super(props);
         this.state={
             tab:'product',
-            selectedTab:'home'
+            selectedTab:'home',
+            name:null
         }
     }
 
@@ -136,30 +234,15 @@ class App extends React.Component {
         WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
 
         })
-        // setTimeout(function () {
-        //     WeChat.isWXAppInstalled().then(function (json) {
-        //         alert(json);
-        //     })
-        // }.bind(this),1000);
-        // setTimeout(function () {
-        //     WeChat.shareToTimeline({
-        //         type: 'text',
-        //         description: 'hello, wechat'
-        //     });
-        // }.bind(this),2000);
 
-        setTimeout(function () {
-            JPush.getRegistrationID().then(function (res) {
-                if(res)
-                    alert(res);
-            })
-
-        },1000);
 
     }
     onReceiveMessage(message) {
-        alert(message);
+        //TODO:make a notification through
+        var notification=message._data;
+        this.onNotificationRecv(notification);
     }
+
     onOpenMessage(message) {
         alert(message);
     }

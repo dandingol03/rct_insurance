@@ -212,8 +212,8 @@ class ServiceOrders extends Component{
                             详细
                         </Text>
                     </TouchableOpacity>
-                </View>
-            </View>;
+                    </View>
+                </View>;
 
         return row;
     }

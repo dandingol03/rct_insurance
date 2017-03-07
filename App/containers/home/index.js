@@ -21,6 +21,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Life from '../life/Life.js';
 import Maintain from '../maintain/Maintain.js';
 import CarManage from '../car/CarManage';
+import BaiduHome from '../map/BaiduHome';
+
 
 class Home extends Component{
 
@@ -63,6 +65,19 @@ class Home extends Component{
             navigator.push({
                 name: 'maintain',
                 component: Maintain,
+                params: {
+                }
+            })
+        }
+    }
+
+    navigate2BaiduHome()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'BaiduHome',
+                component: BaiduHome,
                 params: {
                 }
             })
@@ -203,12 +218,16 @@ class Home extends Component{
                                 </View>
                             </TouchableOpacity>
 
-                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                              onPress={ ()=>{
+                                                    this.navigate2BaiduHome();
+                                                }}
+                            >
                                 <Image style={[styles.module]} source={require('../../img/drivingService@2x.png')}/>
                                 <View style={{marginTop:0,padding:12}}>
                                     <Text style={{fontSize:18,color:'#222'}}>增值服务</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
 
 

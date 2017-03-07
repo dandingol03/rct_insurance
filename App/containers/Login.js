@@ -24,10 +24,23 @@ import {
 
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
-
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {loginAction,setTimerAction} from '../action/actionCreator';
+
+import {
+    MapView,
+    MapTypes,
+    Geolocation
+} from 'react-native-baidu-map';
+
 var Proxy = require('../proxy/Proxy');
+
+var MessageBarAlert = require('react-native-message-bar').MessageBar;
+var MessageBarManager = require('react-native-message-bar').MessageBarManager;
+import Sound from 'react-native-sound';
+const requireAudio = require('../../serviceAudio.wav');
+
+var Promise = require('bluebird');
 
 var  Login =React.createClass({
 
@@ -246,12 +259,80 @@ var  Login =React.createClass({
                     </View>
 
 
+
+                    <MessageBarAlert ref="alert" />
+                    <MessageBarAlert ref="msg" />
+
+
                     <Image style={{position:'absolute',bottom:0,width:width}} source={require('../img/tree.png')} />
                 </Image>
             </View>
         );
 
+    },
+    componentDidMount() {
+        MessageBarManager.registerMessageBar(this.refs.alert);
+
+        setTimeout(function () {
+            Sound.setCategory('Playback', true)
+            const s = new Sound('./serviceAudio.wav',  Sound.MAIN_BUNDLE,(e) => {
+                if (e) {
+                    alert(e)
+                    return;
+                }
+
+                s.play(() => s.release());
+            });
+        },1000)
+
+
+
+
+
+        // var  makePromise=(name, delay) =>{
+        //     return new Promise((resolve) => {
+        //         console.log(`${name} started`);
+        //         setTimeout(() => {
+        //             console.log(`${name} completed`);
+        //             resolve(name);
+        //         }, delay);
+        //     });
+        // }
+        //
+        // var data = [2000, 1, 1000];
+        // Promise.reduce(data, ( item, index) => {
+        //     return makePromise(index, item).then(res => {
+        //         return  res;
+        //     });
+        // }, 0).then(res => {
+        //     console.log(res);
+        // });
+
+
+        // MessageBarManager.showAlert({
+        //     title: "John Doe", // Title of the alert
+        //     message: "Hello, any suggestions?", // Message of the alert
+        //     avatar: require('../img/person.jpg'),
+        //     titleNumberOfLines: 1,
+        //     messageNumberOfLines: 0,
+        //     titleStyle: {color: 'white', fontSize: 18, fontWeight: 'bold' },
+        //     messageStyle: { color: 'white', fontSize: 16 ,},
+        //     avatarStyle: { height: 40, width: 40, borderRadius: 20 },
+        //     animationType: 'SlideFromLeft',
+        //     shouldHideAfterDelay:false,
+        //     stylesheetExtra:{backgroundColor:'rgba(180,180,180,0.5)',strokeColor:'transparent'}
+        // });
+        //
+        // setTimeout(function () {
+        //     MessageBarManager.hideAlert();
+        // }.bind(this),1000);
+
+    },
+    componentWillUnmount() {
+        // Remove the alert located on this master page from the manager
+        MessageBarManager.unregisterMessageBar();
     }
+
 });
 
 

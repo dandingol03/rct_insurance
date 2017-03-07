@@ -2,10 +2,13 @@
  * Created by dingyiming on 2017/2/15.
  */
 import * as types from './types';
+var Proxy = require('../proxy/Proxy');
 import Config from '../../config';
 import {updateScoreInfo} from './ScoreActions';
-import {updatePersonInfo,updateScore} from './UserActions';
-var Proxy = require('../proxy/Proxy');
+import {updatePersonInfo,updateScore,updateCertificate} from './UserActions';
+import {updateRegistrationId} from './JpushActions';
+import {activeTTSToken} from './TTSActions';
+
 
 export let loginAction=function(username,password,cb){
 
@@ -22,6 +25,9 @@ export let loginAction=function(username,password,cb){
             body: "grant_type=password&password=" + password + "&username=" + username
         }).then(function (json) {
             var accessToken = json.access_token;
+
+            //TODO:make a dispatch
+            updateCertificate({username:username,password:password});
 
             Proxy.postes({
                 url: Config.server + '/svr/request',
@@ -51,24 +57,37 @@ export let loginAction=function(username,password,cb){
                     if(json.re==1) {
                         dispatch(updateScore({data:json.data}));
                     }
-                    Proxy.postes({
-                        url: Config.server + '/svr/request',
-                        headers: {
-                            'Authorization': "Bearer " + accessToken,
-                            'Content-Type': 'application/json'
-                        },
-                        body: {
-                            request: 'getPersonalContactInfo'
-                        }
-                    }).then(function (json) {
+
+                    //update registrationId
+                    updateRegistrationId({accessToken:accessToken})
+                        .then(function (json) {
+
+                            //activate tts token
+                            return dispatch(activeTTSToken({accessToken:accessToken}));
+                        })
+                        .then(function(json){
+                            Proxy.postes({
+                                url: Config.server + '/svr/request',
+                                headers: {
+                                    'Authorization': "Bearer " + accessToken,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: {
+                                    request: 'getPersonalContactInfo'
+                                }
+                            }).then(function (json) {
 
 
-                        dispatch(getAccessToken(accessToken));
-                        dispatch(clearTimerAction());
-                        if (cb)
-                            cb();
-                    })
-                })
+                                dispatch(getAccessToken(accessToken));
+                                dispatch(clearTimerAction());
+                                if (cb)
+                                    cb();
+                            })
+                        })
+
+
+                });
+
 
             });
         }).catch(function (err) {
