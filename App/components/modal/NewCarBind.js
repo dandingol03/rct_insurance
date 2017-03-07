@@ -276,23 +276,21 @@ class NewCarBind extends Component{
     render(){
 
 
-
-
         return (
             <View style={{flex:1}}>
-
-                <View style={[{backgroundColor:'#444',padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                <View style={[{backgroundColor:'rgba(17, 17, 17, 0.6)',padding: 10,height:54,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
                     <View style={{flex:1}}>
                         <TouchableOpacity onPress={()=>{
                         this.close();
                             }}>
-                            <Icon name='chevron-left' size={30} color="#fff"/>
+                            <Icon name="angle-left" size={40} color="#fff"/>
                         </TouchableOpacity>
                     </View>
-                    <Text style={{fontSize:17,flex:3,textAlign:'center',color:'#fff'}}>
+                    <Text style={{fontSize:17,flex:10,textAlign:'center',color:'#fff'}}>
                         绑定新车
                     </Text>
-                    <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}>
+                    <View style={{flex:1,marginRight:5,flexDirection:'row',justifyContent:'center'}}>
                         <TouchableOpacity onPress={
                             ()=>{
                                 this.close();
@@ -308,24 +306,24 @@ class NewCarBind extends Component{
                 <View style={{flex:2,padding:10}}>
                     <View style={styles.row}>
 
-                        <View style={{marginRight:20,width:30,flexDirection:'row',alignItems:'center'}}>
-                            <Icon name="map-marker" size={24}/>
+                        <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
+                            <Icon name="map-marker" size={24} color="#343434"/>
                         </View>
 
-                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':16}}>用车城市:</Text>
+                        <View style={{flex:3,flexDirection:'row',alignItems:'center',backgroundColor:'transparent'}}>
+                            <Text style={{fontSize:16,color:'#343434'}}>用车城市:</Text>
                         </View>
 
                         <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                            <Text style={{color:'#222',fontSize:18}}>{this.state.city}</Text>
+                            <Text style={{color:'#343434',fontSize:16}}>{this.state.city}</Text>
                         </View>
 
-                        <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
                             <TouchableOpacity onPress={
                                     ()=>{
                                         this.appendCarNumPrefixByCity(true);
                                     }}>
-                                <Icon name="chevron-right" size={24}/>
+                                <Icon name="angle-right" size={30} color="#343434"/>
                             </TouchableOpacity>
                         </View>
 
@@ -333,17 +331,17 @@ class NewCarBind extends Component{
 
                     <View style={[styles.row,{alignItems:'center'}]}>
 
-                        <View style={{marginRight:20,width:30,flexDirection:'row',alignItems:'center'}}>
-                            <Icon name="address-card-o" size={24}/>
+                        <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
+                            <Icon name="address-card-o" size={24} color="#343434"/>
                         </View>
 
                         <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{'fontSize':16}}>车牌:</Text>
+                            <Text style={{fontSize:16,color:'#343434'}}>车牌:</Text>
                         </View>
 
-                        <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
                             <TextInput
-                                style={{borderBottomWidth:0,fontSize:18,flex:1,textAlign:'center'}}
+                                style={{borderBottomWidth:0,fontSize:13,flex:1,textAlign:'center',color:'#343434'}}
                                 editable = {true}
                                 height={40}
                                 onChangeText={
@@ -393,7 +391,7 @@ class NewCarBind extends Component{
                     />
 
                 </Modal>
-
+                </Image>
 
             </View>
         );

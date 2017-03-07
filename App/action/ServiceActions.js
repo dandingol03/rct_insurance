@@ -240,9 +240,9 @@ export let fetchServiceOrders=function () {
 let fetchPlaceInfo=function (payload) {
     return new Promise((resolve,reject)=>{
 
-        var {order,accessToken}=payload;
+        var {_order,accessToken}=payload;
 
-        var _order=_.cloneDeep(order);
+        var _order=_.cloneDeep(_order);
 
         Proxy.postes({
             url: Config.server + '/svr/request',
@@ -253,11 +253,12 @@ let fetchPlaceInfo=function (payload) {
             body: {
                 request: 'getServicePlaceNameByPlaceId',
                 info:{
-                    servicePersonId:_order.servicePlaceId
+                    type:'place',
+                    placeId:_order.servicePlaceId
                 }
             }
         }).then(function (res) {
-            var json=res.data;
+            var json=res;
             if(json.re==1) {
                 _order.servicePlace=json.data;
             }
@@ -299,7 +300,7 @@ let fetchRelativeInfo=function (payload) {
                     {
                         _order.servicePerson=json.data;
                     }
-                    resolve(_order);
+                    resolve({re:1,data:_order});
                 }).catch(function (e) {
                     reject(e);
                 })

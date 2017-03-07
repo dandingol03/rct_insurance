@@ -329,17 +329,18 @@ class AppendCarInsuranceder extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,flexDirection:'row',height:50},styles.card]}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                <View style={[{padding: 10,paddingTop:20,flexDirection:'row',height:54,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity style={{width:20,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',
                         padding:10,paddingLeft:0,paddingRight:0}}
                                       onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={45} color="#222"/>
+                        <Icon name="angle-left" size={40} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
-                        <Text style={{fontSize:16,color:'#222',marginLeft:5}}>
+                        <Text style={{fontSize:17,color:'#fff',marginLeft:5}}>
                             选择被保险人
                         </Text>
                     </View>
@@ -479,7 +480,7 @@ class AppendCarInsuranceder extends Component{
                     </View>
 
                 </ScrollableTabView>
-
+                </Image>
 
             </View>);
     }

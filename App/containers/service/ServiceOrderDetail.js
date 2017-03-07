@@ -26,13 +26,16 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import DateFilter from '../../filter/DateFilter';
 import {fetchAppliedOrderDetail} from '../../action/ServiceActions';
+import {fetchServiceOrders} from '../../action/ServiceActions';
+
 import _ from 'lodash';
+import Evaluate from './Evaluate'
 
 
 class ServiceOrderDetail extends Component{
 
-
     goBack(){
+        this.props.fetchData();
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
@@ -44,7 +47,6 @@ class ServiceOrderDetail extends Component{
         this.props.dispatch(fetchAppliedOrderDetail({order:this.props.order})).then(function (json) {
             if(json.re==1)
             {
-
                 if(json.data&&json.data.candidates)
                 {
                     var _candidates=_.cloneDeep(json.data.candidates);
@@ -54,7 +56,6 @@ class ServiceOrderDetail extends Component{
                     this.setState({detail:json.data});
             }
         }.bind(this))
-
     }
 
 
@@ -113,10 +114,359 @@ class ServiceOrderDetail extends Component{
         return row;
     }
 
+    agreeWithCandidate(){
+        var candidate=null;
+        this.state.detail.candidates.map(function(people,i) {
+            if(people.checked==true)
+                candidate=people;
+        });
+        if(candidate!=null)
+        {
+            //TODO:inject sendCustomMessage to servicePerson
+            Proxy.post({
+                url:Config.server+'/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + this.state.accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request:'applyCarServiceOrderCandidate',
+                    info: {
+                        candidateId:candidate.candidateId
+                    },
+                }
+            }, (res)=> {
+                var json = res;
+                if(json.re==1)
+                {
+                     Proxy.post({
+                        url:Config.server+'/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + this.state.accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request:'sendCustomMessage',
+                            info: {
+                                orderId: this.props.order.orderId,
+                                servicePersonId: candidate.servicePersonId,
+                                type: 'to-servicePerson',
+                                subType:'agreeWithCandidate',
+                                orderNum:this.props.order.orderNum
+                            }
+                        }
+                    }, (res)=> {
+                        var json = res;
+                        if(json.re==1)
+                        {
+                            Alert.alert(
+                                '信息',
+                                '接单成功，已通知服务人员',
+                                [
+                                    {text: 'OK', onPress: () => {
+                                       this.goBack();
+                                    }},
+                                ]
+                            )
+                        }
+                    }, (err) =>{
+                        var str='';
+                        for(var field in err)
+                            str += field + ':' + err[field];
+                        alert('error=\r\n' + str);
+                    });
+                }
+            }, (err) =>{
+                var str='';
+                for(var field in err)
+                    str += field + ':' + err[field];
+                alert('error=\r\n' + str);
+            });
+
+        }else{
+            Alert.alert(
+                '信息',
+                '请勾选服务人员后再点击同意',
+                [
+                    {text: 'OK', onPress: () => {
+                        console.Log('...');
+                    }},
+                ]
+            )
+        }
+    }
+
+
+    cancleOrder(state){
+        //取消"已下单"的订单
+        if(this.props.order.orderState==1){
+            //指定了服务人员
+            if(this.props.order.servicePersonId!=undefined&&this.props.order.servicePersonId!=null) {
+                var date = new Date();
+                var timeDifference = parseInt((new Date(this.props.order.estimateTime)-date) /(1000*60*60))
+                if (timeDifference >= 2) {
+
+                    Proxy.post({
+                        url:Config.server+'/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + this.state.accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request:'updateServiceOrderState',
+                            info: {
+                                orderState: state,
+                                order: this.props.order,
+                            },
+                        }
+                    }, (res)=> {
+                        var json = res;
+                        if(json.re==1)
+                        {
+                            Alert.alert(
+                                '信息',
+                                '订单取消成功',
+                                [
+                                    {text: 'OK', onPress: () => {
+                                        this.goBack();
+                                    }},
+                                ]
+                            )
+                        }
+                    }, (err) =>{
+                        var str='';
+                        for(var field in err)
+                            str += field + ':' + err[field];
+                        alert('error=\r\n' + str);
+                    });
+
+                }
+                else {
+                    alert("距离预约时间不足两小时，无法取消订单！");
+                }
+            }
+            //未指定服务人员
+            else{
+                // 通知 candidate表中的服务人员
+                var date = new Date();
+
+                var timeDifference = parseInt((new Date(this.props.order.estimateTime)-date) /(1000*60*60))
+                if (timeDifference >= 2) {
+
+                    Proxy.post({
+                        url:Config.server+'/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + this.state.accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request:'updateServiceOrderState',
+                            info: {
+                                orderState: state,
+                                order: this.props.order,
+                            },
+                        }
+                    }, (res)=> {
+                        var json = res;
+                        if(json.re==1)
+                        {
+                            var servicePersonIdObjs = json.data;
+                            var servicePersonIds = [];
+                            servicePersonIdObjs.map(function(servicePersonId,i) {
+                                servicePersonIds.push(servicePersonId.servicePersonId);
+                            })
+
+                            Proxy.post({
+                                url:Config.server+'/svr/request',
+                                headers: {
+                                    'Authorization': "Bearer " + this.state.accessToken,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: {
+                                    request:'sendCustomMessage',
+                                    info: {
+                                        order: this.props.order,
+                                        servicePersonIds: servicePersonIds,
+                                        type: 'to-servicePerson'
+                                    },
+                                }
+                            }, (res)=> {
+                                var json = res;
+                                if(json.re==1)
+                                {
+                                    Alert.alert(
+                                        '信息',
+                                        '订单取消成功',
+                                        [
+                                            {text: 'OK', onPress: () => {
+                                                this.goBack();
+                                            }},
+                                        ]
+                                    )
+                                }
+                            }, (err) =>{
+                                var str='';
+                                for(var field in err)
+                                    str += field + ':' + err[field];
+                                alert('error=\r\n' + str);
+                            });
+
+                        }
+                    }, (err) =>{
+                        var str='';
+                        for(var field in err)
+                            str += field + ':' + err[field];
+                        alert('error=\r\n' + str);
+                    });
+
+                }
+                else {
+                    alert("距离预约时间不足两小时，无法取消订单！");
+                }
+
+            }
+        }
+
+        //取消服务中的订单（已有确定人员接单但还未执行））
+        if(this.props.order.orderState==2){
+
+            var date = new Date();
+            var timeDifference = parseInt((new Date(this.props.order.estimateTime)-date) /(1000*60*60));
+            if (timeDifference >= 2) {
+
+                Proxy.post({
+                    url:Config.server+'/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + this.state.accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request:'updateServiceOrderState',
+                        info: {
+                            orderState: state,
+                            order: this.props.order,
+                        },
+                    }
+                }, (res)=> {
+                    var json = res;
+                    if(json.re==1)
+                    {
+                        Alert.alert(
+                            '信息',
+                            '订单取消成功',
+                            [
+                                {text: 'OK', onPress: () => {
+                                    this.goBack();
+                                }},
+                            ]
+                        )
+                    }
+                }, (err) =>{
+                    var str='';
+                    for(var field in err)
+                        str += field + ':' + err[field];
+                    alert('error=\r\n' + str);
+                });
+
+            }
+            else {
+                alert("距离预约时间不足两小时，无法取消订单！");
+            }
+        }
+    }
+
+
+    finishOrder(){
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.state.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'updateServiceOrderState',
+                info: {
+                    orderState: 3,
+                    order: this.props.order,
+                },
+            }
+        }, (res)=> {
+            var json = res;
+            if(json.re==1)
+            {
+                Proxy.post({
+                    url:Config.server+'/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + this.state.accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request:'insertFeePayInfo',
+                        info: {
+                            fee:this.props.order.fee,
+                            orderId: this.props.order.orderId,
+                            type:'service'
+                        },
+                    }
+                }, (res)=> {
+                    var json = res;
+                    if(json.re==1)
+                    {
+                        Alert.alert(
+                            '信息',
+                            '订单已完成,是否现在进行评价',
+                            [
+                                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                                {text: 'OK', onPress: () => this.navigate2Evaluate(this.props.order)},
+                            ]
+                        )
+                    }
+                }, (err) =>{
+                    var str='';
+                    for(var field in err)
+                        str += field + ':' + err[field];
+                    alert('error=\r\n' + str);
+                });
+            }else{
+
+                Alert.alert(
+                    '信息',
+                    '服务订单修改状态失败',
+                    [
+                        {text: 'OK', onPress: () => console.log('服务订单修改状态失败!')},
+                    ]
+                )
+                return {re: -1};
+            }
+        }, (err) =>{
+            var str='';
+            for(var field in err)
+                str += field + ':' + err[field];
+            alert('error=\r\n' + str);
+        });
+
+    }
+
+    navigate2Evaluate(order){
+
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Evaluate',
+                component: Evaluate,
+                params: {
+                    order:order
+                }
+            })
+        }
+    }
+
+
     constructor(props) {
         super(props);
-
+        const { accessToken } = this.props;
         this.state={
+            accessToken: accessToken,
             detail:null
         }
     }
@@ -126,11 +476,6 @@ class ServiceOrderDetail extends Component{
         var props=this.props;
         var state=this.state;
 
-
-        var appliedList=null;
-        var handlingList=null;
-        var finishedList=null;
-
         var subServiceTypeMap={1:'机油,机滤',2:'检查制动系统,更换刹车片',3:'雨刷片更换',
             4:'轮胎更换',5:'燃油添加剂',6:'空气滤清器',7:'检查火花塞',8:'检查驱动皮带',9:'更换空调滤芯',10:'更换蓄电池,防冻液'};
 
@@ -139,7 +484,6 @@ class ServiceOrderDetail extends Component{
             31:'鈑喷'};
 
         var candidateList=null;
-
 
         if(this.props.order)
         {
@@ -160,19 +504,17 @@ class ServiceOrderDetail extends Component{
               }
 
             }else {
-
                 this.fetchData();
             }
-
         }
 
 
-
         return (
+
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:60,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
                     <View style={[styles.row,{marginTop:20}]}>
 
@@ -184,14 +526,29 @@ class ServiceOrderDetail extends Component{
                             <Icon name="angle-left" size={40} color="#fff"></Icon>
                         </TouchableOpacity>
 
-                        <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#888'}}>订单详情</Text>
-                        </View>
+                        {
+                            props.order.orderState==1&&(props.order.servicePersonId==null||props.order.servicePersonId==undefined)?
+                                <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
+                                    <Text style={{color:'#fff',fontSize:17}}>订单详情</Text>
+                                </View>:
+                                <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,paddingRight:90}}>
+                                    <Text style={{color:'#fff',fontSize:17}}>订单详情</Text>
+                                </View>
+                        }
 
-                        <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
-                            padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-                            <Text style={{fontSize:12}}>订单取消</Text>
-                        </View>
+                        {
+                            props.order.orderState==1&&(props.order.servicePersonId==null||props.order.servicePersonId==undefined)?
+                                <TouchableOpacity style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
+                            padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}
+                                                 onPress={()=>{
+                                          this.cancleOrder(-3);
+                                      }}>
+                                    <View>
+                                        <Text style={{fontSize:12}}>订单取消</Text>
+                                    </View>
+                                </TouchableOpacity> :null
+                        }
+
 
                     </View>
                 </View>
@@ -200,8 +557,32 @@ class ServiceOrderDetail extends Component{
 
                 {
                     state.detail!==undefined&&state.detail!==null?
-                        <View >
-                            <View style={{height:45,width:width-40,marginLeft:20,marginTop:20}}>
+                        <View>
+                            {
+                                props.order.serviceType!='23'&&props.order.serviceType!='24'&&props.order.serviceType!='22'?
+                                    <View style={{height:45,width:width-30,marginLeft:15,marginTop:20}}>
+                                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
+                                            <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
+                                                <Text style={{color:'#222',fontSize:14}}>
+                                                    车牌号:
+                                                </Text>
+                                            </View>
+
+                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
+                                                {
+                                                    props.order.carInfo!==null?
+                                                        <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
+                                                            {props.order.carInfo.carNum}
+                                                        </Text>:null
+                                                }
+
+                                            </View>
+                                        </View>
+                                    </View>:null
+
+                            }
+
+                            <View style={{height:45,width:width-30,marginLeft:15}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
                                     <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14}}>
@@ -209,7 +590,7 @@ class ServiceOrderDetail extends Component{
                                         </Text>
                                     </View>
 
-                                    <View style={{flex:1,alignItems:'flex-end',justifyContent:'center',padding:12}}>
+                                    <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
                                             {state.detail.serviceName}
                                         </Text>
@@ -217,8 +598,7 @@ class ServiceOrderDetail extends Component{
                                 </View>
                             </View>
 
-
-                            <View style={{height:45,width:width-40,marginLeft:20,marginTop:0}}>
+                            <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
                                     <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14}}>
@@ -226,7 +606,7 @@ class ServiceOrderDetail extends Component{
                                         </Text>
                                     </View>
 
-                                    <View style={{flex:1,alignItems:'flex-end',justifyContent:'center',padding:12}}>
+                                    <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
                                             {DateFilter.filter(state.detail.estimateTime, 'yyyy-mm-dd') }
                                         </Text>
@@ -234,7 +614,7 @@ class ServiceOrderDetail extends Component{
                                 </View>
                             </View>
 
-                            <View style={{height:45,width:width-40,marginLeft:20,marginTop:0}}>
+                            <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
                                     <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14}}>
@@ -242,7 +622,7 @@ class ServiceOrderDetail extends Component{
                                         </Text>
                                     </View>
 
-                                    <View style={{flex:1,alignItems:'flex-end',justifyContent:'center',padding:12}}>
+                                    <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
                                         <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
                                             ${state.detail.fee}
                                         </Text>
@@ -252,7 +632,7 @@ class ServiceOrderDetail extends Component{
 
                             {
                                 state.detail.subServiceContent!==undefined&&state.detail.subServiceContent!==null&&state.detail.subServiceContent!=''?
-                                    <View style={{height:45,width:width-40,marginLeft:20,marginTop:0}}>
+                                    <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
                                             <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
                                                 <Text style={{color:'#222',fontSize:14}}>
@@ -260,7 +640,7 @@ class ServiceOrderDetail extends Component{
                                                 </Text>
                                             </View>
 
-                                            <View style={{flex:1,alignItems:'flex-end',justifyContent:'center',padding:12}}>
+                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
                                                 <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
                                                     {state.detail.subServiceContent}
                                                 </Text>
@@ -272,7 +652,7 @@ class ServiceOrderDetail extends Component{
 
                             {
                                 state.detail.servicePerson!==undefined&&state.detail.servicePerson!==null?
-                                    <View style={{height:45,width:width-40,marginLeft:20,marginTop:0}}>
+                                    <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
                                             <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
                                                 <Text style={{color:'#222',fontSize:14}}>
@@ -280,7 +660,7 @@ class ServiceOrderDetail extends Component{
                                                 </Text>
                                             </View>
 
-                                            <View style={{flex:1,alignItems:'flex-end',justifyContent:'center',padding:12}}>
+                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
                                                 <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
                                                     {state.detail.servicePerson.perName}
                                                 </Text>
@@ -293,13 +673,16 @@ class ServiceOrderDetail extends Component{
                 }
 
 
-
                 {/*侯选人员列表*/}
                 {
                     state.detail&&state.detail.candidates!==undefined&&state.detail.candidates!==null?
                         <View style={[styles.card,{flex:1,marginBottom:20,position:'relative',padding:0}]}>
 
-                            <ScrollView style={{marginBottom:50}}>
+                            <View style={{padding:5,alignItems:'center',justifyContent:'center',backgroundColor:'#ddd'}}>
+                                <Text>候选人员列表</Text>
+                            </View>
+
+                            <ScrollView style={{marginBottom:50,padding:8}}>
                                 {candidateList}
                             </ScrollView>
 
@@ -308,7 +691,7 @@ class ServiceOrderDetail extends Component{
                                 <TouchableOpacity style={{width:140,backgroundColor:'#00f',borderRadius:8,padding:10,
                                         alignItems:'center'}}
                                                   onPress={()=>{
-                                          this.goBack();
+                                          this.agreeWithCandidate();
                                       }}
                                 >
                                    <Text style={{color:'#fff'}}>同意</Text>
@@ -316,6 +699,83 @@ class ServiceOrderDetail extends Component{
                             </View>
 
                         </View>:null
+                }
+
+
+                {/*指定服务人员的已下单订单取消*/}
+                {
+                    props.order.orderState==1&&props.order.servicePersonId!==null&&props.order.servicePersonId!==undefined?
+
+                        <View style={[styles.row,{width:width,height:50,paddingLeft:30,paddingRight:30,alignItems:'center',position:'absolute',bottom:10,justifyContent:'center'}]}>
+
+                            <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
+                                        alignItems:'center'}}
+                                              onPress={()=>{
+                                           this.cancleOrder(-3);
+                                      }}
+                            >
+                                <View>
+                                    <Text style={{color:'#fff'}}>取消订单</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>:null
+
+
+                }
+
+
+                {/*服务中订单的取消和完成*/}
+                {
+                    props.order.orderState==2?
+
+                        <View style={[styles.row,{width:width,height:50,alignItems:'center',position:'absolute',bottom:10,justifyContent:'center'}]}>
+
+                            <TouchableOpacity style={{flex:1,backgroundColor:'#ef473a',borderRadius:8,padding:10,margin:10,
+                                        alignItems:'center'}}
+                                              onPress={()=>{
+                                          this.cancleOrder(-3);
+                                      }}
+                            >
+                            <View>
+                                <Text style={{color:'#fff'}}>取消</Text>
+                            </View>
+                            </TouchableOpacity>
+
+
+                            <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
+                                        alignItems:'center'}}
+                                              onPress={()=>{
+                                          this.finishOrder();
+                                      }}
+                            >
+                            <View>
+                                <Text style={{color:'#fff'}}>完成</Text>
+                            </View>
+                            </TouchableOpacity>
+                        </View>:null
+                }
+
+                {/*完成订单的评价*/}
+                {
+                    props.order.orderState==3?
+
+                        <View style={[styles.row,{width:width,height:50,paddingLeft:30,paddingRight:30,alignItems:'center',position:'absolute',bottom:10,justifyContent:'center'}]}>
+
+                            <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
+                                        alignItems:'center'}}
+                                              onPress={()=>{
+                                          this.navigate2Evaluate(state.detail);
+                                      }}
+                            >
+                                <View>
+                                    <Text style={{color:'#fff'}}>评价订单</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>:null
+
+
                 }
 
 
@@ -364,10 +824,11 @@ var styles = StyleSheet.create({
         transform:[{rotate:'12deg'}]
     }
 
-
 });
 
 
-
-module.exports = connect()(ServiceOrderDetail);
+module.exports = connect(state=>({
+    accessToken:state.user.accessToken
+  })
+)(ServiceOrderDetail);
 
