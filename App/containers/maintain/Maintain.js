@@ -21,9 +21,9 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Entypo from 'react-native-vector-icons/Entypo';
-
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
+
+
 import VideoPlayer from './VideoPlayer.js';
 import Audio from './Audio.js';
 import MaintainPlan from './MaintainPlan';
@@ -339,6 +339,11 @@ class Maintain extends Component{
         var state=this.state;
         var displayArea = {x: 5, y: 20, width:width, height: height - 25};
 
+        var selectedStyle={backgroundColor:'#ccc'};
+        var unSelectedStyle={backgroundColor:'transparent'};
+        var blackStyle={color:'#222'};
+        var unblackStyle={color:'#888'};
+
         return (
             <View style={{flex:1}}>
                 {/*body*/}
@@ -361,7 +366,7 @@ class Maintain extends Component{
                         <ScrollableTabView style={{flex:1}}
                                            renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
-                            <View tabLabel='日常保养' style={{flex:1,padding:8,fontSize:20}}>
+                            <View tabLabel='日常保养' style={{flex:1,padding:8}}>
 
                                 <ScrollView>
                                     <View style={{flex:8}}>
@@ -592,10 +597,10 @@ class Maintain extends Component{
 
                             </View>
 
-                            <ScrollView tabLabel='故障维修' style={{flex:1,padding:10,fontSize:20}}>
+                            <ScrollView tabLabel='故障维修' style={{flex:1,padding:10}}>
 
                                 {/*文本描述*/}
-                                <View style={{flex:3,padding:4}}>
+                                <View style={{flex:1,padding:4}}>
                                     <Text>文本描述</Text>
                                     <TextInput
                                         style={{height:100,borderWidth:1,padding:8,fontSize:13,marginTop:5}}
@@ -613,60 +618,85 @@ class Maintain extends Component{
                                     />
                                 </View>
 
-                                <View style={{flex:3,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center',height:110}}>
+                                <View style={{flex:1,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                        height:135,marginTop:10}}>
                                     {/*音频描述*/}
-                                    <View style={{flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#f96666',borderRadius:8}}>
-                                        <View style={{flex:2}}>
-                                            <View style={{flex:3,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'flex-end'}}>
-                                                <Image resizeMode="cover" source={require('../../img/1@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/2@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/6@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/9@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/5@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/3@2x.png')} style={{flex:1,padding:2}}></Image>
-                                                <Image resizeMode="cover" source={require('../../img/8@2x.png')} style={{flex:1,padding:2}}></Image>
-                                            </View>
-                                            <Text style={{color:'#fff',flex:1,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'center',textAlign:'center'}}>00:00</Text>
-                                        </View>
-                                        <View style={{flex:1,paddingRight:4}}>
-                                            <TouchableOpacity onPress={()=>{
-                                         this.navigate2Audio();
-                                      }}>
-                                                <View>
-                                                    <Image resizeMode="cover" source={require('../../img/maike-@2x.png')}></Image>
+                                    <View style={{flex:1}}>
+                                        <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#f96666',borderRadius:8}}>
+                                            <View style={{flex:2}}>
+                                                <View style={{flex:3,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'flex-end'}}>
+                                                    <Image resizeMode="cover" source={require('../../img/1@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/2@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/6@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/9@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/5@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/3@2x.png')} style={{flex:1,padding:2}}></Image>
+                                                    <Image resizeMode="cover" source={require('../../img/8@2x.png')} style={{flex:1,padding:2}}></Image>
                                                 </View>
-                                            </TouchableOpacity>
+                                                <Text style={{color:'#fff',flex:1,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'center',textAlign:'center'}}>00:00</Text>
+                                            </View>
+                                            <View style={{flex:1,paddingRight:4}}>
+                                                <TouchableOpacity onPress={()=>{
+                                                     this.navigate2Audio();
+                                                  }}>
+                                                    <View>
+                                                        <Image resizeMode="cover" source={require('../../img/maike-@2x.png')}></Image>
+                                                    </View>
+                                                </TouchableOpacity>
 
-                                            <Image resizeMode="cover" source={require('../../img/playAudio@2x.png')} style={{flex:1}}></Image>
+                                                <TouchableOpacity  onPress={
+                                                ()=>{
+                                                   console.log('...');
+                                                }
+                                            }>
+                                                    <View>
+                                                        <Image resizeMode="cover" source={require('../../img/playAudio@2x.png')}></Image>
+                                                    </View>
+                                                </TouchableOpacity>
+
+
+                                            </View>
                                         </View>
+
+                                        <View style={{alignItems:'center',marginTop:5}}>
+                                            <Text style={{color:'#222'}}>音频描述</Text>
+                                        </View>
+
                                     </View>
 
                                     {/*视频描述*/}
-                                    <View style={{height:102,flex:1,padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                  backgroundColor:'#aaa',borderRadius:8}}>
+                                    <View style={{flex:1}}>
 
-                                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                        <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                                backgroundColor:'#444',borderRadius:8,height:110,}}>
+                                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
-                                            {/*录制视频*/}
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
-                                                              onPress={() => {
+                                                {/*录制视频*/}
+                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                  onPress={() => {
                                                                   this.setState({cameraModalVisible:true})
                                                               }}>
 
-                                                        <Image style={{height:30,width:30,borderRadius:10}} source={require('../../img/sas@2x.png')}/>
+                                                    <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
 
-                                            </TouchableOpacity>
+                                                </TouchableOpacity>
 
 
-                                            {/*播放视频*/}
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}} onPress={()=>{
-                                         this.navigate2VideoPlayer(this.state.videoPath);
-                                      }}>
-                                                <View>
-                                                    <Icon name="play-circle" color="#fff" size={35}></Icon>
-                                                </View>
-                                            </TouchableOpacity>
+                                                {/*播放视频*/}
+                                                {/*<TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}} onPress={()=>{*/}
+                                                     {/*this.navigate2VideoPlayer(this.state.videoPath);*/}
+                                                  {/*}}>*/}
+                                                    {/*<View>*/}
+                                                        {/*<Icon name="play-circle" color="#fff" size={35}></Icon>*/}
+                                                    {/*</View>*/}
+                                                {/*</TouchableOpacity>*/}
 
+                                            </View>
+                                        </View>
+
+
+                                        <View style={{alignItems:'center',marginTop:5}}>
+                                            <Text style={{color:'#222'}}>视频录制</Text>
                                         </View>
 
                                     </View>
@@ -674,115 +704,100 @@ class Maintain extends Component{
 
                                 </View>
 
+
+                                <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
+                                    <View style={{width:width*2/3,padding:8,paddingHorizontal:12,
+                                        backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center'}}>
+                                        <Text style={{color:'#fff',fontWeight:'bold'}}>选择附近的维修厂</Text>
+                                    </View>
+
+                                </View>
+
+
                             </ScrollView>
 
-                            <View tabLabel='事故维修' style={{flex:1,padding:12,fontSize:20}}>
-                                <View style={[styles.row80,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
-                                    <View style={{flex:6,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                        <Text style={{fontSize:15,flex:3,textAlign:'left',}}>已报案:</Text>
+                            <View tabLabel='事故维修' style={{flex:1,padding:12}}>
+
+                                {/*已报案*/}
+                                <TouchableOpacity style={[{flexDirection:'row',alignItems:'center',padding:5,paddingHorizontal:12,
+                                        borderRadius:6},this.state.accidentType=='已报案'?selectedStyle:unSelectedStyle]}
+                                                  onPress={()=>{
+                                                      this.setState({accidentType:'已报案'});
+                                                }}>
+
+                                    <View style={{width:50,height:27,alignItems:'center',justifyContent:'center',position:'relative'}}>
+                                        <Icon name="circle-thin" size={27} color="rgba(156, 39, 176, 0.81)"/>
                                         {
-                                            this.state.accidentType == '' ?
-                                                <TouchableOpacity
-                                                    style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
-                                                    onPress={()=>{
-                                                                 this.setState({accidentType:'已报案'});
-                                                }}>
-                                                    <View>
-                                                        <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                    </View>
-                                                </TouchableOpacity> :
-                                                <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                    {
-                                                        this.state.accidentType == '已报案' ?
-                                                            <TouchableOpacity
-                                                                onPress={()=>{
-                                                                 this.setState({accidentType:''});
-                                                }}>
-                                                                <View>
-                                                                    <Icon name="check-circle" color="#aaa" size={30}></Icon>
-                                                                </View>
-                                                            </TouchableOpacity> :
-
-                                                            <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                                <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                            </View>
-
-                                                    }
-                                                </View>
+                                            this.state.accidentType=='已报案'?
+                                                <View style={{width:12,height:12,backgroundColor:'#00f',borderRadius:6
+                                                ,position:'absolute',top:8,left:19}}></View>:null
                                         }
 
                                     </View>
-                                </View>
-                                <View style={[styles.row80,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
-                                    <View style={{flex:6,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                        <Text style={{fontSize:15,flex:3,textAlign:'left',}}>未报案:</Text>
+
+                                    <View style={{flex:1,justifyContent:'center',alignItems:'flex-start'}}>
+                                        <Text style={[{fontWeight:'bold'},this.state.accidentType=='已报案'?blackStyle:unblackStyle]}>
+                                            已报案:
+                                        </Text>
+                                    </View>
+
+                                </TouchableOpacity>
+
+                                {/*未报案*/}
+                                <TouchableOpacity style={[{flexDirection:'row',alignItems:'center',padding:5,paddingHorizontal:12,
+                                    borderRadius:6},this.state.accidentType=='未报案'?selectedStyle:unSelectedStyle]}
+                                                  onPress={()=>{
+                                                      this.setState({accidentType:'未报案'});
+                                                }}>
+
+                                    <View style={{width:50,height:27,alignItems:'center',justifyContent:'center',position:'relative'}}>
+                                        <Icon name="circle-thin" size={27} color="rgba(156, 39, 176, 0.81)"/>
                                         {
-                                            this.state.accidentType == '' ?
-                                                <TouchableOpacity
-                                                    style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
-                                                    onPress={()=>{
-                                                                 this.setState({accidentType:'未报案'});
-                                                }}>
-                                                    <View>
-                                                        <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                    </View>
-                                                </TouchableOpacity> :
-                                                <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                    {
-                                                        this.state.accidentType == '未报案' ?
-                                                            <TouchableOpacity
-                                                                onPress={()=>{
-                                                                 this.setState({accidentType:''});
-                                                }}>
-                                                                <View>
-                                                                    <Icon name="check-circle" color="#aaa" size={30}></Icon>
-                                                                </View>
-                                                            </TouchableOpacity> :
+                                            this.state.accidentType=='未报案'?
+                                                <View style={{width:12,height:12,backgroundColor:'#00f',borderRadius:6
+                                                ,position:'absolute',top:8,left:19}}></View>:null
+                                        }
+                                    </View>
 
-                                                            <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                                <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                            </View>
+                                    <View style={{flex:1,justifyContent:'center',alignItems:'flex-start'}}>
+                                        <Text style={[{fontWeight:'bold'},this.state.accidentType=='未报案'?blackStyle:unblackStyle]}>
+                                            未报案:
+                                        </Text>
+                                    </View>
 
-                                                    }
-                                                </View>
+                                </TouchableOpacity>
+
+                                {/*代索赔*/}
+                                <TouchableOpacity style={[{flexDirection:'row',alignItems:'center',padding:5,paddingHorizontal:12,
+                                    borderRadius:6},this.state.accidentType=='代索赔'?selectedStyle:unSelectedStyle]}
+                                      onPress={()=>{
+                                                      this.setState({accidentType:'代索赔'});
+                                                }}>
+
+                                    <View style={{width:50,height:27,alignItems:'center',justifyContent:'center',position:'relative'}}>
+                                        <Icon name="circle-thin" size={27} color="rgba(156, 39, 176, 0.81)"/>
+                                        {
+                                            this.state.accidentType=='代索赔'?
+                                                <View style={{width:12,height:12,backgroundColor:'#00f',borderRadius:6
+                                                ,position:'absolute',top:8,left:19}}></View>:null
                                         }
 
                                     </View>
-                                </View>
-                                <View style={[styles.row80,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
-                                    <View style={{flex:6,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                        <Text style={{fontSize:15,flex:3,textAlign:'left',}}>代索赔:</Text>
-                                        {
-                                            this.state.accidentType == '' ?
-                                                <TouchableOpacity
-                                                    style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
-                                                    onPress={()=>{
-                                                                 this.setState({accidentType:'代索赔'});
-                                                }}>
-                                                    <View>
-                                                        <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                    </View>
-                                                </TouchableOpacity> :
-                                                <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                    {
-                                                        this.state.accidentType == '代索赔' ?
-                                                            <TouchableOpacity
-                                                                onPress={()=>{
-                                                                 this.setState({accidentType:''});
-                                                }}>
-                                                                <View>
-                                                                    <Icon name="check-circle" color="#aaa" size={30}></Icon>
-                                                                </View>
-                                                            </TouchableOpacity> :
 
-                                                            <View  style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                                                <Icon name="check-circle-o" color="#aaa" size={30}></Icon>
-                                                            </View>
+                                    <View style={{flex:1,justifyContent:'center',alignItems:'flex-start'}}>
+                                        <Text style={[{fontWeight:'bold'},this.state.accidentType=='代索赔'?blackStyle:unblackStyle]}>
+                                            代索赔:
+                                        </Text>
+                                    </View>
 
-                                                    }
-                                                </View>
-                                        }
+                                </TouchableOpacity>
 
+
+                                {/*跳转按钮*/}
+                                <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:30}}>
+                                    <View style={{width:width*2/3,padding:10,paddingHorizontal:12,borderRadius:5,
+                                        backgroundColor:'rgba(14, 153, 193, 0.73)',alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'#fff'}}>选择附近的维修厂</Text>
                                     </View>
                                 </View>
 

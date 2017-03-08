@@ -26,7 +26,7 @@ const Feature = ({title, onPress, description, buttonLabel = "PLAY"}) => (
         <Button title={buttonLabel} onPress={onPress}/>
     </View>);
 
-const requireAudio = require('./serviceAudio.mp3');
+const requireAudio = require('./traffic.mp3');
 
 class MainView extends Component {
 
@@ -36,7 +36,7 @@ class MainView extends Component {
         Sound.setCategory('Ambient', true); // true = mixWithOthers
 
         this.playSoundBundle = () => {
-            const s = new Sound('serviceAudio.mp3', Sound.MAIN_BUNDLE, (e) => {
+            const s = new Sound('traffic.mp3', Sound.MAIN_BUNDLE, (e) => {
                 if (e) {
                     console.log('error', e);
                 } else {
