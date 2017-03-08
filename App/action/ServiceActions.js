@@ -395,7 +395,8 @@ export let updateMapCenter=(payload)=>{
 let getDataDistribution=(payload)=>{
 
     return new Promise((resolve, reject) => {
-        var {center,places}=payload;
+
+        var {center,places,threshold}=payload;
 
         var records=[];
         var recordCount=0;
@@ -416,7 +417,8 @@ let getDataDistribution=(payload)=>{
                     var distance=parseFloat(parseFloat(json.distance).toFixed(2));
 
 
-                    if (distance <= 25000)
+
+                    if (distance <= (threshold!==undefined&&threshold!==null?threshold:25000))
                     {
                         recordCount++;
                         place.distance=distance;
@@ -446,6 +448,46 @@ let getDataDistribution=(payload)=>{
     });
 
 }
+
+//搜索维修厂数据
+export let fetchMaintenance=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'fetchMaintenanceInArea',
+                    info:{}
+                }
+            }).then((json)=>{
+                if (json.re == 1) {
+                    var center=state.service.center;
+                    var unites=json.data;
+
+                    getDataDistribution({places:unites,center:center,threshold:20000}).then(function (json) {
+                        resolve(json);
+                    })
+
+                }
+
+            }).catch((e)=>{
+              reject(e);
+            })
+
+
+        });
+    }
+}
+
 
 
 //获取检测公司数据
@@ -812,6 +854,90 @@ export let doRegionSearch=(payload)=>{
     }
 }
 
+//拉取站点
+export  let fetchRailwayStationInArea=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'fetchRailwayStationInArea',
+                    info:{}
+
+                }
+            }).then((json)=>{
+                resolve(json);
+            }).catch((e)=>{
+                reject(e);
+            })
+
+        });
+    }
+}
+
+//拉取用户地点
+export let fetchDestinationByPersonId=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'selectDestinationByPersonId',
+
+                }
+            }).then((json)=>{
+                resolve(json)
+
+            }).catch((e)=>{
+                reject(e);
+            })
+        });
+    }
+}
+
+
+export let fetchServicePersonByUnitId=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var {placeId}=payload;
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getServicePersonByUnitId',
+                    info:{
+                        unitId:placeId
+                    }
+                }
+            }).then((json)=>{
+                resolve(json);
+            }).catch((e)=>{
+                reject(e);
+            })
+
+        });
+    }
+}
 
 //根据维修厂拉取服务人员
 export let fetchServicePersonByDetectUnitId=(payload)=>{

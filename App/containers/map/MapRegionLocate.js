@@ -24,13 +24,12 @@ import {
 
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
-import _ from 'lodash';
-import Demo from '../../../BaiduMapDemo';
-import Config from '../../../config';
-import MapServiceSelect from './MapServiceSelect';
 import MapAdministrateConfirm from './MapAdministrateConfirm';
+import MapAirportConfirm from './MapAirportConfirm';
+import MapParkCarConfirm from './MapParkCarConfirm';
 import{
     updateMapCenter,doRegionSearch
 } from '../../action/ServiceActions';
@@ -54,9 +53,15 @@ class MapRegionLocate extends Component{
 
 
         const { navigator } = this.props;
+
+        if(navigator) {
+
+
+
+        }
         var {plot}=payload;
 
-        var {service}=this.state;
+        var {service,mode,carInfo}=this.state;
         var params=null;
         switch(service)
         {
@@ -64,19 +69,85 @@ class MapRegionLocate extends Component{
                 params= {
                     contentInfo: {detectUnit: plot}
                 };
+                navigator.push({
+                    name: 'MapAdministrateConfirm',
+                    component: MapAdministrateConfirm,
+                    params: params
+                })
                 break;
+            case 'airport':
+                var serviceName=null;
+                switch(mode)
+                {
+                    case 'pickUp':
+                        serviceName='接机服务';
+                        break;
+                    case 'seeOff':
+                        serviceName='送机服务';
+                        break;
+                }
+                Alert.alert(
+                    '信息',
+                    '您目前选择的是'+serviceName+'，确认之后按下OK',
+                    [
+                        {text: '取消'},
+                        {text: '确认', onPress: () => {
+                        params={
+                            contentInfo:{
+                                mode:mode,
+                                unit:plot,
+                                carInfo:carInfo
+                            }
+                        };
+                            navigator.push({
+                                name: 'MapAirportConfirm',
+                                component: MapAirportConfirm,
+                                params: params
+                            })
+                        }},
+                    ]
+                )
+
+                break;
+            case 'park_car':
+                var serviceName=null;
+                switch(mode)
+                {
+                    case 'pickUp':
+                        serviceName='接站服务';
+                        break;
+                    case 'seeOff':
+                        serviceName='送站服务';
+                        break;
+                }
+                Alert.alert(
+                    '信息',
+                    '您目前选择的是'+serviceName+'，确认之后按下OK',
+                    [
+                        {text: '取消'},
+                        {text: '确认', onPress: () => {
+                            params={
+                                contentInfo:{
+                                    mode:mode,
+                                    unit:plot,
+                                    carInfo:carInfo
+                                }
+                            };
+                            navigator.push({
+                                name: 'MapParkCarConfirm',
+                                component: MapParkCarConfirm,
+                                params: params
+                            })
+                        }},
+                    ]
+                )
+                break;
+
+
         }
 
 
 
-
-        if(navigator) {
-            navigator.push({
-                name: 'MapAdministrateConfirm',
-                component: MapAdministrateConfirm,
-                params: params
-            })
-        }
     }
 
 
@@ -153,7 +224,8 @@ class MapRegionLocate extends Component{
             places:null,
             populations:null,
             isScaffold:false,
-            tag:null
+            tag:null,
+            mode:props.service=='airport'||props.service=='park_car'?'pickUp':null
 
         }
 
@@ -164,6 +236,10 @@ class MapRegionLocate extends Component{
         var props=this.props;
         var state=this.state;
         var title=''
+        var unSelectedModeBackgroundStyle={backgroundColor:'#fff'};
+        var selectedModeBackgroundStyle={backgroundColor:'rgb(17, 193, 243)'};
+        var unSelectedModeFontStyle={color:'#222'};
+        var selectedModeFontStyle={color:'#fff'};
         switch(state.service)
         {
             case 'administrator':
@@ -174,6 +250,7 @@ class MapRegionLocate extends Component{
                 break;
             case 'airport':
                 title='接送机';
+
                 break;
             case 'park_car':
                 title='取送站';
@@ -312,6 +389,69 @@ class MapRegionLocate extends Component{
 
                         </View>
                     </TouchableOpacity>
+
+
+                    {/*mode part*/}
+                    {
+                        state.service=='airport'?
+                            <TouchableOpacity style={[styles.card,{height:40,width:40,padding:0,right:10,
+                            position:'absolute',top:125,zIndex:1000},state.mode=='pickUp'?selectedModeBackgroundStyle:unSelectedModeBackgroundStyle]}
+                                              onPress={()=>{
+                                         this.goBack();
+                                      }}
+                            >
+                                <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                    {
+                                        state.mode=='pickUp'?
+                                            <Icon name="plane" size={12} color="#fff"></Icon>:
+                                            <Icon name="plane" size={12} color="#222"></Icon>
+                                    }
+
+                                    {
+                                        state.mode=='pickUp'?
+                                            <Text style={{color:'#fff',fontWeight:'bold',fontSize:11}}>
+                                                接机
+                                            </Text>:
+                                            <Text style={{color:'#222',fontWeight:'bold',fontSize:11}}>
+                                                接机
+                                            </Text>
+                                    }
+
+                                </View>
+                            </TouchableOpacity>:null
+
+                    }
+                    {
+                        state.service=='airport'?
+                            <TouchableOpacity style={[styles.card,{height:40,width:40,padding:0,right:10,
+                            position:'absolute',top:165,zIndex:1000},state.mode=='seeOff'?selectedModeBackgroundStyle:unSelectedModeBackgroundStyle]}
+                                              onPress={()=>{
+                                         this.goBack();
+                                      }}
+                            >
+                                <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+
+
+                                    {
+                                        state.mode=='seeOff'?
+                                            <Icon name="car" size={12} color="#fff"></Icon>:
+                                            <Icon name="car" size={12} color="#222"></Icon>
+                                    }
+
+                                    {
+                                        state.mode=='seeOff'?
+                                            <Text style={{color:'#fff',fontWeight:'bold',fontSize:11}}>
+                                                送机
+                                            </Text>:
+                                            <Text style={{color:'#222',fontWeight:'bold',fontSize:11}}>
+                                                送机
+                                            </Text>
+                                    }
+
+                                </View>
+                            </TouchableOpacity>:null
+                    }
+
 
 
                     <MapView

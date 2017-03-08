@@ -39,16 +39,17 @@ class MapServiceSelect extends Component{
     }
 
 
-    navigate2MapDistrictResult()
+    navigate2MapDistrictResult(service)
     {
 
         const { navigator } = this.props;
         if(navigator) {
+
             navigator.push({
                 name: 'MapDistrictResult',
                 component: MapDistrictResult,
                 params: {
-                    service:'administrator'
+                    service:service
                 }
             })
         }
@@ -101,7 +102,7 @@ class MapServiceSelect extends Component{
 
                     <TouchableOpacity style={{flex:1,alignItems:'center'}}
                                       onPress={()=>{
-                                          this.navigate2MapDistrictResult();
+                                          this.navigate2MapDistrictResult('administrator');
                                       }}
                     >
 
@@ -127,7 +128,11 @@ class MapServiceSelect extends Component{
                     </View>
 
 
-                    <View style={{flex:1,alignItems:'center'}}>
+                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                      onPress={()=>{
+                                          this.navigate2MapDistrictResult('airport');
+                                      }}
+                    >
 
                         <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(64, 210, 116)',
                             alignItems:'center',justifyContent:'center'}}>
@@ -136,10 +141,14 @@ class MapServiceSelect extends Component{
                         <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
                             接送机
                         </Text>
-                    </View>
+                    </TouchableOpacity>
 
 
-                    <View style={{flex:1,alignItems:'center'}}>
+                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                      onPress={()=>{
+                                           this.navigate2MapDistrictResult('park_car');
+                                      }}
+                    >
 
                         <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(225, 113, 255)',
                             alignItems:'center',justifyContent:'center'}}>
@@ -148,7 +157,7 @@ class MapServiceSelect extends Component{
                         <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
                             接送站
                         </Text>
-                    </View>
+                    </TouchableOpacity>
 
 
 

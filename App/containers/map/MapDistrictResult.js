@@ -26,7 +26,10 @@ var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import _ from 'lodash';
 import Config from '../../../config';
-import {fetchDetectUnitsInArea} from '../../action/ServiceActions';
+import {
+    fetchDetectUnitsInArea,
+    fetchMaintenance
+} from '../../action/ServiceActions';
 import MapRegionLocate from './MapRegionLocate';
 
 
@@ -73,6 +76,31 @@ class MapDistrictResult extends Component{
                     this.setState({records:records,recordCount:recordCount});
 
 
+                })
+                break;
+            case 'airport':
+                this.props.dispatch(fetchMaintenance()).then((json)=>{
+                    var data=json.data;
+                    var {records,recordCount}=data;
+                    this.setState({records:records,recordCount:recordCount});
+                }).catch((e)=>{
+                    Alert.alert(
+                        '错误',
+                        e
+                    );
+                })
+                break;
+
+            case 'park_car':
+                this.props.dispatch(fetchMaintenance()).then((json)=>{
+                    var data=json.data;
+                    var {records,recordCount}=data;
+                    this.setState({records:records,recordCount:recordCount});
+                }).catch((e)=>{
+                    Alert.alert(
+                        '错误',
+                        e
+                    );
                 })
                 break;
         }
@@ -162,7 +190,9 @@ class MapDistrictResult extends Component{
                             <Text style={{color:'#222',fontWeight:'bold'}}>
                                 {
                                     state.service=='administrator'?
-                                        '审车':null
+                                        '审车':state.service=='airport'?
+                                        '接送机':state.service=='park_car'?
+                                        '接送站':null
                                 }
                             </Text>
                         </View>

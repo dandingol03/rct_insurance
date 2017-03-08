@@ -1,3 +1,6 @@
+/**
+ * Created by danding on 17/3/7.
+ */
 
 import React,{Component} from 'react';
 import _ from 'lodash';
@@ -22,14 +25,17 @@ var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
     fetchServicePersonByDetectUnitId,
+    fetchServicePersonByUnitId,
     createNewCustomerPlace,
     generateCarServiceOrderFee,
     generateCarServiceOrder,
     selectTab,
     enableServiceOrdersRefresh,
     disableServiceOrdersRefresh,
+    fetchDestinationByPersonId,
     enableServiceOrdersClear,
-    updateCandidateState
+    updateCandidateState,
+    fetchRailwayStationInArea
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -57,7 +63,7 @@ const wholeHeight=Dimensions.get('window').height-80;
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
 
-class MapAdministrateConfirm extends Component{
+class MapParkCarConfirm extends Component{
 
 
     goBack(){
@@ -382,32 +388,67 @@ class MapAdministrateConfirm extends Component{
         }
     }
 
+    fetchServicePerson(payload)
+    {
+        this.props.dispatch(fetchServicePersonByUnitId(payload)).then((json)=>{
+
+            if(json.re==1)
+            {
+                this.setState({carManage:Object.assign(this.state.carManage,{servicePerson:json.data})});
+            }else{
+
+                Alert.alert(
+                    '错误',
+                    '该维修厂没有指定的服务人员'
+                );
+            }
+
+        }).catch((e)=>{
+            Alert.alert(
+                '错误',
+                e
+            );
+        })
+    }
 
     constructor(props) {
         super(props);
 
         var contentInfo=props.contentInfo;
-        var detectUnit=null;
-        var detectUnites=null;
+        var unit=null;
+        var units=null;
         var carInfo=null;
+        var mode=null;
+        var carManage={};
         if (contentInfo !== undefined && contentInfo !== null) {
 
-            if(contentInfo.detectUnit!==undefined&&contentInfo.detectUnit!==null)
-                detectUnit = contentInfo.detectUnit;
-            if(contentInfo.detectUnites!==undefined&&contentInfo.detectUnites!==null)
-                detectUnites=contentInfo.detectUnites;
+            if(contentInfo.unit!==undefined&&contentInfo.unit!==null)
+                unit = contentInfo.unit;
+            if(contentInfo.units!==undefined&&contentInfo.units!==null)
+                units=contentInfo.units;
             if(contentInfo.carInfo!==undefined&&contentInfo.carInfo!==null)
                 carInfo=contentInfo.carInfo;
             else
                 carInfo={};
+            if(contentInfo.mode!==undefined&&contentInfo.mode!==null)
+                mode=contentInfo.mode;
+            if(mode=='pickUp')
+            {
+                carManage.subServiceTypes=1;
+            }else{
+                carManage.subServiceTypes=2;
+            }
         }
+
+
 
 
         this.state={
             contentInfo:contentInfo,
-            detectUnit:detectUnit,
-            detectUnites:detectUnites,
-            carManage:{},
+            mode:mode,
+            unit:unit,
+            units:units,
+            carManage:carManage,
             actionSheetCallbacks:[],
             doingBusiness:false,
             carInfo:carInfo
@@ -435,9 +476,9 @@ class MapAdministrateConfirm extends Component{
             panelScaffoldedStyle={height:0};
         }
 
-        if(state.detectUnit&&(state.carManage.servicePerson==undefined||state.carManage.servicePerson==null))
+        if(state.unit&&(state.carManage.servicePerson==undefined||state.carManage.servicePerson==null))
         {
-            this.fetchServicePersonByDetectUnitId();
+            this.fetchServicePerson({placeId:state.unit.placeId});
         }else{
 
         }
@@ -464,7 +505,7 @@ class MapAdministrateConfirm extends Component{
                             </TouchableOpacity>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:12}}>
-                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>选择检测公司</Text>
+                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>生成接站订单</Text>
                             </View>
 
                             <View style={{width:80,alignItems:'center',marginRight:20,
@@ -503,7 +544,7 @@ class MapAdministrateConfirm extends Component{
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}>
 
                                 <DatePicker
-                                    style={{width:100,marginLeft:10}}
+                                    style={{width:100,marginLeft:10,fontSize:12}}
                                     customStyles={{
                                         placeholderText:{color:'#fff',fontSize:12},
                                         dateInput:{height:20},
@@ -531,7 +572,7 @@ class MapAdministrateConfirm extends Component{
                     </View>
 
 
-                    {/*检测公司*/}
+                    {/*维修厂*/}
                     <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
                         <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:5,paddingHorizontal:4}}>
@@ -540,14 +581,14 @@ class MapAdministrateConfirm extends Component{
                             <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center',paddingVertical:5}}>
                                 <Text style={{color:'#bf530c',fontSize:14}} >
-                                    检测公司
+                                    维修厂
                                 </Text>
                             </View>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
 
                                 <Text style={{fontSize:14,color:'#222'}}>
-                                    {state.detectUnit.name}
+                                    {state.unit.name}
                                 </Text>
 
                             </View>
@@ -584,7 +625,8 @@ class MapAdministrateConfirm extends Component{
                         </View>
                     </View>
 
-                    {/*选择车*/}
+
+                    {/*选择接站出发地*/}
                     <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
                         <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:3,paddingHorizontal:4}}>
@@ -592,136 +634,102 @@ class MapAdministrateConfirm extends Component{
 
                             <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center'}}>
-                                <Icon name="car" size={22} color="#bf530c"></Icon>
+                                <Icon name="home" size={20} color="#bf530c"></Icon>
                             </View>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                 {
-                                    state.carInfo?
+                                    state.servicePlace&&state.servicePlace.name?
                                         <Text style={{fontSize:13}}>
-                                            {state.carInfo.carNum}
+                                            {state.servicePlace.name}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
-                                            车牌号
+                                            接站出发地
                                         </Text>
                                 }
                             </View>
 
-                            <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
+                            <TouchableOpacity style={{width:120,justifyContent:'center',alignItems:'center',padding:7,
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                               onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
-                                                if(json.data)
+                                                   props.dispatch(fetchRailwayStationInArea()).then((json)=>{
+                                                var servicePlaces=[];
+                                                if(json.data&&json.data.length>0)
                                                 {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
+                                                    json.data.map((servicePlace)=>{
+                                                       servicePlaces.push(servicePlace.name);
                                                     });
                                                 }
-                                                this.setState({cars:cars});
+                                                this.setState({servicePlaces:servicePlaces});
                                                 setTimeout(()=>{
                                                     this.ActionSheet.show();
                                                 },400);
 
                                           });
-                                      }}>
-                                <Text style={{color:'#fff',fontSize:12}}>
-                                    选择车辆
+                                              }}
+                            >
+
+                                <Text style={{color:'#fff',fontSize:13}}>
+                                    选择接站出发地
                                 </Text>
                             </TouchableOpacity>
 
                         </View>
                     </View>
 
-                    {/*取送车*/}
+                    {/*选择接站目的地*/}
+                    <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
+                        <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
+                            padding:3,paddingHorizontal:4}}>
 
-                    <View style={[styles.row,{width:width,padding:7,paddingHorizontal:12,alignItems:'center'}]}>
 
-                        <View style={{paddingRight:12,alignItems:'center',width:80}}>
-                            <Text style={{color:'#bf530c'}}>取送车</Text>
+                            <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
+                                    justifyContent:'center',alignItems:'center'}}>
+                                <Icon name="home" size={20} color="#bf530c"></Icon>
+                            </View>
+
+                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                {
+                                    state.carManage&&state.carManage.destination&&state.carManage.destination.title?
+                                        <Text style={{fontSize:13}}>
+                                            {state.carManage.destination.title}
+                                        </Text>:
+                                        <Text style={{color:'#aaa',fontSize:13}}>
+                                            地点
+                                        </Text>
+                                }
+                            </View>
+
+                            <TouchableOpacity style={{width:120,justifyContent:'center',alignItems:'center',padding:7,
+                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
+                                              onPress={()=>{
+                                                   props.dispatch(fetchDestinationByPersonId()).then((json)=>{
+                                                var destinations=[];
+                                                if(json.data&&json.data.length>0)
+                                                {
+                                                    json.data.map((destination)=>{
+                                                       destinations.push(destination.title);
+                                                    });
+                                                }
+                                                this.setState({destinations:destinations});
+                                                setTimeout(()=>{
+                                                    this.DestinationSheet.show();
+                                                },400);
+
+                                          });
+                                              }}
+                            >
+
+                                <Text style={{color:'#fff',fontSize:13}}>
+                                    选择接站目的地
+                                </Text>
+                            </TouchableOpacity>
+
                         </View>
-
-
-                        <View style={{width:120,}}>
-
-                                <Switch
-                                    width={42}
-                                    height={25}
-                                    value={this.state.carManage.isAgent}
-                                    backgroundActive="#f79916"
-                                    backgroundInactive="#666"
-                                    onSyncPress={value =>{
-                                   this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
-                                }}/>
-
-                        </View>
-
-                        {/*<Switch activeButtonColor="#fff"   inactiveButtonPressedColor="#666" activeBackgroundColor="#bf530c"*/}
-                                {/*onChangeState={(toggle)=>{*/}
-
-                                  {/*console.log(toggle);*/}
-                                {/*this.setState({carManage:Object.assign(this.state.carManage,{isAgent:toggle})})*/}
-                        {/*}}*/}
-
-                                {/*onPress={(status)=>{*/}
-                                   {/*alert(status);*/}
-                                {/*}}*/}
-                        {/*/>*/}
                     </View>
 
 
 
-                    {/*选择取车地点*/}
-                    {
-                        this.state.carManage.isAgent==true?
-                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
-                            padding:3,paddingHorizontal:4}}>
-
-
-                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
-                                    justifyContent:'center',alignItems:'center'}}>
-                                        <Icon name="home" size={24} color="#bf530c"></Icon>
-                                    </View>
-
-                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                        {
-                                            state.carManage.destination?
-                                                <Text style={{fontSize:13}}>
-                                                    {state.carManage.destination.title}
-                                                </Text>:
-                                                <Text style={{color:'#aaa',fontSize:13}}>
-                                                    地点
-                                                </Text>
-                                        }
-                                    </View>
-
-                                    <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
-                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
-                                                      onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
-                                                if(json.data)
-                                                {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
-                                                    });
-                                                }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
-
-                                          });
-                                      }}>
-                                        <Text style={{color:'#fff',fontSize:12}}>
-                                            选择取车地点
-                                        </Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                            </View>:null
-                    }
 
 
 
@@ -733,7 +741,7 @@ class MapAdministrateConfirm extends Component{
                                           this.preCheck();
                                       }}
                         >
-                            <Text style={{color:'#fff'}}>提交审车订单</Text>
+                            <Text style={{color:'#fff'}}>提交接站订单</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -742,11 +750,21 @@ class MapAdministrateConfirm extends Component{
 
                     <ActionSheet
                         ref={(o) => this.ActionSheet = o}
-                        title="选择车辆"
-                        options={['取消'].concat(this.state.cars)}
+                        title={state.mode=='pickUp'?'请选择接站地点':'请选择送站地点'}
+                        options={['取消'].concat(this.state.servicePlaces)}
                         cancelButtonIndex={CANCEL_INDEX}
                         onPress={this._handlePress.bind(this)}
                     />
+
+                    <ActionSheet
+                        ref={(o) => this.DestinationSheet = o}
+                        title='选择目的地'
+                        options={['取消'].concat(this.state.destinations)}
+                        cancelButtonIndex={CANCEL_INDEX}
+                        onPress={this._handlePress.bind(this)}
+                    />
+
+
 
                 </View>
 
@@ -823,5 +841,5 @@ var styles = StyleSheet.create({
 
 
 
-module.exports = connect()(MapAdministrateConfirm);
+module.exports = connect()(MapParkCarConfirm);
 
