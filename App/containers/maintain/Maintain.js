@@ -349,14 +349,15 @@ class Maintain extends Component{
                 {/*body*/}
                 <Image resizeMode="stretch" source={require('../../img/bkg_old@2x.png')} style={{width:width,height:height}}>
 
-                    <View style={[{padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:60,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
+                    backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                         <TouchableOpacity style={{flex:1,color:'#fff'}} onPress={()=>{
                         this.goBack();
                              }}>
-                            <Icon name="angle-left" size={30} color="#fff"/>
+                            <Icon name="angle-left" size={40} color="#fff"/>
 
                         </TouchableOpacity>
-                        <Text style={{fontSize:15,flex:5,textAlign:'center',color:'#fff'}}>
+                        <Text style={{fontSize:17,flex:5,textAlign:'center',color:'#fff'}}>
                             维修服务
                         </Text>
                         <View style={{flex:1,padding:0}}></View>
@@ -366,12 +367,12 @@ class Maintain extends Component{
                         <ScrollableTabView style={{flex:1}}
                                            renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
-                            <View tabLabel='日常保养' style={{flex:1,padding:8}}>
+                            <View tabLabel='日常保养' style={{flex:1,padding:5}}>
 
                                 <ScrollView>
                                     <View style={{flex:8}}>
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center'}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}}
+                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}}
                                                               onPress={()=>{
                                              dailyChecked = this.state.dailyChecked;
                                              dailyChecked[0] = !this.state.dailyChecked[0];
@@ -391,7 +392,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[1] = !this.state.dailyChecked[1];
                                          if(dailyChecked[1]==true){
@@ -409,7 +410,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[2] = !this.state.dailyChecked[2];
                                          if(dailyChecked[2]==true){
@@ -428,8 +429,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
                                         </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center'}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[3] = !this.state.dailyChecked[3];
                                          if(dailyChecked[3]==true){
@@ -447,7 +448,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[4] = !this.state.dailyChecked[4];
                                          if(dailyChecked[4]==true){
@@ -465,7 +466,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[5] = !this.state.dailyChecked[5];
                                          if(dailyChecked[5]==true){
@@ -484,8 +485,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
                                         </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center'}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[6] = !this.state.dailyChecked[6];
                                          if(dailyChecked[6]==true){
@@ -503,7 +504,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[7] = !this.state.dailyChecked[7];
                                          if(dailyChecked[7]==true){
@@ -521,7 +522,7 @@ class Maintain extends Component{
                                                     </View>
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[8] = !this.state.dailyChecked[8];
                                          if(dailyChecked[8]==true){
@@ -540,8 +541,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
                                         </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:12}} onPress={()=>{
+                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5}}>
+                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                          dailyChecked = this.state.dailyChecked;
                                          dailyChecked[9] = !this.state.dailyChecked[9];
                                          if(dailyChecked[9]==true){
@@ -579,7 +580,7 @@ class Maintain extends Component{
                                                 underlineColorAndroid="transparent"
                                             />
                                             <View style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                                                          borderRadius:4,marginTop:10,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                                                 <TouchableOpacity onPress={()=>{
                                                     this.getMaintainPlan(miles);
 
@@ -590,6 +591,16 @@ class Maintain extends Component{
                                         </View>
 
                                     </View>
+
+                                    <TouchableOpacity
+                                        onPress={()=>{
+
+                                            }}>
+                                        <View style={{flex:2,height:35,width:width*0.6,marginLeft:width*0.2,flexDirection:'row',
+                                        justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'#50a0ed',borderRadius:6}}>
+                                            <Text style={{color:'#fff'}}>选择维修厂</Text>
+                                        </View>
+                                    </TouchableOpacity>
 
 
 
