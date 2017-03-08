@@ -592,15 +592,12 @@ class Maintain extends Component{
 
                                     </View>
 
-                                    <TouchableOpacity
-                                        onPress={()=>{
 
-                                            }}>
-                                        <View style={{flex:2,height:35,width:width*0.6,marginLeft:width*0.2,flexDirection:'row',
-                                        justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'#50a0ed',borderRadius:6}}>
-                                            <Text style={{color:'#fff'}}>选择维修厂</Text>
-                                        </View>
-                                    </TouchableOpacity>
+
+                                    <View style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
+                                       justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}>
+                                        <Text style={{color:'#fff'}}>选择附近的维修厂</Text>
+                                    </View>
 
 
 
