@@ -270,6 +270,7 @@ var  Login =React.createClass({
         );
 
     },
+
     componentDidMount() {
         MessageBarManager.registerMessageBar(this.refs.alert);
 
