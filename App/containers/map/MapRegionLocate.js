@@ -473,7 +473,7 @@ class MapRegionLocate extends Component{
                         state.isScaffold==false?
                             <View style={[styles.panel,{width:width},panelScaffoldedStyle]}>
                                 {/*result header*/}
-                                <View style={{width:width,height:31,backgroundColor:'rgba(120,120,120,0.6)',flexDirection:'row'}}>
+                                <View style={{width:width,height:31,backgroundColor:'rgba(100,100,100,0.9)',flexDirection:'row'}}>
 
                                     <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center',marginLeft:50}}
                                                       onPress={()=>{
@@ -512,7 +512,7 @@ class MapRegionLocate extends Component{
                     {
                         state.isScaffold==true?
                             <TouchableOpacity style={{width:width,height:30,alignItems:'center',justifyContent:'center',
-                                backgroundColor:'rgba(120,120,120,0.6)'}}
+                                backgroundColor:'rgba(100,100,100,0.9)'}}
                                               onPress={()=>{
                                                   this.scaffoldToggle();
                                               }}
