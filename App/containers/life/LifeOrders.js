@@ -24,7 +24,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans} from '../../action/actionCreator';
+import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans} from '../../action/LifeActions';
 import DateFilter from '../../filter/DateFilter';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import ApplyedLifeOrderDetails from './ApplyedLifeOrderDetails'

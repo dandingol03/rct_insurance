@@ -149,10 +149,8 @@ class BaiduHome extends Component{
                     }}
                     >
                     </MapView>
+
                 </View>
-
-
-
 
             </View>
         )

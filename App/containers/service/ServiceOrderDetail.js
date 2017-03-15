@@ -558,29 +558,28 @@ class ServiceOrderDetail extends Component{
                 {
                     state.detail!==undefined&&state.detail!==null?
                         <View>
-                            {
-                                props.order.serviceType!='23'&&props.order.serviceType!='24'&&props.order.serviceType!='22'?
-                                    <View style={{height:45,width:width-30,marginLeft:15,marginTop:20}}>
-                                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
-                                            <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
-                                                <Text style={{color:'#222',fontSize:14}}>
-                                                    车牌号:
-                                                </Text>
-                                            </View>
+                            {/*{*/}
+                                {/*props.order.serviceType!='23'&&props.order.serviceType!='24'&&props.order.serviceType!='22'?*/}
+                                    {/*<View style={{height:45,width:width-30,marginLeft:15,marginTop:20}}>*/}
+                                        {/*<View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>*/}
+                                            {/*<View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>*/}
+                                                {/*<Text style={{color:'#222',fontSize:14}}>*/}
+                                                    {/*车牌号:*/}
+                                                {/*</Text>*/}
+                                            {/*</View>*/}
 
-                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
-                                                {
-                                                    props.order.carInfo!==null?
-                                                        <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
-                                                            {props.order.carInfo.carNum}
-                                                        </Text>:null
-                                                }
+                                            {/*<View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>*/}
+                                                {/*{*/}
+                                                    {/*props.order.carInfo!==null?*/}
+                                                        {/*<Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>*/}
+                                                            {/*{props.order.carInfo.carNum}*/}
+                                                        {/*</Text>:null*/}
+                                                {/*}*/}
 
-                                            </View>
-                                        </View>
-                                    </View>:null
-
-                            }
+                                            {/*</View>*/}
+                                        {/*</View>*/}
+                                    {/*</View>:null*/}
+                            {/*}*/}
 
                             <View style={{height:45,width:width-30,marginLeft:15}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
@@ -597,6 +596,25 @@ class ServiceOrderDetail extends Component{
                                     </View>
                                 </View>
                             </View>
+
+                            {
+                                state.detail.servicePlace!==undefined&&state.detail.servicePlace!==null&&state.detail.servicePlace!=''?
+                                    <View style={{height:45,width:width-30,marginLeft:15}}>
+                                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
+                                            <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
+                                                <Text style={{color:'#222',fontSize:14}}>
+                                                    地点:
+                                                </Text>
+                                            </View>
+                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
+                                                <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
+                                                    {state.detail.servicePlace.name}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>:null
+                            }
+
 
                             <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
@@ -723,6 +741,30 @@ class ServiceOrderDetail extends Component{
 
 
                 }
+
+
+                {/*未指定服务人员的已下单订单没有候选人时取消*/}
+                {
+                    props.order.orderState==1&&(state.detail.candidates==undefined||state.detail.candidates!==null)?
+
+                        <View style={[styles.row,{width:width,height:50,paddingLeft:30,paddingRight:30,alignItems:'center',position:'absolute',bottom:10,justifyContent:'center'}]}>
+
+                            <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
+                                        alignItems:'center'}}
+                                              onPress={()=>{
+                                           this.cancleOrder(-3);
+                                      }}
+                            >
+                                <View>
+                                    <Text style={{color:'#fff'}}>取消订单</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>:null
+
+
+                }
+
 
 
                 {/*服务中订单的取消和完成*/}

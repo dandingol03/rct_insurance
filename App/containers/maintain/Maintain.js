@@ -15,7 +15,10 @@ import  {
     TextInput,
     ScrollView,
     Alert,
-    Modal
+    Modal,
+    Platform,
+    PermissionsAndroid,
+
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -29,10 +32,11 @@ import Audio from './Audio.js';
 import MaintainPlan from './MaintainPlan';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import Camera from 'react-native-camera';
 
+import Camera from 'react-native-camera';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-var Sound = require('react-native-sound');
+import Sound from 'react-native-sound';
+
 var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
     if (error) {
         console.log('failed to load the sound', error);
@@ -137,8 +141,9 @@ class Maintain extends Component{
                     var json=res;
                     if(json.re==1){
                         var routineName=json.data;
+                        this.setState({routineName:routineName});
                         this.navigate2MaintainPlan();
-                        //this.setState({routineName:routineName,modalVisible:true});
+
                     }
 
                 }, (err) =>{
@@ -153,62 +158,6 @@ class Maintain extends Component{
         this[actionSheet].show();
     }
 
-    _onPress() {
-        // Disable button while recording and playing back
-        this.setState({disabled: true});
-
-        // Start recording
-        let rec = new Recorder("filename.mp4").record();
-
-        // Stop recording after approximately 3 seconds
-        setTimeout(() => {
-            rec.stop((err) => {
-                // NOTE: In a real situation, handle possible errors here
-
-                // Play the file after recording has stopped
-                new Player("filename.mp4")
-                    .play()
-                    .on('ended', () => {
-                        // Enable button again after playback finishes
-                        this.setState({disabled: false});
-                    });
-            });
-        }, 3000);
-    }
-
-
-    record() {
-
-        AudioRecorder.prepareRecordingAtPath(this.state.audioPath, {
-            SampleRate: 22050,
-            Channels: 1,
-            AudioQuality: "Low",
-            AudioEncoding: "aac"
-        });
-
-        var whoosh = new Sound(this.state.audioPath, Sound.MAIN_BUNDLE, (error) => {
-            if (error) {
-                console.log('failed to load the sound', error);
-                return;
-            }
-            // loaded successfully
-            console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-        });
-
-    }
-
-    _onPress2() {
-
-        // Play the sound with an onEnd callback,
-        whoosh.play((success) => {
-            if (success) {
-                console.log('successfully finished playing');
-            } else {
-                console.log('playback failed due to audio decoding errors');
-            }
-        });
-
-    }
 
     takePicture = () => {
         if (this.camera) {
@@ -297,6 +246,135 @@ class Maintain extends Component{
         }
     }
 
+    //音频录制
+    prepareRecordingPath(audioPath){
+        AudioRecorder.prepareRecordingAtPath(audioPath, {
+            SampleRate: 22050,
+            Channels: 1,
+            AudioQuality: "Low",
+            AudioEncoding: "aac",
+            AudioEncodingBitRate: 32000
+        });
+    }
+
+    componentDidMount() {
+        this._checkPermission().then((hasPermission) => {
+            this.setState({ hasPermission });
+
+            if (!hasPermission) return;
+
+            this.prepareRecordingPath(this.state.audioPath);
+
+            AudioRecorder.onProgress = (data) => {
+                this.setState({currentTime: Math.floor(data.currentTime)});
+            };
+
+            AudioRecorder.onFinished = (data) => {
+                // Android callback comes in the form of a promise instead.
+                if (Platform.OS === 'ios') {
+                    this._finishRecording(data.status === "OK", data.audioFileURL);
+                }
+            };
+        });
+    }
+
+    _checkPermission() {
+
+        return Promise.resolve(true);
+
+        const rationale = {
+            'title': 'Microphone Permission',
+            'message': 'AudioExample needs access to your microphone so you can record audio.'
+        };
+
+        return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, rationale)
+            .then((result) => {
+                console.log('Permission result:', result);
+                return (result === true || result === PermissionsAndroid.RESULTS.GRANTED);
+            });
+    }
+
+    async _pause() {
+        if (!this.state.recording) {
+            console.warn('Can\'t pause, not recording!');
+            return;
+        }
+
+        this.setState({stoppedRecording: true, recording: false});
+
+        try {
+            const filePath = await AudioRecorder.pauseRecording();
+
+            // Pause is currently equivalent to stop on Android.
+            if (Platform.OS === 'android') {
+                this._finishRecording(true, filePath);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async _stop() {
+        if (!this.state.recording) {
+            console.warn('Can\'t stop, not recording!');
+            return;
+        }
+
+        this.setState({stoppedRecording: true, recording: false});
+
+        try {
+            const filePath = await AudioRecorder.stopRecording();
+
+            if (Platform.OS === 'android') {
+                this._finishRecording(true, filePath);
+            }
+            return filePath;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    recordAudio(){
+        if(this.state.recording==true){
+            this._stop();
+        }
+        else{
+            this._record();
+        }
+
+    }
+
+    async _record() {
+        if (this.state.recording) {
+            alert('Already recording!');
+            return;
+        }
+
+        if (!this.state.hasPermission) {
+            alert('Can\'t record, no permission granted!');
+            return;
+        }
+
+        if(this.state.stoppedRecording){
+            this.prepareRecordingPath(this.state.audioPath);
+        }
+
+        this.setState({recording: true});
+
+        try {
+            const filePath = await AudioRecorder.startRecording();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    _finishRecording(didSucceed, filePath) {
+        this.setState({ finished: didSucceed });
+        console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
+    }
+
+
 
     constructor(props)
     {
@@ -313,7 +391,14 @@ class Maintain extends Component{
             routineName:'',
             audio:null,
             video:null,
+
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
+            currentTime: 0.0,
+            recording: false,
+            stoppedRecording: false,
+            finished: false,
+            hasPermission: true,
+
             videoPath:'',
             cameraModalVisible:false,
             camera: {
@@ -563,29 +648,28 @@ class Maintain extends Component{
                                     </View>
 
                                     <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa'}}>
-
                                         <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                             <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
                                             <TextInput
                                                 style={{flex:2,fontSize:12,color:'#343434'}}
                                                 onChangeText={(miles) =>
-                                                    {
-                                                      this.state.miles=miles;
-                                                      this.setState({miles:miles});
-                                                    }}
+                                            {
+                                              this.state.miles=miles;
+                                              this.setState({miles:miles});
+                                            }}
                                                 value={
-                                                        miles+''
-                                                    }
+                                                miles+''
+                                            }
                                                 placeholder='请输入里程...'
                                                 placeholderTextColor="#aaa"
                                                 underlineColorAndroid="transparent"
                                             />
                                             <View style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                                                          borderRadius:4,marginTop:10,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                                                 <TouchableOpacity onPress={()=>{
-                                                        this.getMaintainPlan(miles);
+                                                    this.getMaintainPlan(miles);
 
-                                                        }}>
+                                            }}>
                                                     <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -642,7 +726,9 @@ class Maintain extends Component{
                                                     <Image resizeMode="cover" source={require('../../img/3@2x.png')} style={{flex:1,padding:2}}></Image>
                                                     <Image resizeMode="cover" source={require('../../img/8@2x.png')} style={{flex:1,padding:2}}></Image>
                                                 </View>
-                                                <Text style={{color:'#fff',flex:1,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'center',textAlign:'center'}}>00:00</Text>
+                                                <Text style={{color:'#fff',flex:1,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                                                    {this.state.currentTime}s
+                                                </Text>
                                             </View>
                                             <View style={{flex:1,paddingRight:4}}>
                                                 <TouchableOpacity onPress={()=>{
@@ -655,7 +741,7 @@ class Maintain extends Component{
 
                                                 <TouchableOpacity  onPress={
                                                 ()=>{
-                                                   console.log('...');
+                                                   console.log('播放音频');
                                                 }
                                             }>
                                                     <View>
@@ -680,33 +766,41 @@ class Maintain extends Component{
                                                 backgroundColor:'#444',borderRadius:8,height:110,}}>
                                             <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
-                                                {/*录制视频*/}
-                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
-                                                                  onPress={() => {
+                                                {
+                                                    this.state.videoPath==''?
+                                                        <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                          onPress={() => {
                                                                   this.setState({cameraModalVisible:true})
                                                               }}>
 
-                                                    <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
+                                                            <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
 
-                                                </TouchableOpacity>
+                                                        </TouchableOpacity>:
 
-
-                                                {/*播放视频*/}
-                                                {/*<TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}} onPress={()=>{*/}
-                                                     {/*this.navigate2VideoPlayer(this.state.videoPath);*/}
-                                                  {/*}}>*/}
-                                                    {/*<View>*/}
-                                                        {/*<Icon name="play-circle" color="#fff" size={35}></Icon>*/}
-                                                    {/*</View>*/}
-                                                {/*</TouchableOpacity>*/}
+                                                        <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                          onPress={()=>{
+                                                                this.navigate2VideoPlayer(this.state.videoPath);
+                                                              }}>
+                                                            <View>
+                                                                <Icon name="play-circle" color="#fff" size={35}></Icon>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                }
 
                                             </View>
                                         </View>
 
 
-                                        <View style={{alignItems:'center',marginTop:5}}>
-                                            <Text style={{color:'#222'}}>视频录制</Text>
-                                        </View>
+                                        {
+                                            this.state.videoPath==''?
+                                                <View style={{alignItems:'center',marginTop:5}}>
+                                                    <Text style={{color:'#222'}}>视频录制</Text>
+                                                </View>:
+                                                <View style={{alignItems:'center',marginTop:5}}>
+                                                    <Text style={{color:'#222'}}>视频播放</Text>
+                                                </View>
+                                        }
+
 
                                     </View>
 
@@ -719,7 +813,6 @@ class Maintain extends Component{
                                         backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center'}}>
                                         <Text style={{color:'#fff',fontWeight:'bold'}}>选择附近的维修厂</Text>
                                     </View>
-
                                 </View>
 
 

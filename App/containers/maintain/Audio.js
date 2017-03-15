@@ -44,7 +44,6 @@ class Audio extends Component {
 
     }
 
-
     prepareRecordingPath(audioPath){
         AudioRecorder.prepareRecordingAtPath(audioPath, {
             SampleRate: 22050,

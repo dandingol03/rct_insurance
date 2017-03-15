@@ -26,7 +26,7 @@ const Feature = ({title, onPress, description, buttonLabel = "PLAY"}) => (
         <Button title={buttonLabel} onPress={onPress}/>
     </View>);
 
-const requireAudio = require('./traffic.mp3');
+const requireAudio = require('./serviceAudio.mp3');
 
 class MainView extends Component {
 
