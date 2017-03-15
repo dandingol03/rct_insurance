@@ -25,7 +25,7 @@ import Proxy from '../../proxy/Proxy';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionSheet from 'react-native-actionsheet';
-import {setLifePlanDetail,updateLifeModified} from '../../action/actionCreator';
+import {setLifePlanDetail,updateLifeModified} from '../../action/LifeActions';
 
 
 class LifePlanDetails extends Component{

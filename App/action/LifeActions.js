@@ -1,9 +1,64 @@
-/**
- * Created by dingyiming on 2017/2/28.
- */
-import * as types from './types';
+
 import Config from '../../config';
 var Proxy = require('../proxy/Proxy');
+
+import {
+    SET_LIFE_HISTORY_ORDERS,
+    SET_LIFE_PRICED_ORDERS,
+    SET_LIFE_APPLYED_ORDERS,
+    ENABLE_LIFEORDERS_ONFRESH,
+    DISABLE_LIFEORDERS_ONFRESH,
+    SET_LIFE_PLANS,
+    SET_LIFE_PLAN_DETAIL
+    } from '../constants/LifeConstants';
+
+export let setLifeOrdersInHistory=(orders)=>{
+    return {
+        type:SET_LIFE_HISTORY_ORDERS,
+        orders:orders
+    }
+}
+
+export let setLifeOrdersInPriced=(orders)=>{
+    return {
+        type:SET_LIFE_PRICED_ORDERS,
+        orders:orders
+    }
+}
+
+export let setLifeOrdersInApplyed=(orders)=>{
+    return {
+        type:SET_LIFE_APPLYED_ORDERS,
+        orders:orders
+    }
+}
+
+export let enableLifeOrdersOnFresh=()=>{
+    return {
+        type:ENABLE_LIFEORDERS_ONFRESH,
+    }
+}
+
+export let disableLifeOrdersOnFresh=()=>{
+    return {
+        type:DISABLE_LIFEORDERS_ONFRESH,
+    }
+}
+
+export let setLifePlans=(plans)=>{
+    return {
+        type:SET_LIFE_PLANS,
+        plans:plans
+    }
+}
+
+export let setLifePlanDetail=(plan)=>{
+    return {
+        type:SET_LIFE_PLAN_DETAIL,
+        planDetail:plan
+    }
+}
+
 
 export let fetchLifeOrders=function (accessToken,cb) {
     var orders = null;
@@ -76,5 +131,4 @@ export let updateLifeModified=function(plans,modifiedPlan) {
         })
         dispatch(setLifePlans(plans));
     }
-
 }

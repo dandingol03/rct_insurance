@@ -25,7 +25,7 @@ import Proxy from '../../proxy/Proxy';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LifePlanDetail from './LifePlanDetail';
 import LifeOrderPay from './LifeOrderPay'
-import {setLifePlans,setLifePlanDetail} from '../../action/actionCreator';
+import {setLifePlans,setLifePlanDetail} from '../../action/LifeActions';
 
 
 class LifePlan extends Component{

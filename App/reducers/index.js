@@ -6,7 +6,7 @@ import { combineReducers } from 'redux';
 import user from './user';
 import timer from './timer';
 import life from './life';
-import Car from './CarReducer';
+import car from './CarReducer';
 import serviceReducer from './ServiceReducer';
 
 
@@ -15,7 +15,7 @@ export default rootReducer = combineReducers({
     user,
     timer,
     life,
-    Car,
+    car,
     service:serviceReducer,
 
 })

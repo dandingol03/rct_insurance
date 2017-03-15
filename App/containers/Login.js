@@ -287,9 +287,6 @@ var  Login =React.createClass({
         },1000)
 
 
-
-
-
         // var  makePromise=(name, delay) =>{
         //     return new Promise((resolve) => {
         //         console.log(`${name} started`);

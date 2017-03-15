@@ -116,7 +116,10 @@ class MapServiceSelect extends Component{
                     </TouchableOpacity>
 
 
-                    <View style={{flex:1,alignItems:'center'}}>
+                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                      onPress={()=>{
+                                          this.navigate2MapDistrictResult('paper_validate');
+                                      }}>
 
                         <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(50, 139, 255)',
                             alignItems:'center',justifyContent:'center'}}>
@@ -125,7 +128,7 @@ class MapServiceSelect extends Component{
                         <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
                             审证
                         </Text>
-                    </View>
+                    </TouchableOpacity>
 
 
                     <TouchableOpacity style={{flex:1,alignItems:'center'}}

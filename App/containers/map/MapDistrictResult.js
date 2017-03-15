@@ -14,11 +14,6 @@ import  {
     TouchableOpacity
 } from 'react-native';
 
-import {
-    MapView,
-    MapTypes,
-    Geolocation
-} from 'react-native-baidu-map';
 
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -28,7 +23,8 @@ import _ from 'lodash';
 import Config from '../../../config';
 import {
     fetchDetectUnitsInArea,
-    fetchMaintenance
+    fetchMaintenance,
+    fetchCarManageStation
 } from '../../action/ServiceActions';
 import MapRegionLocate from './MapRegionLocate';
 
@@ -71,6 +67,15 @@ class MapDistrictResult extends Component{
         {
             case 'administrator':
                 this.props.dispatch(fetchDetectUnitsInArea({})).then((json) =>{
+                    var data=json.data;
+                    var {records,recordCount}=data;
+                    this.setState({records:records,recordCount:recordCount});
+
+
+                })
+                break;
+            case 'paper_validate':
+                this.props.dispatch(fetchCarManageStation({})).then((json) =>{
                     var data=json.data;
                     var {records,recordCount}=data;
                     this.setState({records:records,recordCount:recordCount});
@@ -191,6 +196,7 @@ class MapDistrictResult extends Component{
                                 {
                                     state.service=='administrator'?
                                         '审车':state.service=='airport'?
+                                        '审证':state.service=='paper_validate'?
                                         '接送机':state.service=='park_car'?
                                         '接送站':null
                                 }

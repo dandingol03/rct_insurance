@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import Config from '../../config';
 var Proxy = require('../proxy/Proxy');
+
 import {
     UPDATE_SERVICE_ORDERS,
     UPDATE_MAP_CENTER,
@@ -122,8 +123,6 @@ export let generateCarServiceOrder=(payload)=>{
                 reject(e);
             })
 
-
-
         });
     }
 }
@@ -156,7 +155,6 @@ export let generateCarServiceOrderFee=(payload)=>{
             }).catch((e)=>{
                 reject(e);
             })
-
 
         });
     }
@@ -197,11 +195,10 @@ export let createNewCustomerPlace=(payload)=>{
                 reject('选择地点错误，请重新选择您的取车地点');
             });
 
-
-
         });
     }
 }
+
 
 export let fetchServiceOrders=function () {
 
@@ -236,6 +233,7 @@ export let fetchServiceOrders=function () {
             })
         }
 }
+
 
 let fetchPlaceInfo=function (payload) {
     return new Promise((resolve,reject)=>{
@@ -523,6 +521,49 @@ export let fetchDetectUnitsInArea=(payload)=>{
 
                 }else{
                         resolve({re:1,data:null})
+                }
+
+
+            }).catch(function (err) {
+                reject(err);
+            })
+
+        });
+    }
+}
+
+//获取车管所数据
+export let fetchCarManageStation=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'fetchServicePlacesInArea',
+                    info:payload
+                }
+            }).then(function (json) {
+
+                if (json.re == 1) {
+
+                    var center=state.service.center;
+                    var places=json.data;
+                    getDataDistribution({places:places,center:center}).then(function (json) {
+                        resolve(json);
+                    })
+
+
+                }else{
+                    resolve({re:1,data:null})
                 }
 
 

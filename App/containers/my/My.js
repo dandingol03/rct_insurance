@@ -27,6 +27,7 @@ import Credit from './Credit';
 import CarManage from '../car/CarManage';
 import ServiceOrders from '../service/ServiceOrders';
 import LifeOrders from '../life/LifeOrders';
+import CarOrders from '../car/CarOrders';
 import Camera from 'react-native-camera';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
@@ -107,6 +108,20 @@ class My extends Component{
             navigator.push({
                 name: 'LifeOrders',
                 component: LifeOrders,
+                params: {
+
+                }
+            })
+        }
+    }
+
+    navigate2CarOrders()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'CarOrders',
+                component: CarOrders,
                 params: {
 
                 }
@@ -327,13 +342,15 @@ class My extends Component{
 
                     <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*车险订单*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',
-                            marginRight:1}}>
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                                          onPress={()=>{
+                                              console.log('qqq');
+                                          }}>
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_carInsurance.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 车险订单
                             </Text>
-                        </View>
+                        </TouchableOpacity>
 
                         {/*寿险订单*/}
                         <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}

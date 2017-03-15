@@ -238,7 +238,11 @@ export let fetchCarOrders=function (accessToken,cb) {
             if(json.re==1) {
                 historyOrders=json.data;
             }
-            dispatch(setCarOrdersInHistory(historyOrders));
+
+            if(historyOrders !== undefined && historyOrders !== null &&historyOrders.length > 0) {
+                dispatch(setCarOrdersInHistory(historyOrders));
+            }
+
             return Proxy.postes({
                 url: Config.server + '/svr/request',
                 headers: {
@@ -278,8 +282,11 @@ export let fetchCarOrders=function (accessToken,cb) {
                     })
                 }
             }
-            dispatch(setCarOrdersInPricedAndInPricing(pricedOrPricingOrders));
-            dispatch(setCarOrdersInApplyed(applyedOrders));
+
+            if(pricedOrPricingOrders !== undefined && pricedOrPricingOrders !== null &&pricedOrPricingOrders.length > 0)
+                dispatch(setCarOrdersInPricedAndInPricing(pricedOrPricingOrders));
+            if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
+                dispatch(setCarOrdersInApplyed(applyedOrders));
             dispatch(disableCarOrdersOnFresh());
             if(cb)
                 cb();
