@@ -15,7 +15,7 @@ export default rootReducer = combineReducers({
     user,
     timer,
     life,
-    car,
+    carOrders:car,
     service:serviceReducer,
 
 })
