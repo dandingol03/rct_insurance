@@ -647,7 +647,7 @@ class Maintain extends Component{
                                         </View>
                                     </View>
 
-                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa'}}>
+                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
                                         <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                             <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
                                             <TextInput
@@ -665,19 +665,14 @@ class Maintain extends Component{
                                                 underlineColorAndroid="transparent"
                                             />
                                             <View style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                          borderRadius:4,marginTop:10,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                                                 <TouchableOpacity onPress={()=>{
-                                                    this.getMaintainPlan(miles);
-
-                                            }}>
+                                                    this.getMaintainPlan(miles);}}>
                                                     <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
-
                                     </View>
-
-
 
                                     <View style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
                                        justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}>

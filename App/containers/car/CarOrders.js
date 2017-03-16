@@ -159,11 +159,6 @@ class CarOrders extends Component{
 
 
     render(){
-
-
-
-
-
         var applyedListView=null;
         var pricedListView=null;
         var historyListView=null;
@@ -346,10 +341,10 @@ var styles = StyleSheet.create({
 
 module.exports = connect(state=>({
         accessToken:state.user.accessToken,
-        historyOrders:state.car.historyOrders,
-        pricedAndPricingOrders:state.car.pricedAndPricingOrders,
-        applyedOrders:state.car.applyedOrders,
-        onFresh:state.car.onFresh
+        historyOrders:state.Car.historyOrders,
+        pricedAndPricingOrders:state.Car.pricedAndPricingOrders,
+        applyedOrders:state.Car.applyedOrders,
+        onFresh:state.carOrders.onFresh
     })
 )(CarOrders);
 
