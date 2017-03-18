@@ -38,6 +38,7 @@ class MaintainPlan extends Component{
     }
 
     render(){
+
         return (
             <View style={{height:height*0.5,width:width*0.8,margin:30,marginTop:100,
                          backgroundColor:'#fff',borderWidth:1,borderColor:'#aaa',borderRadius:6}}>

@@ -19,13 +19,19 @@ import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Sound from 'react-native-sound';
+import StatusBarAlert from 'react-native-statusbar-alert';
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Home from './home/index';
 import My from './my/My';
 import dym from './dym';
 import {fetchAccessToken} from '../action/UserActions';
-import {createNotification,downloadGeneratedTTS} from '../action/JpushActions';
+import {
+    createNotification,
+    downloadGeneratedTTS,
+    alertWithType
+} from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
 
 
@@ -40,8 +46,9 @@ class App extends React.Component {
 
     onNotificationRecv(payload)
     {
-        var {kind}=payload;
-        switch(kind)
+        var {type}=payload;
+        console.log('type='+type);
+        switch(type)
         {
             case 'from-service':
                 var {orderId,servicePersonId,date}=payload;
@@ -54,27 +61,52 @@ class App extends React.Component {
 
                    if(json.re==1)
                    {
-                        //获取accessToken并进行页面跳转
+                        //TODO:获取accessToken并进行页面跳转
+
+
                        this.props.dispatch(createNotification(payload,'service'))
-                           .then(function (json) {
+                           .then( (json) =>{
                                 //TODO:下载音频文件
+                                console.log('go get tts');
                                 return this.props.dispatch(downloadGeneratedTTS({content:content}));
                            })
-                           .then(function (json) {
+                           .then( (json)=> {
                                 if(json.re==1)
                                 {
                                     var path=json.data;
                                     //TODO:播放音频文件
+                                    var sound = new Sound(json.data, '', (error) => {
+                                        if (error) {
+                                            console.log('failed to load the sound', error);
+                                        }
+                                    });
+                                    this.state.soundMounted=sound;
+                                    setTimeout(() => {
+                                        sound.play((success) => {
+                                            if (success) {
+                                                console.log('successfully finished playing');
+                                                sound.release();
+                                                this.state.soundMounted=null;
+                                            } else {
+                                                console.log('playback failed due to audio decoding errors');
+                                                sound.release();
+                                                this.state.soundMounted=null;
+                                            }
+                                        });
+                                    }, 100);
+
+                                    //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
+                                    this.props.dispatch(alertWithType({msg:content}));
 
 
-                                    //TODO:popup插件
+
 
                                 }
                            });
 
                    }else{
                    }
-                }).catch(function (e) {
+                }).catch( (e)=> {
                     alert(e);
                 })
 
@@ -116,6 +148,7 @@ class App extends React.Component {
                                                 //TODO:播放文件
 
                                                 //TODO:popup插件
+
                                             }
                                         })
                                 }
@@ -134,7 +167,8 @@ class App extends React.Component {
         this.state={
             tab:'product',
             selectedTab:'home',
-            name:null
+            name:null,
+            recved:false
         }
     }
 
@@ -156,6 +190,8 @@ class App extends React.Component {
         }
 
 
+
+
         return (
             <TabNavigator.Item
                 selected={this.state.selectedTab === route}
@@ -168,15 +204,25 @@ class App extends React.Component {
                 tabStyle={{backgroundColor:'transparent'}}
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
-                <Navigator
-                    initialRoute={{ name: route, component:component }}
-                    configureScene={(route) => {
-                        return Navigator.SceneConfigs.HorizontalSwipeJumpFromRight;
-                      }}
-                    renderScene={(route, navigator) => {
-                        let Component = route.component;
-                        return <Component {...route.params} navigator={navigator} />
-                      }} />
+
+
+                <View style={{flex:1}}>
+
+                    <Navigator
+                        initialRoute={{ name: route, component:component }}
+                            configureScene={(route) => {
+                            return Navigator.SceneConfigs.HorizontalSwipeJumpFromRight;
+                          }}
+                        renderScene={(route, navigator) => {
+                            let Component = route.component;
+                            return (<Component {...route.params} navigator={navigator} />);
+                          }}
+
+                    />
+
+                </View>
+
+
             </TabNavigator.Item>
         );
     }
@@ -236,6 +282,11 @@ class App extends React.Component {
         })
 
 
+        setTimeout(()=>{
+            this.setState({recved:true});
+        },8000)
+
+
     }
     onReceiveMessage(message) {
         //TODO:make a notification through
@@ -291,7 +342,8 @@ var styles = StyleSheet.create({
 
 export default connect(
     (state) => ({
-        auth: state.user.auth
+        auth: state.user.auth,
+        notification:state.notification
     })
 )(App);
 

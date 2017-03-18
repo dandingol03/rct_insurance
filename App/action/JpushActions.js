@@ -7,6 +7,10 @@ import {
 import JPush from 'react-native-jpush'
 var RNFS = require('react-native-fs');
 import RNFetchBlob from 'react-native-fetch-blob'
+import {
+    MAKE_MESSAGE_POP,
+    ON_MESSAGE_CLOSE
+} from '../constants/JpushConstants';
 
 //下载生成的订单播报文件
 export let downloadGeneratedTTS=(payload)=>{
@@ -49,6 +53,7 @@ export let downloadGeneratedTTS=(payload)=>{
                 })
                 // Status code is not 200
                 .catch((errorMessage, statusCode) => {
+                    alert(errorMessage);
                     reject(errorMessage);
                 })
 
@@ -188,9 +193,9 @@ export  let createNotification=(payload,type)=>{
                         ownerId:orderId,
                         content:content,
                         notyTime:date,
-                        side:'customer',
+                        recv:'customer',
                         subType:null,
-                        type:type
+                        type:type,
                     }
                 }
             }).then(function (json) {
@@ -203,6 +208,37 @@ export  let createNotification=(payload,type)=>{
             })
 
         });
+    }
+}
+
+
+
+let makeMessagePop=(payload)=>{
+    return {
+        type:MAKE_MESSAGE_POP,
+        payload:payload
+    }
+}
+
+
+export let alertWithType=(payload)=>{
+    return (dispatch,getState)=> {
+
+        dispatch(makeMessagePop(payload));
+    }
+}
+
+//消息关闭
+let onMessageClose=()=>{
+    return {
+        type:ON_MESSAGE_CLOSE
+    }
+}
+
+export let closeMessage=()=>{
+    return (dispatch,getState)=> {
+
+        dispatch(onMessageClose());
     }
 }
 

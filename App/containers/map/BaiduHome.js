@@ -50,13 +50,17 @@ class BaiduHome extends Component{
     navigate2MapServiceSelect()
     {
 
+        var isMaintainable=false;
+        if(this.state.service=='maintain')
+            isMaintainable=true;
+
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
                 name: 'MapServiceSelect',
                 component: MapServiceSelect,
                 params: {
-
+                    isMaintainable:isMaintainable
                 }
             })
         }
@@ -80,7 +84,8 @@ class BaiduHome extends Component{
                 latitude: 36.67205,
                 longitude: 117.14501,
                 title: '您的位置'
-            }
+            },
+            service:props.service!==undefined&&props.service!==null?props.service:null
         }
 
     }
@@ -124,14 +129,21 @@ class BaiduHome extends Component{
                         backgroundColor: '#F5FCFF',position:'relative'}}>
                     {/*header bar*/}
                     <TouchableOpacity style={[styles.card,{height:45,width:width*4/5,marginLeft:width/10,
-                            position:'absolute',top:10,zIndex:1000,flexDirection:'row'}]}
+                            position:'absolute',top:10,zIndex:1000,flexDirection:'row',justifyContent:'center'}]}
                                       onPress={()=>{
                                          this.navigate2MapServiceSelect();
                                       }}
                     >
-                        <Text style={{color:'#222',fontSize:11}}>
-                            选择审车、审证、接送机、接送站等服务
-                        </Text>
+                        {
+                            state.service=='maintain'?
+                                <Text style={{color:'#222',fontSize:11}}>
+                                    选择维修服务
+                                </Text>:
+                                <Text style={{color:'#222',fontSize:11}}>
+                                    选择审车、审证、接送机、接送站等服务
+                                </Text>
+                        }
+
                         <Icon name="hand-pointer-o" size={12} color="#222"></Icon>
                     </TouchableOpacity>
 

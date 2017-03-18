@@ -108,6 +108,18 @@ class MapDistrictResult extends Component{
                     );
                 })
                 break;
+            case 'maintain':
+                this.props.dispatch(fetchMaintenance()).then((json)=>{
+                    var data=json.data;
+                    var {records,recordCount}=data;
+                    this.setState({records:records,recordCount:recordCount});
+                }).catch((e)=>{
+                    Alert.alert(
+                        '错误',
+                        e
+                    );
+                });
+                break;
         }
     }
 

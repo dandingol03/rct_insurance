@@ -447,6 +447,9 @@ let getDataDistribution=(payload)=>{
 
 }
 
+
+
+
 //搜索维修厂数据
 export let fetchMaintenance=(payload)=>{
     return (dispatch,getState)=> {

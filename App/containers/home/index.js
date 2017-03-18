@@ -23,6 +23,10 @@ import Maintain from '../maintain/Maintain.js';
 import CarManage from '../car/CarManage';
 import BaiduHome from '../map/BaiduHome';
 
+import {
+    closeMessage
+} from '../../action/JpushActions';
+
 
 class Home extends Component{
 
@@ -175,6 +179,9 @@ class Home extends Component{
         var username='danding';
         var {goodInfo}=this.state;
 
+        var props=this.props;
+        var state=this.state;
+
         return (
             <View style={{flex:1}}>
                 {/* header bar */}
@@ -234,6 +241,7 @@ class Home extends Component{
                     </View>
                 </Image>
 
+
             </View>);
     }
 }
@@ -274,6 +282,7 @@ var styles = StyleSheet.create({
 
 
 module.exports = connect(state=>({
-        accessToken:state.user.accessToken
+        accessToken:state.user.accessToken,
+        notification:state.notification
     })
 )(Home);
