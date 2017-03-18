@@ -139,7 +139,7 @@ class ServiceOrderDetail extends Component{
                 var json = res;
                 if(json.re==1)
                 {
-                     Proxy.post({
+                    Proxy.post({
                         url:Config.server+'/svr/request',
                         headers: {
                             'Authorization': "Bearer " + this.state.accessToken,
@@ -164,7 +164,7 @@ class ServiceOrderDetail extends Component{
                                 '接单成功，已通知服务人员',
                                 [
                                     {text: 'OK', onPress: () => {
-                                       this.goBack();
+                                        this.goBack();
                                     }},
                                 ]
                             )
@@ -490,18 +490,18 @@ class ServiceOrderDetail extends Component{
             if(state.detail!==undefined&&state.detail!==null)
             {
                 //渲染侯选列表
-              if(state.candidates!==undefined&&state.candidates!==null)
-              {
-                  var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                if(state.candidates!==undefined&&state.candidates!==null)
+                {
+                    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
-                  candidateList=(
-                          <ListView
-                              automaticallyAdjustContentInsets={false}
-                              dataSource={ds.cloneWithRows(state.candidates)}
-                              renderRow={this.renderRow.bind(this)}
-                          />
-                      );
-              }
+                    candidateList=(
+                        <ListView
+                            automaticallyAdjustContentInsets={false}
+                            dataSource={ds.cloneWithRows(state.candidates)}
+                            renderRow={this.renderRow.bind(this)}
+                        />
+                    );
+                }
 
             }else {
                 this.fetchData();
@@ -540,7 +540,7 @@ class ServiceOrderDetail extends Component{
                             props.order.orderState==1&&(props.order.servicePersonId==null||props.order.servicePersonId==undefined)?
                                 <TouchableOpacity style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
                             padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}
-                                                 onPress={()=>{
+                                                  onPress={()=>{
                                           this.cancleOrder(-3);
                                       }}>
                                     <View>
@@ -558,28 +558,29 @@ class ServiceOrderDetail extends Component{
                 {
                     state.detail!==undefined&&state.detail!==null?
                         <View>
-                            {/*{*/}
-                                {/*props.order.serviceType!='23'&&props.order.serviceType!='24'&&props.order.serviceType!='22'?*/}
-                                    {/*<View style={{height:45,width:width-30,marginLeft:15,marginTop:20}}>*/}
-                                        {/*<View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>*/}
-                                            {/*<View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>*/}
-                                                {/*<Text style={{color:'#222',fontSize:14}}>*/}
-                                                    {/*车牌号:*/}
-                                                {/*</Text>*/}
-                                            {/*</View>*/}
+                            {
+                                props.order.serviceType!='23'&&props.order.serviceType!='24'&&props.order.serviceType!='22'?
+                                    <View style={{height:45,width:width-30,marginLeft:15,marginTop:20}}>
+                                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
+                                            <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
+                                                <Text style={{color:'#222',fontSize:14}}>
+                                                    车牌号:
+                                                </Text>
+                                            </View>
 
-                                            {/*<View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>*/}
-                                                {/*{*/}
-                                                    {/*props.order.carInfo!==null?*/}
-                                                        {/*<Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>*/}
-                                                            {/*{props.order.carInfo.carNum}*/}
-                                                        {/*</Text>:null*/}
-                                                {/*}*/}
+                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
+                                                {
+                                                    props.order.carInfo!==null?
+                                                        <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
+                                                            {props.order.carInfo.carNum}
+                                                        </Text>:null
+                                                }
 
-                                            {/*</View>*/}
-                                        {/*</View>*/}
-                                    {/*</View>:null*/}
-                            {/*}*/}
+                                            </View>
+                                        </View>
+                                    </View>:null
+
+                            }
 
                             <View style={{height:45,width:width-30,marginLeft:15}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
@@ -596,25 +597,6 @@ class ServiceOrderDetail extends Component{
                                     </View>
                                 </View>
                             </View>
-
-                            {
-                                state.detail.servicePlace!==undefined&&state.detail.servicePlace!==null&&state.detail.servicePlace!=''?
-                                    <View style={{height:45,width:width-30,marginLeft:15}}>
-                                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
-                                            <View style={{width:100,paddingLeft:12,justifyContent:'center',padding:12}}>
-                                                <Text style={{color:'#222',fontSize:14}}>
-                                                    地点:
-                                                </Text>
-                                            </View>
-                                            <View style={{flex:1,alignItems:'flex-start',justifyContent:'center',padding:12}}>
-                                                <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>
-                                                    {state.detail.servicePlace.name}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>:null
-                            }
-
 
                             <View style={{height:45,width:width-30,marginLeft:15,marginTop:0}}>
                                 <View style={[styles.row,{borderBottomWidth:1,borderColor:'#999'}]}>
@@ -712,7 +694,7 @@ class ServiceOrderDetail extends Component{
                                           this.agreeWithCandidate();
                                       }}
                                 >
-                                   <Text style={{color:'#fff'}}>同意</Text>
+                                    <Text style={{color:'#fff'}}>同意</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -743,30 +725,6 @@ class ServiceOrderDetail extends Component{
                 }
 
 
-                {/*未指定服务人员的已下单订单没有候选人时取消*/}
-                {
-                    props.order.orderState==1&&(state.detail.candidates==undefined||state.detail.candidates!==null)?
-
-                        <View style={[styles.row,{width:width,height:50,paddingLeft:30,paddingRight:30,alignItems:'center',position:'absolute',bottom:10,justifyContent:'center'}]}>
-
-                            <TouchableOpacity style={{flex:1,backgroundColor:'#387ef5',borderRadius:8,padding:10,margin:10,
-                                        alignItems:'center'}}
-                                              onPress={()=>{
-                                           this.cancleOrder(-3);
-                                      }}
-                            >
-                                <View>
-                                    <Text style={{color:'#fff'}}>取消订单</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                        </View>:null
-
-
-                }
-
-
-
                 {/*服务中订单的取消和完成*/}
                 {
                     props.order.orderState==2?
@@ -779,9 +737,9 @@ class ServiceOrderDetail extends Component{
                                           this.cancleOrder(-3);
                                       }}
                             >
-                            <View>
-                                <Text style={{color:'#fff'}}>取消</Text>
-                            </View>
+                                <View>
+                                    <Text style={{color:'#fff'}}>取消</Text>
+                                </View>
                             </TouchableOpacity>
 
 
@@ -791,9 +749,9 @@ class ServiceOrderDetail extends Component{
                                           this.finishOrder();
                                       }}
                             >
-                            <View>
-                                <Text style={{color:'#fff'}}>完成</Text>
-                            </View>
+                                <View>
+                                    <Text style={{color:'#fff'}}>完成</Text>
+                                </View>
                             </TouchableOpacity>
                         </View>:null
                 }
@@ -870,7 +828,7 @@ var styles = StyleSheet.create({
 
 
 module.exports = connect(state=>({
-    accessToken:state.user.accessToken
-  })
+        accessToken:state.user.accessToken
+    })
 )(ServiceOrderDetail);
 

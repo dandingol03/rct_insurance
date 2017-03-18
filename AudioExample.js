@@ -10,6 +10,7 @@ import {
     View,
     Platform,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 const Sound = require('react-native-sound');
 
 const Button = ({title, onPress}) => (
@@ -30,18 +31,28 @@ const requireAudio = require('./serviceAudio.mp3');
 
 class MainView extends Component {
 
+    goBack(){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.pop();
+        }
+    }
+
+
     constructor(props) {
         super(props);
+        var path = this.props.path;
+        alert('path='+path);
 
         Sound.setCategory('Ambient', true); // true = mixWithOthers
 
         this.playSoundBundle = () => {
-            const s = new Sound('traffic.mp3', Sound.MAIN_BUNDLE, (e) => {
+            const s = new Sound(path, (e) => {
                 if (e) {
                     console.log('error', e);
                 } else {
                     s.setSpeed(1);
-                    console.log('duration', s.getDuration());
+                    console.log('duration',s.getDuration());
                     s.setVolume(1);
                     s.play(() => s.release()); // Release when it's done so we're not using up resources
                 }
@@ -60,8 +71,6 @@ class MainView extends Component {
             });
         };
 
-
-
     }
 
     renderiOSOnlyFeatures() {
@@ -72,6 +81,20 @@ class MainView extends Component {
 
     render() {
         return <View style={styles.container}>
+            <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
+                    backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                <TouchableOpacity style={{flex:1,color:'#fff'}} onPress={()=>{
+                        this.goBack();
+                             }}>
+                    <Icon name="angle-left" size={40} color="#fff"/>
+
+                </TouchableOpacity>
+                <Text style={{fontSize:17,flex:5,textAlign:'center',color:'#fff'}}>
+
+                </Text>
+                <View style={{flex:1,padding:0}}></View>
+            </View>
+
             <Feature title="Main bundle audio" onPress={this.playSoundBundle}/>
             { Platform.OS === 'ios' ? this.renderiOSOnlyFeatures() : null }
         </View>

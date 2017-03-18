@@ -10,7 +10,8 @@ import {
     Navigator,
     BackAndroid,
     ToastAndroid,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 
 
@@ -27,21 +28,40 @@ import dym from './dym';
 import {fetchAccessToken} from '../action/UserActions';
 import {createNotification,downloadGeneratedTTS} from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
-
-
-
-
+import AudioExample from '../../AudioExample';
+import DropdownAlert from 'react-native-dropdownalert'
 
 var WeChat = require('react-native-wechat');
 
 
 class App extends React.Component {
 
+    navigate2AudioExample(path){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'audioExample',
+                component: AudioExample,
+                params: {
+                    path:path
+                }
+            })
+        }
+    }
+
 
     onNotificationRecv(payload)
     {
-        var {kind}=payload;
-        switch(kind)
+        Alert.alert(
+            'onNotificationRecv',
+            'onNotificationRecv'+payload.type,
+            [
+                {text: 'OK', onPress: () => console.log('Cancel OK!')},
+            ]
+        )
+
+        var {type}=payload;
+        switch(type)
         {
             case 'from-service':
                 var {orderId,servicePersonId,date}=payload;
@@ -57,16 +77,25 @@ class App extends React.Component {
                         //获取accessToken并进行页面跳转
                        this.props.dispatch(createNotification(payload,'service'))
                            .then(function (json) {
+                               Alert.alert(
+                                   '获取accessToken并进行页面跳转',
+                                   '获取accessToken并进行页面跳转',
+                                   [
+                                       {text: 'OK', onPress: () => console.log('Cancel OK!')},
+                                   ]
+                               )
+
                                 //TODO:下载音频文件
                                 return this.props.dispatch(downloadGeneratedTTS({content:content}));
+
                            })
                            .then(function (json) {
                                 if(json.re==1)
                                 {
                                     var path=json.data;
+                                    console.log('path='+path);
                                     //TODO:播放音频文件
-
-
+                                    this.navigate2AudioExample(path);
                                     //TODO:popup插件
 
                                 }
@@ -235,8 +264,8 @@ class App extends React.Component {
 
         })
 
-
     }
+
     onReceiveMessage(message) {
         //TODO:make a notification through
         var notification=message._data;
@@ -291,7 +320,7 @@ var styles = StyleSheet.create({
 
 export default connect(
     (state) => ({
-        auth: state.user.auth
+        auth: state.user.auth,
+        accessToken: state.user.accessToken,
     })
 )(App);
-

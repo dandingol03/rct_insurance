@@ -24,6 +24,8 @@ var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AudioExample from '../../AudioExample';
+import Config from '../../config';
+import Proxy from '../proxy/Proxy';
 
 class dym extends Component{
 
@@ -38,6 +40,43 @@ class dym extends Component{
                 }
             })
         }
+    }
+
+    sendNotification(){
+        var {accessToken}=this.props;
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'sendNotification',
+            }
+        }, (json)=> {
+            if(json.re==1) {
+                Alert.alert(
+                    '发送成功',
+                    '发送成功',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                        {text: 'OK', onPress: () => console.log('Cancel OK!')},
+                    ]
+                )
+            }else{
+                Alert.alert(
+                    '发送失败',
+                    '发送失败',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                        {text: 'OK', onPress: () => console.log('Cancel OK!')},
+                    ]
+                )
+            }
+
+        }, (err) =>{
+        });
+
     }
 
     constructor(props) {
@@ -69,6 +108,14 @@ class dym extends Component{
                              }}>
                       <View>
                           <Text style={{fontSize: 30}}>AudioExample</Text>
+                      </View>
+
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
+                        this.sendNotification();
+                             }}>
+                      <View>
+                          <Text style={{fontSize: 30}}>sendNotification</Text>
                       </View>
 
                   </TouchableOpacity>
@@ -217,7 +264,7 @@ var styles = StyleSheet.create({
 
 
 module.exports = connect(state=>({
-
+    accessToken:state.user.accessToken
     })
 )(dym);
 

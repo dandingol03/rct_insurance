@@ -92,6 +92,7 @@ var  Login =React.createClass({
             loginDot:'.'
         });
     },
+
     render:function () {
 
         const shadowOpt = {
@@ -285,7 +286,6 @@ var  Login =React.createClass({
                 s.play(() => s.release());
             });
         },1000)
-
 
         // var  makePromise=(name, delay) =>{
         //     return new Promise((resolve) => {

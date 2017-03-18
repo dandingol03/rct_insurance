@@ -41,7 +41,6 @@ class Audio extends Component {
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
             hasPermission: undefined,
         };
-
     }
 
     prepareRecordingPath(audioPath){
@@ -145,6 +144,7 @@ class Audio extends Component {
     }
 
     async _play() {
+
         if (this.state.recording) {
             await this._stop();
         }

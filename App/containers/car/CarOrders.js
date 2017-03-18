@@ -341,9 +341,9 @@ var styles = StyleSheet.create({
 
 module.exports = connect(state=>({
         accessToken:state.user.accessToken,
-        historyOrders:state.Car.historyOrders,
-        pricedAndPricingOrders:state.Car.pricedAndPricingOrders,
-        applyedOrders:state.Car.applyedOrders,
+        historyOrders:state.carOrders.historyOrders,
+        pricedAndPricingOrders:state.carOrders.pricedAndPricingOrders,
+        applyedOrders:state.carOrders.applyedOrders,
         onFresh:state.carOrders.onFresh
     })
 )(CarOrders);

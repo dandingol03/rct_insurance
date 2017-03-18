@@ -26,7 +26,6 @@ var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 
-
 import VideoPlayer from './VideoPlayer.js';
 import Audio from './Audio.js';
 import MaintainPlan from './MaintainPlan';
@@ -35,16 +34,7 @@ import Proxy from '../../proxy/Proxy';
 
 import Camera from 'react-native-camera';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-import Sound from 'react-native-sound';
-
-var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
-    if (error) {
-        console.log('failed to load the sound', error);
-        return;
-    }
-    // loaded successfully
-    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-});
+import AudioExample from '../../../AudioExample.js';
 
 
 class Maintain extends Component{
@@ -53,6 +43,19 @@ class Maintain extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2AudioExample(path){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'audioExample',
+                component: AudioExample,
+                params: {
+                    path:path
+                }
+            })
         }
     }
 
@@ -178,8 +181,6 @@ class Maintain extends Component{
         }
     }
 
-
-
     storePicture(portrait){
 
         var {accessToken}=this.props;
@@ -212,7 +213,6 @@ class Maintain extends Component{
             });
         }
     }
-
 
     startRecording = () => {
         if (this.camera) {
@@ -329,6 +329,7 @@ class Maintain extends Component{
                 this._finishRecording(true, filePath);
             }
             return filePath;
+
         } catch (error) {
             console.error(error);
         }
@@ -371,6 +372,7 @@ class Maintain extends Component{
 
     _finishRecording(didSucceed, filePath) {
         this.setState({ finished: didSucceed });
+        this.navigate2AudioExample(filePath);
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
 
@@ -397,7 +399,7 @@ class Maintain extends Component{
             recording: false,
             stoppedRecording: false,
             finished: false,
-            hasPermission: true,
+            hasPermission: undefined,
 
             videoPath:'',
             cameraModalVisible:false,
@@ -407,7 +409,6 @@ class Maintain extends Component{
                 type: Camera.constants.Type.back,
                 orientation: Camera.constants.Orientation.auto,
                 flashMode: Camera.constants.FlashMode.auto,
-
             },
             portrait:null,
         };
@@ -736,7 +737,7 @@ class Maintain extends Component{
 
                                                 <TouchableOpacity  onPress={
                                                 ()=>{
-                                                   console.log('播放音频');
+                                                    this._stop();
                                                 }
                                             }>
                                                     <View>

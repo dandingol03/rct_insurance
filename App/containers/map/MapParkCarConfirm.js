@@ -411,6 +411,113 @@ class MapParkCarConfirm extends Component{
         })
     }
 
+    verifyDate(_date)
+    {
+
+        this.state.selectTime=true;
+
+        var {carManage}=this.state;
+
+        var date=new Date(_date);
+        var curDay=new Date();
+        var hour=date.getHours();
+        var day=date.getDay();
+        var serviceHour=null;
+        var serviceDay=null;
+
+        if((date-curDay)>0&&curDay.getDate()!=date.getDate())
+        {
+            if(carManage.servicePerson!==undefined&& carManage.servicePerson!==null){
+
+                var servicePerson=carManage.servicePerson;
+                var serviceSegments=servicePerson.serviceSegments;
+                serviceHour = parseInt(serviceSegments.substring(1, 2));
+                serviceDay = parseInt(serviceSegments.substring(0, 1));
+
+                var tip='周';
+                switch (serviceDay) {
+                    case 1:
+                        tip+='一';
+                        break;
+                    case 2:
+                        tip+='二';
+                        break;
+                    case 3:
+                        tip+='三';
+                        break;
+                    case 4:
+                        tip+='四';
+                        break;
+                    case 5:
+                        tip+='五';
+                        break;
+                    case 6:
+                        tip+='六';
+                        break;
+                    case 7:
+                        tip+='日';
+                        break;
+                }
+                switch(serviceHour)
+                {
+                    case 1:
+                        tip+='上午';
+                        break;
+                    case 2:
+                        tip+='下午';
+                        break;
+                }
+
+                if(day==serviceDay)
+                {
+                    if(parseInt(hour/12)==serviceHour-1)
+                    {
+                        //TODO:make a change
+                        this.state.carManage.estimateTime=date;
+                        this.setState({carManage:this.state.carManage,selectTime:false});
+                        return;
+                    }else{
+                        setTimeout(()=>{
+                            Alert.alert('错误','您所选的日期时段不对,该服务人员的工作时段位于'+tip+',请重新选择',[{text:'确认',onPress:()=>{
+
+                            }}])
+                        },600);
+                        this.setState({selectTime:false});
+                    }
+
+                }else{
+
+                    setTimeout(()=>{
+                        Alert.alert('错误','您所选的日期时段不对,该服务人员的工作时段位于'+tip+',请重新选择',[{text:'确认',onPress:()=>{
+
+                        }}]);
+                    },600)
+                    this.setState({selectTime:false});
+                }
+
+
+            }else{
+                this.state.carManage.estimateTime=date;
+                this.setState({carManage:this.state.carManage,selectTime:false});
+
+            }
+        }else{
+
+            setTimeout(()=>{
+                Alert.alert('错误','您所选的日期必须在当天之后,请重新选择',[{text:'确认',onPress:()=>{
+
+                }}]);
+            },600)
+
+            this.setState({selectTime:false});
+
+        }
+
+
+    }
+
+
+
     constructor(props) {
         super(props);
 
@@ -561,8 +668,7 @@ class MapParkCarConfirm extends Component{
                                     iconSource={null}
                                     onDateChange={(date) => {
                                         //TODO:校检date的合法性
-                                        this.state.carManage.estimateTime=date;
-                                        this.setState({carManage:this.state.carManage});
+                                        this.verifyDate(date);
                                     }}
                                 />
 
