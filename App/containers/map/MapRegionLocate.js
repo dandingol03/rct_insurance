@@ -28,6 +28,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import MapAdministrateConfirm from './MapAdministrateConfirm';
+import MapDailyConfirm from './MapDailyConfirm';
 import MapAirportConfirm from './MapAirportConfirm';
 import MapParkCarConfirm from './MapParkCarConfirm';
 import{
@@ -48,16 +49,13 @@ class MapRegionLocate extends Component{
     }
 
 
-    navigate2MapAdministrateConfirm(payload)
+    navigate2OrderConfirm(payload)
     {
 
 
         const { navigator } = this.props;
 
         if(navigator) {
-
-
-
         }
         var {plot}=payload;
 
@@ -141,6 +139,16 @@ class MapRegionLocate extends Component{
                         }},
                     ]
                 )
+                break;
+            case 'maintain':
+                params= {
+                    contentInfo: {unit: plot}
+                };
+                navigator.push({
+                    name: 'MapDailyConfirm',
+                    component: MapDailyConfirm,
+                    params: params
+                })
                 break;
 
 
@@ -255,6 +263,9 @@ class MapRegionLocate extends Component{
             case 'park_car':
                 title='取送站';
                 break;
+            case 'maintain':
+                title='维修服务'
+                break;
 
         }
 
@@ -315,7 +326,7 @@ class MapRegionLocate extends Component{
                       <TouchableOpacity style={{width:width,flexDirection:'row',alignItems:'center',padding:10,
                             borderBottomWidth:1,borderColor:'#ddd'}} key={i}
                                         onPress={()=>{
-                                            this.navigate2MapAdministrateConfirm({plot:plot});
+                                            this.navigate2OrderConfirm({plot:plot});
                                       }}>
 
                           <View style={{flex:3,justifyContent:'center',alignItems:'flex-start'}}>

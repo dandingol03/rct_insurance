@@ -45,6 +45,7 @@ class MapServiceSelect extends Component{
         const { navigator } = this.props;
         if(navigator) {
 
+
             navigator.push({
                 name: 'MapDistrictResult',
                 component: MapDistrictResult,
@@ -59,7 +60,8 @@ class MapServiceSelect extends Component{
     constructor(props) {
         super(props);
         this.state={
-            title:props.title!==undefined&&props.title!==null?props.title:'审车'
+            title:props.title!==undefined&&props.title!==null?props.title:'审车',
+            isMaintainable:props.isMaintainable!==undefined&&props.isMaintainable!==null?props.isMaintainable:null
         }
 
     }
@@ -98,74 +100,94 @@ class MapServiceSelect extends Component{
 
 
                 {/*body part*/}
-                <View style={[styles.row,{height:100,justifyContent:'center'}]}>
 
-                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
-                                      onPress={()=>{
+
+                {
+                    state.isMaintainable==true?
+                        <View style={[styles.row,{height:100,justifyContent:'center'}]}>
+                            <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                              onPress={()=>{
+                                          this.navigate2MapDistrictResult('maintain');
+                                      }}
+                            >
+
+                                <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(255, 124, 19)',
+                                        alignItems:'center',justifyContent:'center'}}>
+                                    <Icon name="car" size={30} color="#fff"></Icon>
+                                </View>
+                                <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
+                                    维修
+                                </Text>
+                            </TouchableOpacity>
+                        </View>:
+                        <View style={[styles.row,{height:100,justifyContent:'center'}]}>
+
+                            <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                              onPress={()=>{
                                           this.navigate2MapDistrictResult('administrator');
                                       }}
-                    >
+                            >
 
-                        <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(255, 124, 19)',
+                                <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(255, 124, 19)',
                             alignItems:'center',justifyContent:'center'}}>
-                            <Icon name="car" size={30} color="#fff"></Icon>
-                        </View>
-                        <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
-                            审车
-                        </Text>
-                    </TouchableOpacity>
+                                    <Icon name="car" size={30} color="#fff"></Icon>
+                                </View>
+                                <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
+                                    审车
+                                </Text>
+                            </TouchableOpacity>
 
 
-                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
-                                      onPress={()=>{
+                            <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                              onPress={()=>{
                                           this.navigate2MapDistrictResult('paper_validate');
                                       }}>
 
-                        <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(50, 139, 255)',
+                                <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(50, 139, 255)',
                             alignItems:'center',justifyContent:'center'}}>
-                            <Icon name="address-card-o" size={30} color="#fff"></Icon>
-                        </View>
-                        <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
-                            审证
-                        </Text>
-                    </TouchableOpacity>
+                                    <Icon name="address-card-o" size={30} color="#fff"></Icon>
+                                </View>
+                                <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
+                                    审证
+                                </Text>
+                            </TouchableOpacity>
 
 
-                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
-                                      onPress={()=>{
+                            <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                              onPress={()=>{
                                           this.navigate2MapDistrictResult('airport');
                                       }}
-                    >
+                            >
 
-                        <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(64, 210, 116)',
+                                <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(64, 210, 116)',
                             alignItems:'center',justifyContent:'center'}}>
-                            <Icon name="plane" size={30} color="#fff"></Icon>
-                        </View>
-                        <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
-                            接送机
-                        </Text>
-                    </TouchableOpacity>
+                                    <Icon name="plane" size={30} color="#fff"></Icon>
+                                </View>
+                                <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
+                                    接送机
+                                </Text>
+                            </TouchableOpacity>
 
 
-                    <TouchableOpacity style={{flex:1,alignItems:'center'}}
-                                      onPress={()=>{
+                            <TouchableOpacity style={{flex:1,alignItems:'center'}}
+                                              onPress={()=>{
                                            this.navigate2MapDistrictResult('park_car');
                                       }}
-                    >
+                            >
 
-                        <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(225, 113, 255)',
+                                <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(225, 113, 255)',
                             alignItems:'center',justifyContent:'center'}}>
-                            <Icon name="train" size={30} color="#fff"></Icon>
+                                    <Icon name="train" size={30} color="#fff"></Icon>
+                                </View>
+                                <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
+                                    接送站
+                                </Text>
+                            </TouchableOpacity>
+
                         </View>
-                        <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
-                            接送站
-                        </Text>
-                    </TouchableOpacity>
 
+                }
 
-
-
-                </View>
 
             </View>
         )

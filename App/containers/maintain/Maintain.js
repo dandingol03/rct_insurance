@@ -18,7 +18,6 @@ import  {
     Modal,
     Platform,
     PermissionsAndroid,
-
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -28,13 +27,28 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 
 import VideoPlayer from './VideoPlayer.js';
 import Audio from './Audio.js';
-import MaintainPlan from './MaintainPlan';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
+import BaiduHome from '../map/BaiduHome';
 
 import Camera from 'react-native-camera';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-import AudioExample from '../../../AudioExample.js';
+import Sound from 'react-native-sound';
+import {
+    updateMaintainBusiness
+} from '../../action/MaintainActions';
+import MaintainPlan from '../../components/modal/MaintainPlan';
+
+
+
+var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
+    if (error) {
+        console.log('failed to load the sound', error);
+        return;
+    }
+    // loaded successfully
+    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+});
 
 
 class Maintain extends Component{
@@ -99,9 +113,24 @@ class Maintain extends Component{
         }
     }
 
-    getMaintainPlan(miles){
+    navigate2BaiduHome()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
 
-        var miles = miles;
+            navigator.push({
+                name: 'baiduHome',
+                component: BaiduHome,
+                params: {
+                    service:'maintain'
+                }
+            })
+        }
+    }
+
+    checkMaintainPlan(){
+
+        var {miles} = this.state;
         var reg=/\D/;
         if(miles==undefined||miles==null||reg.exec(miles)!=null)
         {
@@ -144,8 +173,7 @@ class Maintain extends Component{
                     var json=res;
                     if(json.re==1){
                         var routineName=json.data;
-                        this.setState({routineName:routineName});
-                        this.navigate2MaintainPlan();
+                        this.setState({routineName:routineName, maintainPlanModal:true});
 
                     }
 
@@ -258,6 +286,8 @@ class Maintain extends Component{
     }
 
     componentDidMount() {
+
+
         this._checkPermission().then((hasPermission) => {
             this.setState({ hasPermission });
 
@@ -378,6 +408,56 @@ class Maintain extends Component{
 
 
 
+    //进行维修业务的保存
+    updateMaintainBusiness(tabIndex)
+    {
+
+        switch(tabIndex) {
+            case 0:
+                var {dailyChecked}=this.state;
+                var subServiceTypes=[];
+                var dailys = [
+                    {subServiceId: '1', subServiceTypes: '机油,机滤', serviceType: '11', checked: true},
+                    {subServiceId: '2', subServiceTypes: '检查制动系统,更换刹车片', serviceType: '11', checked: false},
+                    {subServiceId: '3', subServiceTypes: '雨刷片更换', serviceType: '11', checked: false},
+                    {subServiceId: '4', subServiceTypes: '轮胎更换', serviceType: '11', checked: false},
+                    {subServiceId: '5', subServiceTypes: '燃油添加剂', serviceType: '11', checked: false},
+                    {subServiceId: '6', subServiceTypes: '空气滤清器', serviceType: '11', checked: false},
+                    {subServiceId: '7', subServiceTypes: '检查火花塞', serviceType: '11', checked: false},
+                    {subServiceId: '8', subServiceTypes: '检查驱动皮带', serviceType: '11', checked: false},
+                    {subServiceId: '9', subServiceTypes: '更换空调滤芯', serviceType: '11', checked: false},
+                    {subServiceId: '10', subServiceTypes: '更换蓄电池,防冻液', serviceType: '11', checked: false}
+                ];
+
+                dailyChecked.map(function (checked, i) {
+                    if (checked == true)
+                    {
+                        subServiceTypes.push(dailys[i].subServiceId);
+                    }
+                });
+                this.props.dispatch(updateMaintainBusiness({
+                    serviceType:'11',
+                    subServiceTypes:subServiceTypes
+                }));
+                break;
+            case 1:
+
+                this.props.dispatch(updateMaintainBusiness({
+                    serviceType:'12',
+                    description:this.state.maintain.description
+                }));
+                break;
+            case 2:
+
+                this.props.dispatch(updateMaintainBusiness({
+                    serviceType:'13',
+                    subServiceTypes:this.state.accidentType
+                }));
+                break;
+        }
+
+    }
+
     constructor(props)
     {
         super(props);
@@ -385,15 +465,14 @@ class Maintain extends Component{
         this.state = {
             accessToken: accessToken,
             dailyChecked:[true,false,false,false,false,false,false,false,false,false],
-            selectedDailys:[],
             accidentType:'',
             disabled: false,
-            description:'',
+            description:{
+
+            },
             miles:0,
             routineName:'',
-            audio:null,
-            video:null,
-
+            maintain:{},
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
             currentTime: 0.0,
             recording: false,
@@ -403,6 +482,7 @@ class Maintain extends Component{
 
             videoPath:'',
             cameraModalVisible:false,
+            maintainPlanModal:false,
             camera: {
                 aspect: Camera.constants.Aspect.fill,
                 captureTarget: Camera.constants.CaptureTarget.disk,
@@ -417,7 +497,7 @@ class Maintain extends Component{
     render(){
 
         var dailyChecked = [];
-        var selectedDailys = [];
+
 
         var miles = this.state.miles;
 
@@ -437,7 +517,7 @@ class Maintain extends Component{
 
                     <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
                     backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
-                        <TouchableOpacity style={{flex:1,color:'#fff'}} onPress={()=>{
+                        <TouchableOpacity style={{flex:1}} onPress={()=>{
                         this.goBack();
                              }}>
                             <Icon name="angle-left" size={40} color="#fff"/>
@@ -462,10 +542,7 @@ class Maintain extends Component{
                                                               onPress={()=>{
                                              dailyChecked = this.state.dailyChecked;
                                              dailyChecked[0] = !this.state.dailyChecked[0];
-                                             if( dailyChecked[0]==true){
-                                               selectedDailys.push({subServiceId:'1',subServiceTypes:'机油,机滤',serviceType:'11',checked:true});
-                                             }
-                                             this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
+                                             this.setState({dailyChecked:dailyChecked});
                                             }}>
 
                                                     <View style={{flex:1,alignItems:'center'}}>
@@ -479,13 +556,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[1] = !this.state.dailyChecked[1];
-                                         if(dailyChecked[1]==true){
-                                          selectedDailys.push({subServiceId:'2',subServiceTypes:'检查制动系统,更换刹车片',serviceType:'11',checked:true});
-                                         }
-                                        this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[1] = !this.state.dailyChecked[1];
+
+                                                this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain2.png')} style={{flex:5}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换刹车片</Text>
@@ -497,13 +572,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[2] = !this.state.dailyChecked[2];
-                                         if(dailyChecked[2]==true){
-                                           selectedDailys.push( {subServiceId:'3',subServiceTypes:'雨刷片更换',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                     dailyChecked = this.state.dailyChecked;
+                                                     dailyChecked[2] = !this.state.dailyChecked[2];
+
+                                                     this.setState({dailyChecked:dailyChecked});
+                                                 }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain3.png')} style={{flex:5}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>雨刷片更换</Text>
@@ -517,13 +590,11 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[3] = !this.state.dailyChecked[3];
-                                         if(dailyChecked[3]==true){
-                                           selectedDailys.push({subServiceId:'4',subServiceTypes:'轮胎更换',serviceType:'11',checked:false},);
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[3] = !this.state.dailyChecked[3];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain4.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>轮胎更换</Text>
@@ -535,13 +606,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[4] = !this.state.dailyChecked[4];
-                                         if(dailyChecked[4]==true){
-                                           selectedDailys.push( {subServiceId:'5',subServiceTypes:'燃油添加剂',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[4] = !this.state.dailyChecked[4];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain5.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>燃油添加剂</Text>
@@ -553,13 +622,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[5] = !this.state.dailyChecked[5];
-                                         if(dailyChecked[5]==true){
-                                           selectedDailys.push( {subServiceId:'6',subServiceTypes:'空气滤清器',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[5] = !this.state.dailyChecked[5];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain6.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>空气滤清器</Text>
@@ -573,14 +640,12 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[6] = !this.state.dailyChecked[6];
-                                         if(dailyChecked[6]==true){
-                                           selectedDailys.push({subServiceId:'7',subServiceTypes:'检查火花塞',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[6] = !this.state.dailyChecked[6];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
+                                                            <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain7.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查火花塞</Text>
                                                         {
@@ -591,13 +656,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[7] = !this.state.dailyChecked[7];
-                                         if(dailyChecked[7]==true){
-                                           selectedDailys.push({subServiceId:'8',subServiceTypes:'检查驱动皮带',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[7] = !this.state.dailyChecked[7];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain8.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查驱动片</Text>
@@ -609,13 +672,11 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[8] = !this.state.dailyChecked[8];
-                                         if(dailyChecked[8]==true){
-                                           selectedDailys.push({subServiceId:'9',subServiceTypes:'更换空调滤芯',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[8] = !this.state.dailyChecked[8];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain9.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>换空调滤芯</Text>
@@ -629,13 +690,11 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                         dailyChecked = this.state.dailyChecked;
-                                         dailyChecked[9] = !this.state.dailyChecked[9];
-                                         if(dailyChecked[9]==true){
-                                           selectedDailys.push({subServiceId:'10',subServiceTypes:'更换蓄电池,防冻液',serviceType:'11',checked:false});
-                                         }
-                                         this.setState({selectedDailys:selectedDailys,dailyChecked:dailyChecked});
-                                     }}>
+                                                 dailyChecked = this.state.dailyChecked;
+                                                 dailyChecked[9] = !this.state.dailyChecked[9];
+
+                                                 this.setState({dailyChecked:dailyChecked});
+                                             }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain10.png')} style={{flex:4}}/>
                                                         <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换蓄电池防冻液</Text>
@@ -654,35 +713,61 @@ class Maintain extends Component{
                                             <TextInput
                                                 style={{flex:2,fontSize:12,color:'#343434'}}
                                                 onChangeText={(miles) =>
-                                            {
-                                              this.state.miles=miles;
-                                              this.setState({miles:miles});
-                                            }}
-                                                value={
-                                                miles+''
-                                            }
+                                                    {
+                                                      this.setState({miles:miles});
+                                                    }}
+                                                value={this.state.miles+''}
+
                                                 placeholder='请输入里程...'
                                                 placeholderTextColor="#aaa"
                                                 underlineColorAndroid="transparent"
                                             />
-                                            <View style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
-                                                <TouchableOpacity onPress={()=>{
-                                                    this.getMaintainPlan(miles);}}>
-                                                    <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
-                                                </TouchableOpacity>
-                                            </View>
+
+                                            <TouchableOpacity style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                                          borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}
+                                                              onPress={()=>{
+                                                                this.checkMaintainPlan();
+                                                                }}>
+                                                <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
+                                            </TouchableOpacity>
+
                                         </View>
                                     </View>
 
-                                    <View style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
-                                       justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}>
+                                    <TouchableOpacity style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
+                                       justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}
+                                                      onPress={()=>{
+                                                        this.updateMaintainBusiness(0);
+                                                        this.navigate2BaiduHome();
+                                            }}>
+
                                         <Text style={{color:'#fff'}}>选择附近的维修厂</Text>
-                                    </View>
+                                    </TouchableOpacity>
 
 
 
                                 </ScrollView>
+
+                                {/*maintainPlan modal*/}
+                                <Modal
+                                    animationType={"slide"}
+                                    transparent={false}
+                                    visible={this.state.maintainPlanModal}
+                                    onRequestClose={() => {alert("Modal has been closed.")}}>
+
+                                    <MaintainPlan
+                                        miles={this.state.miles}
+                                        routineName={this.state.routineName}
+                                        onClose={()=>{
+                                               this.setState({maintainPlanModal:false});
+                                        }}
+                                        onConfirm={(city)=>{
+                                                this.cityConfirm(city);
+                                        }}
+                                    />
+
+                                </Modal>
+
 
                             </View>
 
@@ -703,7 +788,7 @@ class Maintain extends Component{
                                         placeholder='请对故障进行文本描述...'
                                         placeholderTextColor="#aaa"
                                         underlineColorAndroid="transparent"
-                                        multiline='true'
+                                        multiline={true}
                                     />
                                 </View>
 
@@ -805,10 +890,15 @@ class Maintain extends Component{
 
 
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
-                                    <View style={{width:width*2/3,padding:8,paddingHorizontal:12,
-                                        backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center'}}>
+
+                                    <TouchableOpacity style={{width:width*2/3,padding:8,paddingHorizontal:12,
+                                        backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center'}}
+                                                      onPress={() => {
+                                                          this.updateMaintainBusiness(1);
+                                                          this.navigate2BaiduHome()
+                                                      }}>
                                         <Text style={{color:'#fff',fontWeight:'bold'}}>选择附近的维修厂</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
 
 
@@ -893,10 +983,14 @@ class Maintain extends Component{
 
                                 {/*跳转按钮*/}
                                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:30}}>
-                                    <View style={{width:width*2/3,padding:10,paddingHorizontal:12,borderRadius:5,
-                                        backgroundColor:'rgba(14, 153, 193, 0.73)',alignItems:'center',justifyContent:'center'}}>
+                                    <TouchableOpacity style={{width:width*2/3,padding:10,paddingHorizontal:12,borderRadius:5,
+                                        backgroundColor:'rgba(14, 153, 193, 0.73)',alignItems:'center',justifyContent:'center'}}
+                                                      onPress={()=>{
+                                                      this.updateMaintainBusiness(2);
+                                                      this.navigate2BaiduHome();
+                                                }}>
                                         <Text style={{color:'#fff'}}>选择附近的维修厂</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
 
                             </View>
@@ -981,6 +1075,7 @@ class Maintain extends Component{
                     </View>
 
                 </Modal>
+
 
             </View>);
     }

@@ -152,21 +152,27 @@ class Audio extends Component {
         // These timeouts are a hacky workaround for some issues with react-native-sound.
         // See https://github.com/zmxv/react-native-sound/issues/89.
         setTimeout(() => {
-            var sound = new Sound(this.state.audioPath, '', (error) => {
-                if (error) {
-                    console.log('failed to load the sound', error);
-                }
-            });
-
-            setTimeout(() => {
-                sound.play((success) => {
-                    if (success) {
-                        console.log('successfully finished playing');
-                    } else {
-                        console.log('playback failed due to audio decoding errors');
+            console.log(this.state.audioPath);
+            try{
+                var sound = new Sound(this.state.audioPath, '', (error) => {
+                    if (error) {
+                        console.log('failed to load the sound', error);
                     }
                 });
-            }, 100);
+
+                setTimeout(() => {
+                    sound.play((success) => {
+                        if (success) {
+                            console.log('successfully finished playing');
+                        } else {
+                            console.log('playback failed due to audio decoding errors');
+                        }
+                    });
+                }, 100);
+            }catch(e)
+            {
+                alert(e)
+            }
         }, 100);
     }
 

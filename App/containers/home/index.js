@@ -23,6 +23,11 @@ import Maintain from '../maintain/Maintain.js';
 import CarManage from '../car/CarManage';
 import BaiduHome from '../map/BaiduHome';
 
+import {
+    closeMessage
+} from '../../action/JpushActions';
+import StatusBarAlert from 'react-native-statusbar-alert'
+
 
 class Home extends Component{
 
@@ -44,8 +49,6 @@ class Home extends Component{
             })
         }
     }
-
-
 
     navigate2Life(){
         const { navigator } = this.props;
@@ -159,6 +162,7 @@ class Home extends Component{
             goodInfo:{},
             relatedGoods:null,
             selectAll:false,
+            alerts:[],
             dataSource : new ListView.DataSource({
                 rowHasChanged: (r1, r2)=> {
                     if (r1 !== r2) {
@@ -170,15 +174,46 @@ class Home extends Component{
         };
     }
 
+    showSilentAlert() {
+        this.setState({
+            alerts: [{
+                message: 'Silent Switch ON',
+                backgroundColor:"#FF6245"
+            }]
+        })
+    }
+
+    hideSilentAlert() {
+        this.setState({
+            alerts: this.state.alerts.filter(alert => alert.message !== 'Silent Switch ON')
+        })
+    }
 
     render(){
         var username='danding';
         var {goodInfo}=this.state;
 
+        var props=this.props;
+        var state=this.state;
+
         return (
             <View style={{flex:1}}>
+                <StatusBarAlert
+                    backgroundColor="#3CC29E"
+                    color="white"
+                    visible={this.state.notification}
+                />
+
                 {/* header bar */}
-                <Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />
+                <TouchableOpacity style={styles.logo}
+                                  onPress={ ()=>{
+                                        this.showSilentAlert();
+
+                                              }}>
+                    <Image source={require('../../img/newBanner@2x.png')} />
+                </TouchableOpacity>
+
+                {/*<Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />*/}
 
                 {/* body*/}
                 <Image style={{width:width,height:height-230}} source={require('../../img/bkg1@2x.png')}>
@@ -234,6 +269,7 @@ class Home extends Component{
                     </View>
                 </Image>
 
+
             </View>);
     }
 }
@@ -274,6 +310,7 @@ var styles = StyleSheet.create({
 
 
 module.exports = connect(state=>({
-        accessToken:state.user.accessToken
+        accessToken:state.user.accessToken,
+        notification:state.notification
     })
 )(Home);
