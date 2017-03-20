@@ -10,7 +10,9 @@ import {
     Navigator,
     BackAndroid,
     ToastAndroid,
-    Platform
+    Platform,
+    TouchableOpacity,
+    TouchableHighlight
 } from 'react-native';
 
 
@@ -191,6 +193,39 @@ class App extends React.Component {
 
 
 
+        var routeMapper = {
+            LeftButton(route, navigator, index, navState) {
+                if (index > 0) {
+                    return (
+                        <TouchableHighlight style={{ marginTop: 10 }} onPress={() => {
+                            if (index > 0) {
+                                navigator.pop();
+                            }
+                        } }>
+                            <Text>Back</Text>
+                        </TouchableHighlight>
+                    )
+                } else {
+                    return null
+                }
+            },
+
+            RightButton(route, navigator, index, navState) {
+                return null;
+            },
+
+            Title(route, navigator, index, navState) {
+                return (
+                    <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                        <Text style={{ color: 'white', margin: 10, fontSize: 16 }}>
+                            Data Entry
+                        </Text>
+                    </TouchableOpacity>
+                );
+            }
+        };
+
+
 
         return (
             <TabNavigator.Item
@@ -208,6 +243,14 @@ class App extends React.Component {
 
                 <View style={{flex:1}}>
 
+                    <StatusBarAlert
+                        backgroundColor="#3CC29E"
+                        color="white"
+                        visible={this.state.recved}
+                        message="got message"
+                        onPress={() => this.setState({recved: false})}
+                    />
+
                     <Navigator
                         initialRoute={{ name: route, component:component }}
                             configureScene={(route) => {
@@ -217,6 +260,8 @@ class App extends React.Component {
                             let Component = route.component;
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
+
+
 
                     />
 
@@ -284,7 +329,7 @@ class App extends React.Component {
 
         setTimeout(()=>{
             this.setState({recved:true});
-        },8000)
+        },12000)
 
 
     }
