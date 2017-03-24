@@ -25,22 +25,25 @@ import {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {loginAction,setTimerAction} from '../action/actionCreator';
+var Proxy = require('../proxy/Proxy');
+import {
+    loginAction,
+    setTimerAction
+} from '../action/actionCreator';
+
 
 import {
-    MapView,
-    MapTypes,
-    Geolocation
-} from 'react-native-baidu-map';
+    updatePageState
+} from '../action/PageStateActions';
 
-var Proxy = require('../proxy/Proxy');
+import {
+    PAGE_REGISTER
+} from '../constants/PageStateConstants';
 
 var MessageBarAlert = require('react-native-message-bar').MessageBar;
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 import Sound from 'react-native-sound';
-const requireAudio = require('../../serviceAudio.wav');
 
-var Promise = require('bluebird');
 
 var  Login =React.createClass({
 
@@ -74,6 +77,11 @@ var  Login =React.createClass({
             }
         }else{}
 
+    },
+
+    navigate2Register:function(){
+        //TODO:dispatch a action
+        this.props.dispatch(updatePageState({state:PAGE_REGISTER}))
     },
 
     onPress:function () {
@@ -208,10 +216,13 @@ var  Login =React.createClass({
 
                         <View style={{flexDirection:'row',justifyContent:'center'}}>
                             <View style={[styles.row,{borderBottomWidth:0,marginBottom:10,width:width*3/5}]}>
-                                <View style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10
-                                    ,backgroundColor:'transparent'}}>
+                                <TouchableOpacity style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10
+                                    ,backgroundColor:'transparent'}}
+                                                  onPress={()=>{
+                                        this.navigate2Register();
+                                    }}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>注册</Text>
-                                </View>
+                                </TouchableOpacity>
                                 <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
                                      backgroundColor:'transparent'}}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>忘记密码</Text>

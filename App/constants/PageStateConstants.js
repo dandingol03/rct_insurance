@@ -1,0 +1,6 @@
+
+module.exports={
+    'PAGE_LOGIN':'PAGE_LOGIN',
+    'PAGE_REGISTER':'PAGE_REGISTER',
+    'UPDATE_PAGE_STATE':'UPDATE_PAGE_STATE'
+}

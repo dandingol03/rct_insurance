@@ -91,15 +91,23 @@ class Contact extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',flexDirection:'row',
+                <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',flexDirection:'row',
                     alignItems:'center',justifyContent:'flex-start',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
-                    <TouchableOpacity style={{width:80,alignItems:'flex-start',marginTop:20,paddingLeft:10}}
+                    <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                       onPress={()=>{
                                           this.goBack();
-                                      }}
-                        >
+                                      }}>
+
                         <Icon name="angle-left" size={40} color="#fff"></Icon>
                     </TouchableOpacity>
+
+
+                    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <Text>个人信息</Text>
+                    </View>
+
+                    <View style={{width:80,justifyContent:'center',marginTop:20,paddingLeft:10}}>
+                    </View>
                 </View>
 
                 {/*title part*/}

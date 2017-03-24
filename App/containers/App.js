@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Register from './Register';
 import Sound from 'react-native-sound';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
@@ -34,7 +34,13 @@ import {
     downloadGeneratedTTS,
     alertWithType
 } from '../action/JpushActions';
-import {enableCarOrderRefresh} from '../action/CarActions';
+import {
+    enableCarOrderRefresh
+} from '../action/CarActions';
+import {
+    PAGE_LOGIN,
+    PAGE_REGISTER
+} from '../constants/PageStateConstants';
 
 
 
@@ -274,7 +280,8 @@ class App extends React.Component {
 
     render() {
 
-        let auth=this.props.auth;
+        var props=this.props;
+        let auth=props.auth;
         if(auth==true)
         {
             return (
@@ -285,7 +292,16 @@ class App extends React.Component {
                 </TabNavigator>
             );
         }else{
-            return (<Login/>);
+            switch(props.page.state)
+            {
+                case PAGE_LOGIN:
+                    return (<Login/>);
+                    break;
+                case PAGE_REGISTER:
+                    return (<Register/>);
+                    break;
+            }
+
         }
     }
 
@@ -388,7 +404,8 @@ var styles = StyleSheet.create({
 export default connect(
     (state) => ({
         auth: state.user.auth,
-        notification:state.notification
+        notification:state.notification,
+        page:state.page
     })
 )(App);
 

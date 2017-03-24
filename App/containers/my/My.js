@@ -300,10 +300,7 @@ class My extends Component{
                             marginRight:1}}
                                           onPress={()=>{
                                               this.navigate2ContactInfo();
-                                          }}
-                        >
-
-
+                                          }}>
                                 <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_info.png')}
                                        onPress={()=>{
                                                    Alert.alert(
@@ -473,6 +470,13 @@ class My extends Component{
                         flashMode={this.state.camera.flashMode}
                         defaultTouchToFocus
                         mirrorImage={false}
+                        onBarCodeRead={(barcode)=>{
+                            var {type,data,bounds}=barcode;
+
+                            //TODO:
+                            //this is your barcode
+                            console.log('barcode data='+data);
+                        }}
                     />
                     <View style={[styles.overlay, styles.topOverlay]}>
                         <TouchableOpacity
