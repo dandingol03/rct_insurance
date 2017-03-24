@@ -41,6 +41,8 @@ import Sound from 'react-native-sound';
 const requireAudio = require('../../serviceAudio.wav');
 
 var Promise = require('bluebird');
+import PasswordForget from './PasswordForget';
+
 
 var  Login =React.createClass({
 
@@ -75,6 +77,19 @@ var  Login =React.createClass({
         }else{}
 
     },
+
+    // navigate2passwordForget:function(){
+    //     const { navigator } = this.props;
+    //     if(navigator) {
+    //         navigator.push({
+    //             name: 'password_forget',
+    //             component: PasswordForget,
+    //             params: {
+    //
+    //             }
+    //         })
+    //     }
+    // },
 
     onPress:function () {
         var form = this.refs.form.getValue();
@@ -212,10 +227,11 @@ var  Login =React.createClass({
                                     ,backgroundColor:'transparent'}}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>注册</Text>
                                 </View>
-                                <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
-                                     backgroundColor:'transparent'}}>
+                                <TouchableOpacity style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
+                                     backgroundColor:'transparent'}}
+                                                 >
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>忘记密码</Text>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
