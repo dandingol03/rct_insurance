@@ -302,7 +302,6 @@ class NewCarBind extends Component{
                 </View>
 
 
-
                 <View style={{flex:2,padding:10}}>
                     <View style={styles.row}>
 

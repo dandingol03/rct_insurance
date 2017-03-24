@@ -36,10 +36,6 @@ import {
 } from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
 
-
-
-
-
 var WeChat = require('react-native-wechat');
 
 
