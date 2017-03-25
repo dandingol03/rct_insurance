@@ -29,7 +29,8 @@ import PreferenceStore from '../components/utils/PreferenceStore';
 import {
     verifyMobilePhoneRedundancy,
     generateSecurityCode,
-    registerUser
+    registerUser,
+    passwordModify
 } from '../action/UserActions';
 
 import {
@@ -54,6 +55,58 @@ class PasswordModify extends Component{
         this[actionSheet].show();
     }
 
+    save()
+    {
+        var {info}=this.state;
+
+        if(info.code!==undefined&&info.code!==null&&info.code!='')
+        {
+            if(info.pwd!==undefined&&info.pwd!==null)
+            {
+                if(info.pwd_again!==undefined&&info.pwd_again!==null)
+                {
+                    if(info.pwd_again==info.pwd)
+                    {
+                        this.props.dispatch(passwordModify({password:info.pwd})).then((json)=>{
+                            if(json.re==1)
+                            {
+                                Alert.alert(
+                                    '信息',
+                                    '密码修改成功'
+                                )
+                            }
+                        }).catch((e)=>{
+                            Alert.alert(
+                                '错误',
+                                e
+                            )
+                        })
+                    }else{
+                        Alert.alert(
+                            '错误',
+                            '您输入的验证码不正确'
+                        )
+                    }
+
+                }else{
+                    Alert.alert(
+                        '错误',
+                        '请输入确认密码后再点击完成'
+                    )
+                }
+            }else{
+                Alert.alert(
+                    '错误',
+                    '请输入新的密码后再点击完成'
+                )
+            }
+        }else{
+            Alert.alert(
+                '错误',
+                '请输入验证码后再点击完成'
+            )
+        }
+    }
 
     setLifeInsurer(insurer){
         var lifeInsurer = insurer;
@@ -199,17 +252,6 @@ class PasswordModify extends Component{
         var props=this.props;
         var state=this.state;
 
-        var insuranceType = this.state.insuranceType;
-        var hasSocietyInsurance= this.state.hasSocietyInsurance;
-        var hasCommerceInsurance= this.state.hasCommerceInsurance;
-        var insurer = this.state.insurer;
-        var insuranceder = this.state.insuranceder;
-        var benefiter = this.state.benefiter;
-
-        const CANCEL_INDEX = 0;
-        const DESTRUCTIVE_INDEX = 1;
-
-        const insuranceTypeButtons=['取消','重疾险','意外险','养老险','理财险','医疗险'];
         return (
 
             <View style={{flex:1}}>
@@ -234,22 +276,22 @@ class PasswordModify extends Component{
                         <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
                             <View style={{width:70,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                 backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                               <Text style={{color:'#bf530c'}}>手机号</Text>
+                               <Text style={{color:'#bf530c'}}>手机号:</Text>
                             </View>
 
                             <View style={{flex:2,padding:5,justifyContent:'center'}}>
                                 <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(mobilePhone) =>
+                                    style={{height: 35,fontSize:13,paddingLeft:10}}
+                                    onChangeText={(phone) =>
                                     {
 
                                        var info=_.cloneDeep(state.info);
-                                       info.mobilePhone=mobilePhone;
+                                       info.phone=phone;
 
                                        this.setState({info:info});
                                     }}
 
-                                    value={state.info.mobilePhone}
+                                    value={state.info.phone}
                                     placeholder='请输入手机号'
                                     placeholderTextColor="#aaa"
                                     underlineColorAndroid="transparent"
@@ -266,155 +308,20 @@ class PasswordModify extends Component{
                         </View>
 
 
-                        {/*用户名*/}
+
+
+
+
+                        {/*验证码*/}
                         <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                            <View style={{width:70,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                 backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="user-o" size={24} color="#bf530c" />
+                                <Text style={{color:'#bf530c'}}>验证码:</Text>
                             </View>
 
                             <View style={{flex:5,padding:5,justifyContent:'center'}}>
                                 <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(username) =>
-                                    {
-
-                                       this.setState({info:Object.assign(state.info,{username:username})});
-                                    }}
-                                    value={state.info.username}
-                                    placeholder='请输入用户名'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-                        </View>
-
-
-                        {/*密码*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="lock" size={24} color="#bf530c" />
-                            </View>
-
-                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(password) =>
-                                    {
-                                       var reg=/\W/;
-                                       var info=_.cloneDeep(state.info);
-                                       info.password=password;
-                                       if(reg.exec(password)!=null)
-                                       {
-                                           info.password_error=true
-                                       }
-                                       this.setState({info:info});
-                                    }}
-                                    password={true}
-                                    value={state.info.password}
-                                    placeholder='请输入密码'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-
-                            {
-                                state.info.password_error==true?
-                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
-                                        <Text style={{color:'#222'}}>密码不能含中文</Text>
-                                    </View>:null
-                            }
-
-                        </View>
-
-                        {/*邮箱*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="envelope-o" size={22} color="#bf530c" />
-                            </View>
-
-                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(mail) =>
-                                    {
-                                       var reg=/@.*?\./;
-                                       var info=_.cloneDeep(state.info);
-                                       info.mail=mail;
-                                       if(reg.exec(mail)!=null)
-                                       {
-                                       }else{
-                                           info.mail_error=true
-                                       }
-                                       this.setState({info:info});
-                                    }}
-
-                                    value={state.info.mail}
-                                    placeholder='请输入邮箱地址，本项选填'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-
-                            {
-
-                                state.info.mail_error==true?
-                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
-                                        <Text style={{color:'#222'}}>输入的邮箱格式不正确</Text>
-                                    </View>:null
-                            }
-
-                        </View>
-
-
-                        {/*手机验证*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="mobile" size={27} color="#bf530c" />
-                            </View>
-
-                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(mobilePhone) =>
-                                    {
-
-                                       var info=_.cloneDeep(state.info);
-                                       info.mobilePhone=mobilePhone;
-
-                                       this.setState({info:info});
-                                    }}
-
-                                    value={state.info.mobilePhone}
-                                    placeholder='请输入手机号'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-
-                            <TouchableOpacity style={{padding:5,paddingHorizontal:20,justifyContent:'center',alignItems:'center',borderRadius:4,
-                                    backgroundColor:'#f79916'}}
-                                              onPress={()=>{
-                                         this.getCode();
-                                      }}>
-                                <Text style={{color:'#fff',fontSize:12}}>发送验证码</Text>
-                            </TouchableOpacity>
-                        </View>
-
-
-                        {/*验证码比对*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="expeditedssl" size={24} color="#bf530c" />
-                            </View>
-
-                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    style={{height: 35,fontSize:13,paddingLeft:10}}
                                     onChangeText={(code) =>
                                     {
 
@@ -430,20 +337,68 @@ class PasswordModify extends Component{
 
 
 
+                        {/*新密码*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:70,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Text style={{color:'#bf530c'}}>新密码:</Text>
+                            </View>
+
+                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:13,paddingLeft:10}}
+                                    onChangeText={(pwd) =>
+                                    {
+
+                                       this.setState({info:Object.assign(state.info,{pwd:pwd})});
+                                    }}
+                                    value={state.info.pwd}
+                                    placeholder='请输入新密码'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+                        </View>
+
+                        {/*确认密码*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:70,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Text style={{color:'#bf530c'}}>确认密码:</Text>
+                            </View>
+
+                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:13,paddingLeft:10}}
+                                    onChangeText={(pwd_again) =>
+                                    {
+
+                                       this.setState({info:Object.assign(state.info,{pwd_again:pwd_again})});
+                                    }}
+                                    value={state.info.pwd_again}
+                                    placeholder='请再次输入新密码'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+                        </View>
+
+
+                        {/*完成*/}
+                        <View style={{alignItems:'center',height:30,marginTop:10}}>
+                            <TouchableOpacity style={{width:width*2/3,borderRadius:6,padding:8,paddingVertical:10,backgroundColor:'#ef473a',justifyContent:'center',
+                                alignItems:'center'}}
+                                              onPress={()=>{
+                                         this.save();
+                                      }}>
+                                <Text style={{color:'#fff'}}>完成</Text>
+                            </TouchableOpacity>
+                        </View>
 
 
                     </View>
 
-                    <TouchableOpacity style={{flex:1,width:width-60,marginLeft:30,marginBottom:30,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                  backgroundColor:'rgba(17, 17, 17, 0.6)',borderRadius:8}}
-                                      onPress={()=>{
-                                         this.register();
-                                      }}>
-                        <View>
-                            <Text style={{fontSize:15,color:'#fff'}}>用户注册</Text>
-                        </View>
 
-                    </TouchableOpacity>
                 </Image>
 
             </View>
