@@ -35,6 +35,7 @@ import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
 import Portrait from '../Portrait';
+import Notification from '../Notification';
 
 class My extends Component{
 
@@ -42,6 +43,20 @@ class My extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2Notification()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Notification',
+                component: Notification,
+                params: {
+
+                }
+            })
         }
     }
 
@@ -312,7 +327,7 @@ class My extends Component{
 
                        <View style={{width:width,height:50,position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center',
                             justifyContent:'flex-start'}}>
-                            <View style={{padding:8,flexDirection:'row',alignItems:'center'}}>
+                            <View style={{width:120,padding:8,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{color:'#eee',fontWeight:'bold',fontSize:12,marginRight:4}}>
                                     积分:
                                 </Text>
@@ -320,6 +335,19 @@ class My extends Component{
                                     {props.score}
                                 </Text>
                             </View>
+
+                            <View style={{flex:1}}></View>
+
+                            <TouchableOpacity style={{width:80,padding:8,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
+                                              onPress={() => {
+                               this.navigate2Notification();
+                           }}>
+                                <Icon name="comments" size={20} color="#eee"></Icon>
+                                <Text style={{marginLeft:5,color:'#fff',fontSize:12}}>通知</Text>
+                            </TouchableOpacity>
+
+
+
                        </View>
 
                    </Image>
