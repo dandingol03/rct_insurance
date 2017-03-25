@@ -19,7 +19,8 @@ let maintainReducer = (state = initialState, action) => {
 
             return Object.assign({}, state,{
                 num:state.num++,
-                msg:msg
+                msg:msg,
+                validate:true
             })
         default:
             return state;

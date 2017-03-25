@@ -10,6 +10,7 @@ import car from './CarReducer';
 import serviceReducer from './ServiceReducer';
 import maintainReducer from './MaintainReducer';
 import notification from './NotificationReducer';
+import pageState from './PageStateReducer';
 
 export default rootReducer = combineReducers({
     user,
@@ -18,5 +19,6 @@ export default rootReducer = combineReducers({
     carOrders:car,
     service:serviceReducer,
     maintain:maintainReducer,
-    notification:notification
+    notification:notification,
+    page:pageState
 })
