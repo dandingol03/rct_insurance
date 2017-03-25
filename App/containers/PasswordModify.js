@@ -1,3 +1,6 @@
+/**
+ * Created by danding on 17/3/25.
+ */
 import React,{Component} from 'react';
 
 import  {
@@ -22,7 +25,6 @@ import Proxy from '../proxy/Proxy';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionSheet from 'react-native-actionsheet';
-
 import PreferenceStore from '../components/utils/PreferenceStore';
 import {
     verifyMobilePhoneRedundancy,
@@ -38,68 +40,19 @@ import {
     updatePageState
 } from '../action/PageStateActions';
 
-class Register extends Component{
+
+class PasswordModify extends Component{
 
     goBack(){
-        this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.pop();
+        }
     }
 
     show(actionSheet) {
         this[actionSheet].show();
     }
-
-
-    applyLifeInsuranceIntend(){
-
-        var order = {
-            insurer:this.state.insurer,
-            insuranceder:this.state.insuranceder,
-            benefiter:this.state.benefiter,
-            isLegalBenefiter:this.state.isLegalBenefiter,
-            insuranceType:this.state.insuranceType,
-            insuranceTypeCode:this.state.insuranceTypeCode,
-            hasSocietyInsurance:this.state.hasSocietyInsurance,
-            hasCommerceInsurance:this.state.hasCommerceInsurance,
-            planInsuranceFee:this.state.planInsuranceFee,
-        }
-
-        Proxy.post({
-            url:Config.server+'/svr/request',
-            headers: {
-                'Authorization': "Bearer " + this.state.accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: {
-                request:'generateLifeInsuranceOrder',
-                info:order,
-            }
-        }, (res)=> {
-            var json = res;
-            if(json.re==1)
-            {
-                var orderId=json.data.orderId;
-                if(orderId!==undefined&&orderId!==null)
-                {
-                    Alert.alert(
-                        '您的订单',
-                        '您的寿险意向已提交,请等待工作人员配置方案后在"我的寿险订单"中进行查询',
-                        [
-                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                            {text: 'OK', onPress: () => this.navigate2LifeOrders()},
-                        ]
-                    )
-
-                }
-            }
-        }, (err) =>{
-            var str='';
-            for(var field in err)
-                str += field + ':' + err[field];
-            alert('error=\r\n' + str);
-        });
-    }
-
-
 
 
     setLifeInsurer(insurer){
@@ -143,27 +96,27 @@ class Register extends Component{
         if(parseInt(code)==parseInt(info.code))
         {
             this.props.dispatch(registerUser(info)).then((json)=>{
-                    if(json.re==1) {
+                if(json.re==1) {
 
-                        PreferenceStore.put('username',info.username);
-                        PreferenceStore.put('password',info.password);
+                    PreferenceStore.put('username',info.username);
+                    PreferenceStore.put('password',info.password);
 
-                        //TODO:make this to confirm
-                        Alert.alert(
-                            '信息',
-                            '注册成功！是否要直接登录？',
-                            [
-                                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                                {text: 'OK', onPress: () => this.navigate2Login()},
-                            ]
-                        )
+                    //TODO:make this to confirm
+                    Alert.alert(
+                        '信息',
+                        '注册成功！是否要直接登录？',
+                        [
+                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                            {text: 'OK', onPress: () => this.navigate2Login()},
+                        ]
+                    )
 
-                    }else{
-                        Alert.alert(
-                            '错误',
-                            '注册失败'
-                        )
-                    }
+                }else{
+                    Alert.alert(
+                        '错误',
+                        '注册失败'
+                    )
+                }
             }).catch((e)=>{
                 alert(e);
             })
@@ -204,7 +157,7 @@ class Register extends Component{
             }).catch((e)=>{
                 Alert.alert(
                     '错误',
-                        e
+                    e
                 )
 
             })
@@ -267,7 +220,7 @@ class Register extends Component{
                         <Icon name="angle-left" size={40} color="#fff" />
                     </TouchableOpacity>
                     <Text style={{fontSize:17,flex:3,textAlign:'center',color:'#fff'}}>
-                        用户注册
+                        修改密码
                     </Text>
                 </View>
 
@@ -276,8 +229,45 @@ class Register extends Component{
                     <View style={{flex:10,padding:10}}>
 
 
+
+                        {/*手机验证*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:70,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                               <Text style={{color:'#bf530c'}}>手机号</Text>
+                            </View>
+
+                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    onChangeText={(mobilePhone) =>
+                                    {
+
+                                       var info=_.cloneDeep(state.info);
+                                       info.mobilePhone=mobilePhone;
+
+                                       this.setState({info:info});
+                                    }}
+
+                                    value={state.info.mobilePhone}
+                                    placeholder='请输入手机号'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+
+                            <TouchableOpacity style={{padding:5,paddingHorizontal:20,justifyContent:'center',alignItems:'center',borderRadius:4,
+                                    backgroundColor:'#f79916'}}
+                                              onPress={()=>{
+                                         this.getCode();
+                                      }}>
+                                <Text style={{color:'#fff',fontSize:12}}>发送验证码</Text>
+                            </TouchableOpacity>
+                        </View>
+
+
                         {/*用户名*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5}]}>
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
                             <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                 backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
                                 <Icon name="user-o" size={24} color="#bf530c" />
@@ -504,5 +494,5 @@ var styles = StyleSheet.create({
 module.exports = connect(state=>({
         accessToken:state.user.accessToken
     })
-)(Register);
+)(PasswordModify);
 
