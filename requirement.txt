@@ -3,7 +3,7 @@
 
 一、登陆页：
 1.注册新用户：Login.js  213行
-2.忘记密码：Login.js  217行
+2.忘记密码：Login.js  217行  (小丁)
 3.保存登录过的用户名、密码（自动登录功能）：Login.js  146行，186行
 4.新版本app升级
 
@@ -12,7 +12,7 @@
 2.联系客服一项：只完成了页面
 
 三、主页（除去四大块主要业务）
-1.显示注册人数及成交订单数
+1.显示注册人数及成交订单数(小丁)
 
 四、”我”页面：
 1.退出按钮功能：退出已登录的帐号  My.js 430行
@@ -31,9 +31,9 @@
 2.车辆管理:搜索框，查询已绑定车辆并显示车牌信息：未完成  containers->CarManage.js 389行
 3.车辆管理:已绑定车辆列表：车辆详情页面未完成 containers->CarManage.js 262行
                                        点击车牌号不应进入选险种页面 CarManage.js 250行
-4.创建新车：选择用车城市的组件react-native-grid-view,index.js 16行 forEach换为  items._dataBlob.s1.forEach(function(item) {
-5.创建新车：NewCar
-
+4.创建新车：选择用车城市的组件react-native-grid-view,index.js 16行 forEach换为  items._dataBlob.s1.forEach(function(item) {（小丁）
+5.创建新车：填写车辆信息页面：没有输入车主信息及身份证的地方。
+6.创建新车：填写车辆信息，一期是和上传行驶证一样的按钮。二期是直接填写。
 
 
 六、寿险：
