@@ -44,10 +44,11 @@ class PasswordForget extends Component{
                 'Authorization': "Bearer " + this.state.accessToken,
                 'Content-Type': 'application/json'
             }
-        },(json)=> {
+        },(res)=> {
+            var json = res.data;
             if(json.re==1) {
+
                 this.state.generatedCode = json.data;
-                alert(this.state.generatedCode);
             }
             else{
                 console.error('error=\r\n'+json.data);

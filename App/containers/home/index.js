@@ -23,6 +23,8 @@ import Maintain from '../maintain/Maintain.js';
 import CarManage from '../car/CarManage';
 import BaiduHome from '../map/BaiduHome';
 
+import Config from '../../../config';
+import Proxy from '../../proxy/Proxy';
 import {
     closeMessage
 } from '../../action/JpushActions';
@@ -48,8 +50,6 @@ class Home extends Component{
             })
         }
     }
-
-
 
     navigate2Life(){
         const { navigator } = this.props;
@@ -155,6 +155,48 @@ class Home extends Component{
         return row;
     }
 
+    getUserCounters(){
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'fetchUserCounters',
+
+            }
+        },(json)=> {
+            if(json.re==1){
+               this.setState({userCounters:json.data});
+            }
+            else{
+
+            }
+        }, (err) =>{
+        });
+    }
+
+    getOrderCounters(){
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'fetchOrderCounters',
+            }
+        },(json)=> {
+            if(json.re==1){
+                this.setState({orderCounters:json.data});
+            }
+            else{
+
+            }
+        }, (err) =>{
+        });
+    }
 
     constructor(props)
     {
@@ -170,22 +212,41 @@ class Home extends Component{
                     }
                     return r1 !== r2;
                 }
-            })
+            }),
+            userCounters:null,
+            orderCounters:null,
+
         };
     }
 
 
     render(){
-        var username='danding';
-        var {goodInfo}=this.state;
 
         var props=this.props;
         var state=this.state;
+        if(this.state.userCounters==null){
+            this.getUserCounters();
+        }
+        if(this.state.userCounters==null){
+            this.getOrderCounters();
+        }
 
         return (
             <View style={{flex:1}}>
                 {/* header bar */}
                 <Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />
+                <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:195,
+                backgroundColor:'rgba(255, 255, 255, 0.5)',margin:5,padding:5}}>
+                    <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',paddingRight:10,}}>
+                        <Text>注册人数:</Text>
+                        <Text>{this.state.userCounters}</Text>
+                    </View>
+                    <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',paddingRight:10,}}>
+                        <Text>成交订单数:</Text>
+                        <Text>{this.state.userCounters}</Text>
+                    </View>
+
+                </View>
 
                 {/* body*/}
                 <Image style={{width:width,height:height-230}} source={require('../../img/bkg1@2x.png')}>
