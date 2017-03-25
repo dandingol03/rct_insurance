@@ -19,7 +19,8 @@ import {
     TabBarIOS,
     TouchableOpacity,
     Dimensions,
-    Modal
+    Modal,
+    Platform
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -39,7 +40,7 @@ import {
 import {
     PAGE_REGISTER
 } from '../constants/PageStateConstants';
-
+import PreferenceStore from '../components/utils/PreferenceStore';
 var MessageBarAlert = require('react-native-message-bar').MessageBar;
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 import Sound from 'react-native-sound';
@@ -285,56 +286,38 @@ var  Login =React.createClass({
     componentDidMount() {
         MessageBarManager.registerMessageBar(this.refs.alert);
 
-        setTimeout(function () {
-            Sound.setCategory('Playback', true)
-            const s = new Sound('./serviceAudio.wav',  Sound.MAIN_BUNDLE,(e) => {
-                if (e) {
-                    alert(e)
-                    return;
-                }
-
-                s.play(() => s.release());
-            });
-        },1000)
-
-
-        // var  makePromise=(name, delay) =>{
-        //     return new Promise((resolve) => {
-        //         console.log(`${name} started`);
-        //         setTimeout(() => {
-        //             console.log(`${name} completed`);
-        //             resolve(name);
-        //         }, delay);
-        //     });
-        // }
-        //
-        // var data = [2000, 1, 1000];
-        // Promise.reduce(data, ( item, index) => {
-        //     return makePromise(index, item).then(res => {
-        //         return  res;
-        //     });
-        // }, 0).then(res => {
-        //     console.log(res);
-        // });
-
-
-        // MessageBarManager.showAlert({
-        //     title: "John Doe", // Title of the alert
-        //     message: "Hello, any suggestions?", // Message of the alert
-        //     avatar: require('../img/person.jpg'),
-        //     titleNumberOfLines: 1,
-        //     messageNumberOfLines: 0,
-        //     titleStyle: {color: 'white', fontSize: 18, fontWeight: 'bold' },
-        //     messageStyle: { color: 'white', fontSize: 16 ,},
-        //     avatarStyle: { height: 40, width: 40, borderRadius: 20 },
-        //     animationType: 'SlideFromLeft',
-        //     shouldHideAfterDelay:false,
-        //     stylesheetExtra:{backgroundColor:'rgba(180,180,180,0.5)',strokeColor:'transparent'}
-        // });
-        //
         // setTimeout(function () {
-        //     MessageBarManager.hideAlert();
-        // }.bind(this),1000);
+        //     Sound.setCategory('Playback', true)
+        //     const s = new Sound('./serviceAudio.wav',  Sound.MAIN_BUNDLE,(e) => {
+        //         if (e) {
+        //             alert(e)
+        //             return;
+        //         }
+        //
+        //         s.play(() => s.release());
+        //     });
+        // },1000)
+
+        //fetch username and password
+        var username=null;
+        var password=null;
+       PreferenceStore.get('username').then((val)=>{
+            username=val;
+            return PreferenceStore.get('password');
+       }).then((val)=>{
+            password=val;
+            if(username!==undefined&&username!==null&&username!=''
+                &&password!==undefined&&password!==null&&password!='')
+            {
+                //TODO:auto-login
+                this.setState({user:{
+                    username:username,
+                    password:password
+                }})
+                this.onLoginPressed();
+            }
+       })
+
 
     },
     componentWillUnmount() {
