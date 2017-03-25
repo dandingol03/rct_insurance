@@ -30,6 +30,9 @@ import {
 import {
     updatePageState
 } from '../action/PageStateActions';
+import {
+    generateSecurityCode,
+} from '../action/UserActions';
 
 class PasswordForget extends Component{
 
@@ -38,27 +41,25 @@ class PasswordForget extends Component{
     }
 
     getCode(){
-        Proxy.get({
-            url:Config.server+'/securityCode?'+"phoneNum=" + this.state.phoneNum,
-            headers: {
-                'Authorization': "Bearer " + this.state.accessToken,
-                'Content-Type': 'application/json'
-            }
-        },(res)=> {
-            var json = res.data;
-            if(json.re==1) {
-
-                this.state.generatedCode = json.data;
-            }
-            else{
-                console.error('error=\r\n'+json.data);
-            }
-
-        }, (err) =>{
-        });
+            Proxy.get({
+                url:Config.server+'/securityCode?'+"phoneNum=" + this.state.phoneNum,
+                headers: {
+                    'Authorization': "Bearer " + this.state.accessToken,
+                    'Content-Type': 'application/json'
+                }
+            }).then((json)=>{
+                if(json.re==1)
+                {
+                    this.setState({generatedCode:json.data});
+                }
+            }).catch((e)=>{
+                reject(e);
+            })
     }
 
+
     apply(){
+
         if(this.state.generatedCode==this.state.code)
         {
             Proxy.post({
@@ -145,7 +146,7 @@ class PasswordForget extends Component{
                                 </View>
                                 <TouchableOpacity style={{flex:3,padding:5,backgroundColor:'#f79916',justifyContent:'center',alignItems:'center',}}
                                                   onPress={()=>{
-                                         this.getCode();
+                                           this.getCode();
                                       }}>
                                     <Text style={{padding:5,paddingLeft:0,paddingRight:0,color:'#fff',fontSize:13}}>发送验证码</Text>
                                 </TouchableOpacity>

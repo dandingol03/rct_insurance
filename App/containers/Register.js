@@ -462,13 +462,10 @@ class Register extends Component{
 
     componentDidMount()
     {
-        SInfo.setItem('name', 'danding',{
-            sharedPreferencesName:'shared_preferences',
-            keychainService:'app'
-        });
-
-
-
+        // SInfo.setItem('name', 'danding',{
+        //     sharedPreferencesName:'shared_preferences',
+        //     keychainService:'app'
+        // });
 
     }
 
