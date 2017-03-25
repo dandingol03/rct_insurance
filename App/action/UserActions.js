@@ -37,7 +37,88 @@ export let updateCertificate=(payload)=>{
     }
 }
 
+//校验用户手机是否冗余
+export let verifyMobilePhoneRedundancy=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve,reject)=>{
+           var state=getState();
 
+           var {mobilePhone}=payload;
+            Proxy.postes({
+                url: Config.server + '/verifyMobilePhoneRedundancy',
+                headers: {
+                    'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    mobilePhone:mobilePhone,
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e);
+            })
+        });
+    }
+}
+
+//生成验证码
+export let generateSecurityCode=(payload)=>{
+
+        return new Promise((resolve,reject)=> {
+            var {mobilePhone}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/securityCode',
+                headers: {
+                    'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    phoneNum:mobilePhone,
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e);
+            })
+
+        });
+
+}
+
+
+//用户注册
+export let registerUser=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+            var state=getState();
+
+
+            var {username,password,mail,mobilePhone}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/register?'+'username='+username+'&&password='+password+
+                    '&&mobilePhone='+mobilePhone+'&&EMAIL='+mail,
+                headers: {
+                    'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then((json)=>{
+                resolve(json)
+
+            }).catch((e)=>{
+                alert(e);
+                reject(e);
+            })
+
+
+        });
+    }
+}
+
+
+//获取个人积分
 export let fetchScoreBalance=()=>{
     return (dispatch,getState)=> {
         return new Promise((resolve, reject) => {

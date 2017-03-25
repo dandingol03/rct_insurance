@@ -37,6 +37,7 @@
     "react-native-popupwindow": "^0.3.0",
     "react-native-prompt": "^1.0.0",
     "react-native-scrollable-tab-view": "^0.7.2",
+    "react-native-sensitive-info": "^4.0.0",
     "react-native-sound": "^0.9.0",
     "react-native-statusbar-alert": "^0.2.0",
     "react-native-switch-pro": "^0.4.1",
