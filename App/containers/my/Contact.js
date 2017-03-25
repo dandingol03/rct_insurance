@@ -1,10 +1,4 @@
-/**
-<<<<<<< HEAD
- * Created by danding on 17/2/27.
- */
-/**
- * Created by dingyiming on 2017/2/15.
- */
+
 import React,{Component} from 'react';
 
 import  {
@@ -25,6 +19,8 @@ var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import Prompt from 'react-native-prompt';
 import {saveContactInfo} from '../../action/UserActions';
+
+
 
 class Contact extends Component{
 

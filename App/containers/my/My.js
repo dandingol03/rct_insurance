@@ -32,6 +32,8 @@ import CarOrders from '../car/CarOrders';
 import Camera from 'react-native-camera';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
+import HelpAndConfig from '../../components/Help/HelpAndConfig';
+
 
 class My extends Component{
 
@@ -39,6 +41,20 @@ class My extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2HelpAndConfig()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'HelpAndConfig',
+                component: HelpAndConfig,
+                params: {
+
+                }
+            })
         }
     }
 
@@ -433,7 +449,9 @@ class My extends Component{
                     <TouchableOpacity style={[styles.popoverContent,{flexDirection:'row'}]}
                                       onPress={()=>{
                                               this.closePopover();
-
+                                              setTimeout(()=>{
+                                                  this.navigate2HelpAndConfig();
+                                              },300);
                                           }}>
                         <Icon name="exclamation-circle" size={20} color="#444"></Icon>
                         <Text style={[styles.popoverText]}>帮助</Text>
