@@ -22,6 +22,7 @@ import Proxy from '../proxy/Proxy';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionSheet from 'react-native-actionsheet';
+
 import PreferenceStore from '../components/utils/PreferenceStore';
 import {
     verifyMobilePhoneRedundancy,
@@ -37,14 +38,10 @@ import {
     updatePageState
 } from '../action/PageStateActions';
 
-
 class Register extends Component{
 
     goBack(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.pop();
-        }
+        this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
     }
 
     show(actionSheet) {

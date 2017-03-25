@@ -1,6 +1,7 @@
 import {
     PAGE_REGISTER,
     PAGE_LOGIN,
+    PAGE_PASSWORDFORGET,
     UPDATE_PAGE_STATE
 } from '../constants/PageStateConstants';
 

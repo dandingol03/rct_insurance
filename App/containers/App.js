@@ -21,6 +21,8 @@ import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
 import Register from './Register';
+import PasswordForget from './PasswordForget';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Sound from 'react-native-sound';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
@@ -34,16 +36,13 @@ import {
     downloadGeneratedTTS,
     alertWithType
 } from '../action/JpushActions';
-import {
-    enableCarOrderRefresh
-} from '../action/CarActions';
+import {enableCarOrderRefresh} from '../action/CarActions';
 import {
     PAGE_LOGIN,
-    PAGE_REGISTER
+    PAGE_REGISTER,
+    PAGE_PASSWORDFORGET,
+
 } from '../constants/PageStateConstants';
-
-
-
 
 
 var WeChat = require('react-native-wechat');
@@ -281,7 +280,7 @@ class App extends React.Component {
     render() {
 
         var props=this.props;
-        let auth=props.auth;
+        let auth=this.props.auth;
         if(auth==true)
         {
             return (
@@ -300,8 +299,10 @@ class App extends React.Component {
                 case PAGE_REGISTER:
                     return (<Register/>);
                     break;
+                case PAGE_PASSWORDFORGET:
+                    return (<PasswordForget/>);
+                    break;
             }
-
         }
     }
 

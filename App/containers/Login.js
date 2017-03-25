@@ -38,12 +38,14 @@ import {
 } from '../action/PageStateActions';
 
 import {
-    PAGE_REGISTER
+    PAGE_REGISTER,
+    PAGE_PASSWORDFORGET,
 } from '../constants/PageStateConstants';
 import PreferenceStore from '../components/utils/PreferenceStore';
 var MessageBarAlert = require('react-native-message-bar').MessageBar;
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 import Sound from 'react-native-sound';
+
 
 
 var  Login =React.createClass({
@@ -83,6 +85,11 @@ var  Login =React.createClass({
     navigate2Register:function(){
         //TODO:dispatch a action
         this.props.dispatch(updatePageState({state:PAGE_REGISTER}))
+    },
+
+    navigate2PasswordForget:function(){
+        //TODO:dispatch a action
+        this.props.dispatch(updatePageState({state:PAGE_PASSWORDFORGET}))
     },
 
     onPress:function () {
@@ -224,10 +231,14 @@ var  Login =React.createClass({
                                     }}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>注册</Text>
                                 </TouchableOpacity>
-                                <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
-                                     backgroundColor:'transparent'}}>
+
+                                <TouchableOpacity style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
+                                     backgroundColor:'transparent'}}
+                                                  onPress={()=>{
+                                        this.navigate2PasswordForget();
+                                    }}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>忘记密码</Text>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
@@ -329,6 +340,7 @@ var  Login =React.createClass({
 
 
 export default connect(
+
 )(Login);
 
 

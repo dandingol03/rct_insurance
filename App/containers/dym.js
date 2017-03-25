@@ -24,6 +24,7 @@ var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AudioExample from '../../AudioExample';
+import PasswordForget from './PasswordForget';
 
 class dym extends Component{
 
@@ -33,6 +34,19 @@ class dym extends Component{
             navigator.push({
                 name: 'audioExample',
                 component: AudioExample,
+                params: {
+
+                }
+            })
+        }
+    }
+
+    navigate2passwordForget(){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'password_forget',
+                component: PasswordForget,
                 params: {
 
                 }
@@ -69,6 +83,15 @@ class dym extends Component{
                              }}>
                       <View>
                           <Text style={{fontSize: 30}}>AudioExample</Text>
+                      </View>
+
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
+                        this.navigate2passwordForget();
+                             }}>
+                      <View>
+                          <Text style={{fontSize: 30}}>PasswordForget</Text>
                       </View>
 
                   </TouchableOpacity>
