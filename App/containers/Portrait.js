@@ -19,6 +19,8 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import _ from 'lodash';
+import Config from '../../config';
+import Proxy from '../proxy/Proxy';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Camera from 'react-native-camera';
 import PreferenceStore from '../components/utils/PreferenceStore';
@@ -52,13 +54,8 @@ class Portrait extends Component{
                 .then((json) => {
                     var data=json.data;
                     var path=json.path;
-                    //the comment below is to make we can get path from the callback
-                    setTimeout(function () {
-                        Alert.alert(
-                            'info',
-                            'photo path='+path);
-                    },1000)
-                    this.setState({cameraModalVisible:false,portrait:path});
+                    this.setState({cameraModalVisible:false,portrait:{path:path}});
+                    //TODO:make a dispatch
                     this.storePicture(path);
                 })
                 .catch(err => console.error(err));
