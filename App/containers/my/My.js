@@ -33,7 +33,7 @@ import Camera from 'react-native-camera';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
-
+import PasswordModify from '../PasswordModify';
 
 class My extends Component{
 
@@ -57,6 +57,21 @@ class My extends Component{
             })
         }
     }
+
+    navigate2PasswordModify()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'PasswordModify',
+                component: PasswordModify,
+                params: {
+
+                }
+            })
+        }
+    }
+
 
 
     navigate2ContactInfo()
@@ -425,7 +440,7 @@ class My extends Component{
                     style={{backgroundColor:'transparent'}}
                 >
 
-                    <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row'}]}
+                    <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row',justifyContent:'flex-start'}]}
                                       onPress={()=>{
                                               this.closePopover();
                                               setTimeout(()=>{
@@ -440,13 +455,15 @@ class My extends Component{
                     <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row'}]}
                                       onPress={()=>{
                                               this.closePopover();
-
+                                                 setTimeout(()=>{
+                                                  this.navigate2PasswordModify();
+                                              },300);
                                           }}>
                         <Icon name="gear" size={20} color="#444"></Icon>
-                        <Text style={[styles.popoverText]}>设置</Text>
+                        <Text style={[styles.popoverText]}>修改密码</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.popoverContent,{flexDirection:'row'}]}
+                    <TouchableOpacity style={[styles.popoverContent,{flexDirection:'row',justifyContent:'flex-start'}]}
                                       onPress={()=>{
                                               this.closePopover();
                                               setTimeout(()=>{
