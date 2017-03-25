@@ -356,7 +356,8 @@ class App extends React.Component {
     }
 
     onOpenMessage(message) {
-        alert(message);
+        console.log(message);
+
     }
 
 }

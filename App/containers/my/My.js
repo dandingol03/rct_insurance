@@ -14,7 +14,8 @@ import  {
     Alert,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal
+    Modal,
+    BackAndroid
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -108,20 +109,6 @@ class My extends Component{
             navigator.push({
                 name: 'LifeOrders',
                 component: LifeOrders,
-                params: {
-
-                }
-            })
-        }
-    }
-
-    navigate2CarOrders()
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'CarOrders',
-                component: CarOrders,
                 params: {
 
                 }
@@ -424,9 +411,11 @@ class My extends Component{
 
                     <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row'}]}
                                       onPress={()=>{
-
                                               this.closePopover();
-                                              //this.navigateGoodAdd();
+                                              setTimeout(()=>{
+                                                   BackAndroid.exitApp();
+                                              },300);
+
                                           }}>
                         <Icon name="power-off" size={20} color="#444"></Icon>
                         <Text style={[styles.popoverText]}>退出</Text>
