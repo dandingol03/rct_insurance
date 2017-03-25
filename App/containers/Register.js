@@ -22,11 +22,23 @@ import Proxy from '../proxy/Proxy';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionSheet from 'react-native-actionsheet';
-import AppendLifeInsurer from './life/AppendLifeInsurer.js';
-import LifeOrders from './life/LifeOrders';
-import MyPop from 'react-native-popupwindow';
+import PreferenceStore from '../components/utils/PreferenceStore';
+import {
+    verifyMobilePhoneRedundancy,
+    generateSecurityCode,
+    registerUser
+} from '../action/UserActions';
 
-class Life extends Component{
+import {
+    PAGE_LOGIN
+} from '../constants/PageStateConstants';
+
+import {
+    updatePageState
+} from '../action/PageStateActions';
+
+
+class Register extends Component{
 
     goBack(){
         const { navigator } = this.props;
@@ -35,94 +47,10 @@ class Life extends Component{
         }
     }
 
-    onPressHandle() {
-        let options = {
-        };
-        MyPop.showPopupWindow(options,(err,action,button) =>{
-            if(err){
-                ToastAndroid.show(err,ToastAndroid.SHORT);
-            }else{
-                if(action === 'buttonClicked'){
-                    if(button === 'positive'){
-                        ToastAndroid.show('点击确定',ToastAndroid.SHORT);
-                    }else if(button === 'negative'){
-                        ToastAndroid.show('点击取消',ToastAndroid.SHORT);
-                    }
-                }
-            }
-        });
-    }
-
-
-
     show(actionSheet) {
         this[actionSheet].show();
     }
 
-    saveLifeInsuranceIntend(){
-        if(this.state.insuranceder.personId!=undefined&&this.state.insuranceder.personId!=null
-            &&this.state.insurer.personId!=undefined&&this.state.insurer.personId!=null
-            &&((this.state.benefiter.personId!=undefined&&this.state.benefiter.personId!=null)
-            ||(this.state.isLegalBenefiter!=undefined&&$this.state.isLegalBenefiter!=null))
-            &&this.state.planInsuranceFee!=undefined&&this.state.planInsuranceFee!=null
-            &&this.state.insuranceTypeCode!=undefined&&this.state.insuranceTypeCode!=null)
-        {
-            //TDOO:校验是否已有寿险订单
-            //受益人法定
-            Proxy.post({
-                url:Config.server+'/svr/request',
-                headers: {
-                    'Authorization': "Bearer " + this.state.accessToken,
-                    'Content-Type': 'application/json'
-                },
-                body: {
-                    request:'validateLifeInsuranceOrderApplyRedundancy',
-                    info:{
-                        insurancederId:this.state.insuranceder.personId,
-                        insurerId:this.state.insurer.personId,
-                        benefiterId:this.state.benefiter.personId
-                    }
-                }
-            }, (res)=> {
-                var json=res.data;
-                if(json==true) {
-
-                    if(this.state.benefiter.personId!==undefined&&this.state.benefiter.personId!==null&&this.state.benefiter.personId!=='')
-                    {
-                        Alert.alert(
-                            '您的订单',
-                            '已存在正在申请的相同投保人、被保险人的寿险订单,是否仍要提交',
-                            [
-                                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                                {text: 'OK', onPress: () => this.applyLifeInsuranceIntend()},
-                            ]
-                        )
-                    }
-                    else{
-
-                        Alert.alert(
-                            '您的订单',
-                            '已存在正在申请的相同投保人、被保险人、受益人的寿险订单的寿险订单,是否仍要提交',
-                            [
-                                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                                {text: 'OK', onPress: () => this.applyLifeInsuranceIntend()},
-                            ]
-                        )
-                    }
-
-                }else{
-                    this.applyLifeInsuranceIntend();
-                }
-
-            }, (err) =>{
-            });
-        }
-        else
-        {
-            alert("请填写完寿险意向后才选择提交")
-        }
-
-    }
 
     applyLifeInsuranceIntend(){
 
@@ -175,18 +103,7 @@ class Life extends Component{
     }
 
 
-    navigate2LifeOrders(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'life_orders',
-                component: LifeOrders,
-                params: {
 
-                }
-            })
-        }
-    }
 
     setLifeInsurer(insurer){
         var lifeInsurer = insurer;
@@ -215,20 +132,94 @@ class Life extends Component{
 
     }
 
-    navigate2AppendLifeInsurer(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'append_life_insurer',
-                component: AppendLifeInsurer,
-                params: {
-                    setLifeInsurer:this.setLifeInsurer.bind(this),
-                }
+    //转向登录界面
+    navigate2Login(){
+
+        this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
+    }
+
+
+    register()
+    {
+        //TODO:比对state.code和state.info.code
+        var {code,info}=this.state;
+        if(parseInt(code)==parseInt(info.code))
+        {
+            this.props.dispatch(registerUser(info)).then((json)=>{
+                    if(json.re==1) {
+
+                        PreferenceStore.put('username',info.username);
+                        PreferenceStore.put('password',info.password);
+
+                        //TODO:make this to confirm
+                        Alert.alert(
+                            '信息',
+                            '注册成功！是否要直接登录？',
+                            [
+                                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                                {text: 'OK', onPress: () => this.navigate2Login()},
+                            ]
+                        )
+
+                    }else{
+                        Alert.alert(
+                            '错误',
+                            '注册失败'
+                        )
+                    }
+            }).catch((e)=>{
+                alert(e);
             })
+
+        }else{
+            Alert.alert(
+                '错误',
+                '手机验证码输入错误'
+            )
         }
     }
 
 
+    getCode()
+    {
+        //获取验证码
+        var {mobilePhone}=this.state.info;
+        var reg=/^\d{11}$/;
+        if(reg.exec(mobilePhone)!==null)
+        {
+            this.props.dispatch(verifyMobilePhoneRedundancy({mobilePhone:mobilePhone})).then((json)=>{
+                if(json.data==true)
+                {
+                    Alert.alert(
+                        '错误',
+                        '您输入的手机号已被使用,请重新填入手机号再注册'
+                    )
+
+                }else{
+                    generateSecurityCode({mobilePhone:mobilePhone}).then((json)=>{
+                        if(json.re==1)
+                        {
+                            this.setState({code:json.data});
+                        }
+                    })
+                }
+
+            }).catch((e)=>{
+                Alert.alert(
+                    '错误',
+                        e
+                )
+
+            })
+
+        }else{
+            Alert.alert(
+                '错误',
+                '请输入11位的数字作为手机号\r\n再点击获取验证码'
+            )
+        }
+
+    }
 
     constructor(props)
     {
@@ -297,7 +288,7 @@ class Life extends Component{
 
                             <View style={{flex:5,padding:5,justifyContent:'center'}}>
                                 <TextInput
-                                    style={{height: 35,fontSize:15,paddingLeft:20}}
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
                                     onChangeText={(username) =>
                                     {
 
@@ -321,7 +312,7 @@ class Life extends Component{
 
                             <View style={{flex:2,padding:5,justifyContent:'center'}}>
                                 <TextInput
-                                    style={{height: 35,fontSize:15,paddingLeft:20}}
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
                                     onChangeText={(password) =>
                                     {
                                        var reg=/\W/;
@@ -350,33 +341,108 @@ class Life extends Component{
 
                         </View>
 
-
-                        {/*投保人*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
-                            <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>投保人:</Text>
+                        {/*邮箱*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Icon name="envelope-o" size={22} color="#bf530c" />
                             </View>
-                            {
-                                (insurer.perName!==undefined&&insurer.perName!==null)?
-                                    <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>{insurer.perName}</Text>
-                                    </View>:
-                                    <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>谁交保费</Text>
-                                    </View>
 
+                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    onChangeText={(mail) =>
+                                    {
+                                       var reg=/@.*?\./;
+                                       var info=_.cloneDeep(state.info);
+                                       info.mail=mail;
+                                       if(reg.exec(mail)!=null)
+                                       {
+                                       }else{
+                                           info.mail_error=true
+                                       }
+                                       this.setState({info:info});
+                                    }}
+
+                                    value={state.info.mail}
+                                    placeholder='请输入邮箱地址，本项选填'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+
+                            {
+
+                                state.info.mail_error==true?
+                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
+                                        <Text style={{color:'#222'}}>输入的邮箱格式不正确</Text>
+                                    </View>:null
                             }
-                            <TouchableOpacity style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                            marginBottom:0,borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}
+
+                        </View>
+
+
+                        {/*手机验证*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Icon name="mobile" size={27} color="#bf530c" />
+                            </View>
+
+                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    onChangeText={(mobilePhone) =>
+                                    {
+
+                                       var info=_.cloneDeep(state.info);
+                                       info.mobilePhone=mobilePhone;
+
+                                       this.setState({info:info});
+                                    }}
+
+                                    value={state.info.mobilePhone}
+                                    placeholder='请输入手机号'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+
+                            <TouchableOpacity style={{padding:5,paddingHorizontal:20,justifyContent:'center',alignItems:'center',borderRadius:4,
+                                    backgroundColor:'#f79916'}}
                                               onPress={()=>{
-                                                  this.navigate2AppendLifeInsurer();
-                                         console.log('选择投保人')
+                                         this.getCode();
                                       }}>
-                                <View>
-                                    <Text style={{color:'#fff',fontSize:12}}>选择</Text>
-                                </View>
+                                <Text style={{color:'#fff',fontSize:12}}>发送验证码</Text>
                             </TouchableOpacity>
                         </View>
+
+
+                        {/*验证码比对*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Icon name="expeditedssl" size={24} color="#bf530c" />
+                            </View>
+
+                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    onChangeText={(code) =>
+                                    {
+
+                                       this.setState({info:Object.assign(state.info,{code:code})});
+                                    }}
+                                    value={state.info.code}
+                                    placeholder='请输入验证码'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
+                        </View>
+
+
+
 
 
                     </View>
@@ -384,10 +450,10 @@ class Life extends Component{
                     <TouchableOpacity style={{flex:1,width:width-60,marginLeft:30,marginBottom:30,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                   backgroundColor:'rgba(17, 17, 17, 0.6)',borderRadius:8}}
                                       onPress={()=>{
-                                         this.saveLifeInsuranceIntend();
+                                         this.register();
                                       }}>
                         <View>
-                            <Text style={{fontSize:15,color:'#fff'}}>提交寿险意向</Text>
+                            <Text style={{fontSize:15,color:'#fff'}}>用户注册</Text>
                         </View>
 
                     </TouchableOpacity>
@@ -396,6 +462,19 @@ class Life extends Component{
             </View>
         );
     }
+
+    componentDidMount()
+    {
+        SInfo.setItem('name', 'danding',{
+            sharedPreferencesName:'shared_preferences',
+            keychainService:'app'
+        });
+
+
+
+
+    }
+
 }
 
 
@@ -439,5 +518,5 @@ var styles = StyleSheet.create({
 module.exports = connect(state=>({
         accessToken:state.user.accessToken
     })
-)(Life);
+)(Register);
 
