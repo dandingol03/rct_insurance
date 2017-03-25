@@ -11,7 +11,7 @@
     "@remobile/react-native-cordova": "^1.1.1",
     "@remobile/react-native-file-transfer": "^1.0.7",
     "bluebird": "^3.5.0",
-    "danding-tmp": "^1.0.1",
+
     "lodash": "^4.17.4",
     "react": "15.4.2",
     "react-native": "0.41.2",
