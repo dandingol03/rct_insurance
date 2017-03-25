@@ -34,6 +34,7 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
+import Portrait from '../Portrait';
 
 class My extends Component{
 
@@ -41,6 +42,20 @@ class My extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2Portrait()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Portrait',
+                component: Portrait,
+                params: {
+
+                }
+            })
         }
     }
 
@@ -275,7 +290,10 @@ class My extends Component{
 
                        <View style={{height:90,marginTop:40,width:width,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
 
-                           <TouchableOpacity   onPress={() => {this.setState({cameraModalVisible:true})}}>
+                           <TouchableOpacity   onPress={() => {
+                               //this.setState({cameraModalVisible:true});
+                               this.navigate2Portrait();
+                           }}>
                                {
                                    state.portrait!==undefined&&state.portrait!==null?
                                        <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
