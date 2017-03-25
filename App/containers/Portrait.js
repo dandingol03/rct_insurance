@@ -62,14 +62,16 @@ class Portrait extends Component{
         }
     }
 
-    storePicture(portrait){
+    storePicture(){
+
 
         var {accessToken}=this.props;
+        var {portrait}=this.state;
 
-        if (portrait) {
+        if (portrait&&portrait.path) {
             // Create the form data object
             var data = new FormData();
-            data.append('file', {uri: portrait, name: 'portrait.jpg', type: 'multipart/form-data'});
+            data.append('file', {uri: portrait.path, name: 'portrait.jpg', type: 'multipart/form-data'});
 
             //限定为jpg后缀
             Proxy.post({
@@ -94,6 +96,11 @@ class Portrait extends Component{
                 );
             });
 
+        }else{
+            Alert.alert(
+                '错误',
+                '请先进行拍照'
+            );
         }
     }
 
@@ -173,7 +180,7 @@ class Portrait extends Component{
 
                     <TouchableOpacity style={{width:60,height:27,borderRadius:4,backgroundColor:'#444',justifyContent:'center',alignItems:'center'}}
                                       onPress={()=>{
-
+                                          this.storePicture()
                     }}>
                         <Text style={{color:'#fff'}}>保存</Text>
                     </TouchableOpacity>
