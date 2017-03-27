@@ -40,6 +40,7 @@
 
 五、车险：
 1.车辆管理:搜索框小写字母自动转大写 containers->CarManage.js 377行
+    1>.等待丁一明者机测试
 2.车辆管理:搜索框，查询已绑定车辆并显示车牌信息：未完成  containers->CarManage.js 389行
 3.车辆管理:已绑定车辆列表：车辆详情页面未完成 containers->CarManage.js 262行
                                        点击车牌号不应进入选险种页面 CarManage.js 250行
