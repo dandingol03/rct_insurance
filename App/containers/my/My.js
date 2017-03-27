@@ -35,6 +35,7 @@ import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
 import Portrait from '../Portrait';
+import WxShareModal from '../../components/modal/WxShareModal'
 
 class My extends Component{
 
@@ -86,8 +87,6 @@ class My extends Component{
             })
         }
     }
-
-
 
     navigate2ContactInfo()
     {
@@ -162,7 +161,6 @@ class My extends Component{
         }
     }
 
-
     showPopover(ref){
         this.refs[ref].measure((ox, oy, width, height, px, py) => {
             this.setState({
@@ -175,7 +173,6 @@ class My extends Component{
     closePopover(){
         this.setState({menuVisible: false});
     }
-
 
     takePicture = () => {
         if (this.camera) {
@@ -231,8 +228,6 @@ class My extends Component{
         }
     }
 
-
-
     startRecording = () => {
         if (this.camera) {
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
@@ -264,7 +259,8 @@ class My extends Component{
                 flashMode: Camera.constants.FlashMode.auto
             },
             cameraModalVisible:false,
-            portrait:null
+            portrait:null,
+            wxVisible:false,
         };
     }
 
@@ -411,12 +407,15 @@ class My extends Component{
 
                     <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*推荐有礼*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                                          onPress={()=>{
+                                              this.setState({wxVisible:true});
+                                          }}>
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 推荐有礼
                             </Text>
-                        </View>
+                        </TouchableOpacity>
 
                         {/*关于我们*/}
                         <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
@@ -576,6 +575,26 @@ class My extends Component{
                             </TouchableOpacity>
                         }
                     </View>
+
+                </Modal>
+
+                {/*Wechat share*/}
+                <Modal
+                    animationType={"slide"}
+                    transparent={false}
+                    visible={this.state.wxVisible}
+                    onRequestClose={() => {
+                        console.log("Modal has been closed.");
+                    }}
+                >
+
+                    <WxShareModal
+                        onClose={()=>{
+                            this.setState({wxVisible:!this.state.wxVisible});
+                        }}
+
+                        accessToken={this.props.accessToken}
+                    />
 
                 </Modal>
 
