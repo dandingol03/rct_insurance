@@ -51,20 +51,20 @@ class My extends Component{
 
     wxShare()
     {
-        var ob={
-            message: {
-                title: '下载链接',
-                    description: "我正在使用捷慧宝App,想与您一起分享",
-                    thumb: "www/img/logo.png",
-                    mediaTagName: "TEST-TAG-001",
-                    messageExt: "这是第三方带的测试字段",
-                    messageAction: "<action>dotalist</action>",
-                    media:{
-                    type:Wechat.Type.LINK,
-                        webpageUrl:$scope.wx.text
-                }
-            }
-        }
+        // var ob={
+        //     message: {
+        //         title: '下载链接',
+        //             description: "我正在使用捷慧宝App,想与您一起分享",
+        //             thumb: "www/img/logo.png",
+        //             mediaTagName: "TEST-TAG-001",
+        //             messageExt: "这是第三方带的测试字段",
+        //             messageAction: "<action>dotalist</action>",
+        //             media:{
+        //             type:Wechat.Type.LINK,
+        //                 webpageUrl:$scope.wx.text
+        //         }
+        //     }
+        // }
 
 
         var imageResource = require('../../img/logo.png');

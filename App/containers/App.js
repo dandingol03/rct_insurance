@@ -34,7 +34,8 @@ import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
     downloadGeneratedTTS,
-    alertWithType
+    alertWithType,
+    closeMessage
 } from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
 import {
@@ -104,8 +105,6 @@ class App extends React.Component {
 
                                     //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
                                     this.props.dispatch(alertWithType({msg:content}));
-
-
 
 
                                 }
@@ -251,9 +250,20 @@ class App extends React.Component {
                     <StatusBarAlert
                         backgroundColor="#3CC29E"
                         color="white"
-                        visible={this.state.recved}
-                        message="got message"
-                        onPress={() => this.setState({recved: false})}
+                        visible={this.props.notification.validate}
+                        message={this.props.notification.msg}
+                        onPress={() => {
+
+                            //如果挂载音频不为空，则点击停止
+                            if(this.state.soundMounted!==undefined&&this.state.soundMounted!==null)
+                            {
+                                var sound=this.state.soundMounted;
+                                sound.stop();
+                                sound.release();
+                                this.state.soundMounted=null;
+                            }
+                            this.props.dispatch(closeMessage());
+                        }}
                     />
 
                     <Navigator

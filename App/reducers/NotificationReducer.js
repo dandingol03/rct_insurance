@@ -1,15 +1,21 @@
-
+/**
+ * description:
+ * 1.
+ *   validate==true     新消息未读
+ *   validate==false    消息已读
+ */
 
 import {
     MAKE_MESSAGE_POP,
-    UPDATE_NOTIFICATIONS
+    UPDATE_NOTIFICATIONS,
+    ON_MESSAGE_CLOSE
 } from '../constants/JpushConstants';
 
 const initialState = {
     num:1,
     msg:null,
     notifications:null,
-    onFresh:true
+    onFresh:true,
 };
 
 let maintainReducer = (state = initialState, action) => {
@@ -24,6 +30,11 @@ let maintainReducer = (state = initialState, action) => {
                 num:state.num++,
                 msg:msg,
                 validate:true
+            })
+            break;
+        case ON_MESSAGE_CLOSE:
+            return Object.assign({}, state,{
+                validate:false
             })
             break;
         case UPDATE_NOTIFICATIONS:
