@@ -343,6 +343,8 @@ class App extends React.Component {
 
         })
 
+        var socket=new window.WebSocket('ws://139.129.96.231:3010');
+
 
         setTimeout(()=>{
             this.setState({recved:true});

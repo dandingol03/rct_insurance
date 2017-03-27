@@ -1,12 +1,15 @@
 
 
 import {
-    MAKE_MESSAGE_POP
+    MAKE_MESSAGE_POP,
+    UPDATE_NOTIFICATIONS
 } from '../constants/JpushConstants';
 
 const initialState = {
     num:1,
-    msg:null
+    msg:null,
+    notifications:null,
+    onFresh:true
 };
 
 let maintainReducer = (state = initialState, action) => {
@@ -22,6 +25,15 @@ let maintainReducer = (state = initialState, action) => {
                 msg:msg,
                 validate:true
             })
+            break;
+        case UPDATE_NOTIFICATIONS:
+
+            var {notifications,onFresh}=action.payload;
+            return Object.assign({}, state,{
+                notifications:notifications,
+                onFresh:onFresh
+            })
+            break;
         default:
             return state;
     }

@@ -35,7 +35,11 @@ import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
 import Portrait from '../Portrait';
-import WxShareModal from '../../components/modal/WxShareModal'
+import WxShareModal from '../../components/modal/WxShareModal';
+import Notification from '../Notification';
+var WeChat = require('react-native-wechat');
+var resolveAssetSource= require('resolveAssetSource')
+
 
 class My extends Component{
 
@@ -43,6 +47,54 @@ class My extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    wxShare(shareType)
+    {
+        var imageResource = require('../../img/logo.png');
+        switch (shareType) {
+            case '好友':
+                WeChat.shareToSession({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            case '朋友圈':
+                WeChat.shareToTimeline({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            default:
+                break;
+        }
+
+        this.setState({wxVisible:false});
+
+    }
+
+    navigate2Notification()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Notification',
+                component: Notification,
+                params: {
+
+                }
+            })
         }
     }
 
@@ -308,7 +360,7 @@ class My extends Component{
 
                        <View style={{width:width,height:50,position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center',
                             justifyContent:'flex-start'}}>
-                            <View style={{padding:8,flexDirection:'row',alignItems:'center'}}>
+                            <View style={{width:120,padding:8,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{color:'#eee',fontWeight:'bold',fontSize:12,marginRight:4}}>
                                     积分:
                                 </Text>
@@ -316,6 +368,19 @@ class My extends Component{
                                     {props.score}
                                 </Text>
                             </View>
+
+                            <View style={{flex:1}}></View>
+
+                            <TouchableOpacity style={{width:80,padding:8,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
+                                              onPress={() => {
+                               this.navigate2Notification();
+                           }}>
+                                <Icon name="comments" size={20} color="#eee"></Icon>
+                                <Text style={{marginLeft:5,color:'#fff',fontSize:12}}>通知</Text>
+                            </TouchableOpacity>
+
+
+
                        </View>
 
                    </Image>
@@ -410,7 +475,8 @@ class My extends Component{
                         <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
                                           onPress={()=>{
                                               this.setState({wxVisible:true});
-                                          }}>
+                                          }}
+                        >
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 推荐有礼
@@ -444,7 +510,6 @@ class My extends Component{
                     <View style={{flex:1,width:width,backgroundColor:'#fff'}}></View>
 
                 </View>
-
 
 
                 {/*popover part*/}
@@ -581,7 +646,7 @@ class My extends Component{
                 {/*Wechat share*/}
                 <Modal
                     animationType={"slide"}
-                    transparent={false}
+                    transparent={true}
                     visible={this.state.wxVisible}
                     onRequestClose={() => {
                         console.log("Modal has been closed.");
@@ -590,9 +655,11 @@ class My extends Component{
 
                     <WxShareModal
                         onClose={()=>{
-                            this.setState({wxVisible:!this.state.wxVisible});
+                            this.setState({wxVisible:false});
                         }}
-
+                        wxShare={(shareType)=>{
+                            this.wxShare(shareType);
+                        }}
                         accessToken={this.props.accessToken}
                     />
 
