@@ -344,7 +344,8 @@ class NewCarBind extends Component{
                                 editable = {true}
                                 height={40}
                                 onChangeText={
-                                    (carNum)=>this.setState({carNum:carNum})
+
+                                    (carNum)=>this.setState({carNum:  carNum.toUpperCase()})
                                 }
                                 value={this.state.carNum}
                                 placeholder='请输入将要创建的车牌号'

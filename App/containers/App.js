@@ -34,7 +34,8 @@ import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
     downloadGeneratedTTS,
-    alertWithType
+    alertWithType,
+    closeMessage
 } from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
 import {
@@ -44,9 +45,8 @@ import {
 
 } from '../constants/PageStateConstants';
 
-
 var WeChat = require('react-native-wechat');
-
+import ws from '../components/utils/WebSocket';
 
 class App extends React.Component {
 
@@ -106,8 +106,6 @@ class App extends React.Component {
                                     this.props.dispatch(alertWithType({msg:content}));
 
 
-
-
                                 }
                            });
 
@@ -149,14 +147,38 @@ class App extends React.Component {
                                             return this.props.dispatch(downloadGeneratedTTS({content:msg}));
                                         })
                                         .then(function (json) {
+
                                             if(json.re==1)
                                             {
                                                 var path=json.data;
-                                                //TODO:播放文件
+                                                //TODO:播放音频文件
+                                                var sound = new Sound(json.data, '', (error) => {
+                                                    if (error) {
+                                                        console.log('failed to load the sound', error);
+                                                    }
+                                                });
+                                                this.state.soundMounted=sound;
+                                                setTimeout(() => {
+                                                    sound.play((success) => {
+                                                        if (success) {
+                                                            console.log('successfully finished playing');
+                                                            sound.release();
+                                                            this.state.soundMounted=null;
+                                                        } else {
+                                                            console.log('playback failed due to audio decoding errors');
+                                                            sound.release();
+                                                            this.state.soundMounted=null;
+                                                        }
+                                                    });
+                                                }, 100);
 
-                                                //TODO:popup插件
+                                                //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
+                                                this.props.dispatch(alertWithType({msg:content}));
+
 
                                             }
+
+
                                         })
                                 }
                             })
@@ -251,9 +273,20 @@ class App extends React.Component {
                     <StatusBarAlert
                         backgroundColor="#3CC29E"
                         color="white"
-                        visible={this.state.recved}
-                        message="got message"
-                        onPress={() => this.setState({recved: false})}
+                        visible={this.props.notification.validate}
+                        message={this.props.notification.msg}
+                        onPress={() => {
+
+                            //如果挂载音频不为空，则点击停止
+                            if(this.state.soundMounted!==undefined&&this.state.soundMounted!==null)
+                            {
+                                var sound=this.state.soundMounted;
+                                sound.stop();
+                                sound.release();
+                                this.state.soundMounted=null;
+                            }
+                            this.props.dispatch(closeMessage());
+                        }}
                     />
 
                     <Navigator
@@ -343,8 +376,12 @@ class App extends React.Component {
 
         })
 
+
+
         var socket=new window.WebSocket('ws://139.129.96.231:3010');
 
+        //进行websocket连接
+        ws.connect();
 
         setTimeout(()=>{
             this.setState({recved:true});
