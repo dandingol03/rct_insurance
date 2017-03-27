@@ -43,10 +43,58 @@ class Notification extends Component{
         }
     }
 
+    renderLifeRow(rowData,sectionId,rowId){
+
+
+
+        var  lineStyle={flex:1,flexDirection:'row',padding:4,paddingVertical:0,paddingLeft:0,paddingRight:0,
+            justifyContent:'flex-start',backgroundColor:'transparent',position:'relative'};
+
+        var row=(
+            <TouchableOpacity style={lineStyle} onPress={()=>{
+                 rowData.checked=!rowData.checked;
+                 var relativePersons=this.state.relativePersons;
+                 if(rowData.checked==true)
+                 {
+                      relativePersons.map(function(person,i) {
+                          if(person.personId!=rowData.personId)
+                              person.checked=false;
+                      });
+                 }
+                 this.setState({relativePersons:this.state.relativePersons,insuranceder:rowData});
+            }}>
+                <View style={{width:80,alignItems:'flex-start',height:50,justifyContent:'center'}}>
+                    <Text style={{fontSize:13,color:'#222',marginLeft:2}}>{DateFilter.filter(rowData.notyTime,'yyyy-mm-dd')}</Text>
+                    <Text style={{fontSize:13,color:'#222',marginLeft:2}}>{DateFilter.filter(rowData.notyTime,'hh:mm')}</Text>
+                </View>
+
+                <View style={{width:2,backgroundColor:'#666',height:50}}>
+                </View>
+                <View style={{position:'absolute',left:75,top:12}}>
+                    <Icon name="circle-o" size={14} color="#00f" style={{backgroundColor:'#fff'}}/>
+                </View>
+
+                <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2,marginLeft:13,
+                    height:50}}>
+                    <View>
+                        <Text style={{color:'#b7462e',fontSize:14}}>
+                            订单号为:{rowData.orderNum}
+                        </Text>
+                        <Text style={{color:'#222',fontSize:13}}>
+                            {rowData.content}
+                        </Text>
+
+                    </View>
+                </View>
+
+            </TouchableOpacity>
+        );
+
+        return row;
+    }
+
 
     renderRow(rowData,sectionId,rowId){
-
-
 
         var  lineStyle={flex:1,flexDirection:'row',padding:4,paddingVertical:0,paddingLeft:0,paddingRight:0,
             justifyContent:'flex-start',backgroundColor:'transparent',position:'relative'};
@@ -89,7 +137,6 @@ class Notification extends Component{
 
             </TouchableOpacity>
         );
-
 
         return row;
     }
@@ -195,7 +242,7 @@ class Notification extends Component{
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(lifeNotifications)}
-                            renderRow={this.renderRow.bind(this)}
+                            renderRow={this.renderLifeRow.bind(this)}
                         />
                     </ScrollView>
                 );
@@ -250,24 +297,6 @@ class Notification extends Component{
                 </View>
 
 
-
-                {/*<View style={[{padding: 6,paddingHorizontal:10,marginTop:0,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:40},styles.card]}>*/}
-
-                    {/*<TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}*/}
-                                      {/*onPress={()=>{*/}
-                        {/*this.goBack();*/}
-                    {/*}}>*/}
-                        {/*<Icon name="angle-left" size={36} color="#222"/>*/}
-                    {/*</TouchableOpacity>*/}
-
-                    {/*<View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>*/}
-                        {/*<Text style={{fontSize:16,color:'#222',marginLeft:10}}>*/}
-                            {/*通知*/}
-                        {/*</Text>*/}
-                    {/*</View>*/}
-
-                {/*</View>*/}
-
                 <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
                         var tabIndex=data.i;
                         this.state.selectedTab=tabIndex;
@@ -284,7 +313,7 @@ class Notification extends Component{
 
                     <View tabLabel='寿险' style={{flex:1}}>
 
-                        <View style={{padding:20,height:height-264}}>
+                        <View style={{padding:10,height:height-170,paddingHorizontal:0}}>
                             {lifeListView}
                         </View>
 

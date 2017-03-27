@@ -15,7 +15,8 @@ import  {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Modal,
-    BackAndroid
+    BackAndroid,
+    resolveAssetSource
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -36,6 +37,8 @@ import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
 import Portrait from '../Portrait';
 import Notification from '../Notification';
+var WeChat = require('react-native-wechat');
+
 
 class My extends Component{
 
@@ -44,6 +47,38 @@ class My extends Component{
         if(navigator) {
             navigator.pop();
         }
+    }
+
+    wxShare()
+    {
+        var ob={
+            message: {
+                title: '下载链接',
+                    description: "我正在使用捷慧宝App,想与您一起分享",
+                    thumb: "www/img/logo.png",
+                    mediaTagName: "TEST-TAG-001",
+                    messageExt: "这是第三方带的测试字段",
+                    messageAction: "<action>dotalist</action>",
+                    media:{
+                    type:Wechat.Type.LINK,
+                        webpageUrl:$scope.wx.text
+                }
+            }
+        }
+
+
+        var imageResource = require('../../img/logo.png');
+
+        WeChat.shareToTimeline({
+            type: 'imageResource',
+            title: 'resource image',
+            description: 'share resource image to time line',
+            mediaTagName: 'email signature',
+            messageAction: undefined,
+            messageExt: undefined,
+            imageUrl: resolveAssetSource(imageResource).uri
+        });
+
     }
 
     navigate2Notification()
@@ -439,12 +474,16 @@ class My extends Component{
 
                     <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*推荐有礼*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                                          onPress={()=>{
+                                              this.wxShare();
+                                          }}
+                        >
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 推荐有礼
                             </Text>
-                        </View>
+                        </TouchableOpacity>
 
                         {/*关于我们*/}
                         <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
