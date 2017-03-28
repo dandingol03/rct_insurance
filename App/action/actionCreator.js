@@ -8,6 +8,9 @@ import {updatePersonInfo,updateScore,updateCertificate} from './UserActions';
 import {updateRegistrationId} from './JpushActions';
 import {activeTTSToken} from './TTSActions';
 import WS from '../components/utils/WebSocket';
+import PreferenceStore from '../components/utils/PreferenceStore';
+
+
 
 export let loginAction=function(username,password,cb){
 
@@ -28,7 +31,13 @@ export let loginAction=function(username,password,cb){
              accessToken = json.access_token;
 
             //TODO:make a dispatch
-            updateCertificate({username: username, password: password});
+            dispatch(updateCertificate({username: username, password: password}));
+            //TODO:store
+
+
+            PreferenceStore.put('username',username);
+            PreferenceStore.put('password',password);
+
 
             return Proxy.postes({
                 url: Config.server + '/svr/request',

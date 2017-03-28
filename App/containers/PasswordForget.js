@@ -122,7 +122,7 @@ class PasswordForget extends Component{
                 </View>
 
                 {/*body*/}
-                <Image resizeMode="stretch" source={require('../img/login_background@2x.png')} style={{flex:20,width:width}}>
+                <Image resizeMode="stretch" source={require('../img/bkg@2x.png')} style={{flex:20,width:width}}>
 
                     <View style={{flex:1,padding:5,marginTop:10}}>
 

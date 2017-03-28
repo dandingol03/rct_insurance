@@ -15,8 +15,7 @@ import  {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Modal,
-    BackAndroid,
-    resolveAssetSource
+    BackAndroid
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -36,8 +35,10 @@ import Proxy from '../../proxy/Proxy';
 import HelpAndConfig from '../../components/Help/HelpAndConfig';
 import PasswordModify from '../PasswordModify';
 import Portrait from '../Portrait';
+import WxShareModal from '../../components/modal/WxShareModal';
 import Notification from '../Notification';
 var WeChat = require('react-native-wechat');
+var resolveAssetSource= require('resolveAssetSource')
 
 
 class My extends Component{
@@ -49,35 +50,37 @@ class My extends Component{
         }
     }
 
-    wxShare()
+    wxShare(shareType)
     {
-        // var ob={
-        //     message: {
-        //         title: '下载链接',
-        //             description: "我正在使用捷慧宝App,想与您一起分享",
-        //             thumb: "www/img/logo.png",
-        //             mediaTagName: "TEST-TAG-001",
-        //             messageExt: "这是第三方带的测试字段",
-        //             messageAction: "<action>dotalist</action>",
-        //             media:{
-        //             type:Wechat.Type.LINK,
-        //                 webpageUrl:$scope.wx.text
-        //         }
-        //     }
-        // }
-
-
         var imageResource = require('../../img/logo.png');
+        switch (shareType) {
+            case '好友':
+                WeChat.shareToSession({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            case '朋友圈':
+                WeChat.shareToTimeline({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            default:
+                break;
+        }
 
-        WeChat.shareToTimeline({
-            type: 'imageResource',
-            title: 'resource image',
-            description: 'share resource image to time line',
-            mediaTagName: 'email signature',
-            messageAction: undefined,
-            messageExt: undefined,
-            imageUrl: resolveAssetSource(imageResource).uri
-        });
+        this.setState({wxVisible:false});
 
     }
 
@@ -136,8 +139,6 @@ class My extends Component{
             })
         }
     }
-
-
 
     navigate2ContactInfo()
     {
@@ -212,7 +213,6 @@ class My extends Component{
         }
     }
 
-
     showPopover(ref){
         this.refs[ref].measure((ox, oy, width, height, px, py) => {
             this.setState({
@@ -225,7 +225,6 @@ class My extends Component{
     closePopover(){
         this.setState({menuVisible: false});
     }
-
 
     takePicture = () => {
         if (this.camera) {
@@ -281,8 +280,6 @@ class My extends Component{
         }
     }
 
-
-
     startRecording = () => {
         if (this.camera) {
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
@@ -314,7 +311,8 @@ class My extends Component{
                 flashMode: Camera.constants.FlashMode.auto
             },
             cameraModalVisible:false,
-            portrait:null
+            portrait:null,
+            wxVisible:false,
         };
     }
 
@@ -476,7 +474,7 @@ class My extends Component{
                         {/*推荐有礼*/}
                         <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
                                           onPress={()=>{
-                                              this.wxShare();
+                                              this.setState({wxVisible:true});
                                           }}
                         >
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
@@ -512,7 +510,6 @@ class My extends Component{
                     <View style={{flex:1,width:width,backgroundColor:'#fff'}}></View>
 
                 </View>
-
 
 
                 {/*popover part*/}
@@ -643,6 +640,28 @@ class My extends Component{
                             </TouchableOpacity>
                         }
                     </View>
+
+                </Modal>
+
+                {/*Wechat share*/}
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.wxVisible}
+                    onRequestClose={() => {
+                        console.log("Modal has been closed.");
+                    }}
+                >
+
+                    <WxShareModal
+                        onClose={()=>{
+                            this.setState({wxVisible:false});
+                        }}
+                        wxShare={(shareType)=>{
+                            this.wxShare(shareType);
+                        }}
+                        accessToken={this.props.accessToken}
+                    />
 
                 </Modal>
 

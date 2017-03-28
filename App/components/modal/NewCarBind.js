@@ -352,6 +352,7 @@ class NewCarBind extends Component{
                                 placeholderTextColor="#aaa"
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="characters"
+
                             />
                         </View>
 
