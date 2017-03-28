@@ -353,6 +353,7 @@ class CarManage extends Component{
                                 placeholder='请输入车牌号作为搜索条件'
                                 placeholderTextColor="#aaa"
                                 underlineColorAndroid="transparent"
+                                autoCapitalize="characters"
                             />
                         </View>
                         <View style={{width:60,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#00c9ff',

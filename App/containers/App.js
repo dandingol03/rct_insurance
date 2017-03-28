@@ -55,6 +55,7 @@ class App extends React.Component {
     {
         var {type}=payload;
         console.log('type='+type);
+
         switch(type)
         {
             case 'from-service':
@@ -299,8 +300,6 @@ class App extends React.Component {
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
 
-
-
                     />
 
                 </View>
@@ -383,9 +382,9 @@ class App extends React.Component {
         //进行websocket连接
         ws.connect();
 
-        setTimeout(()=>{
-            this.setState({recved:true});
-        },12000)
+        // setTimeout(()=>{
+        //     this.setState({recved:true});
+        // },12000)
 
 
     }

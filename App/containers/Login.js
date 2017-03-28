@@ -108,6 +108,7 @@ var  Login =React.createClass({
             loginDot:'.'
         });
     },
+
     render:function () {
 
         const shadowOpt = {
@@ -280,8 +281,6 @@ var  Login =React.createClass({
                         </Modal>
 
                     </View>
-
-
 
                     <MessageBarAlert ref="alert" />
                     <MessageBarAlert ref="msg" />

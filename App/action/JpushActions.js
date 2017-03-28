@@ -109,7 +109,6 @@ export let downloadGeneratedTTS=(payload)=>{
 
 export let updateRegistrationId=function (payload) {
 
-
         return new Promise((resolve, reject) => {
 
 
@@ -120,6 +119,7 @@ export let updateRegistrationId=function (payload) {
                     {
                         var {accessToken} =payload;
                         var registrationId=res;
+                        console.log('registrationId='+registrationId);
                         Proxy.postes({
                             url: Config.server + '/svr/request',
                             headers: {

@@ -25,6 +25,8 @@ var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AudioExample from '../../AudioExample';
 import PasswordForget from './PasswordForget';
+import Config from '../../config';
+import Proxy from '../proxy/Proxy';
 
 class dym extends Component{
 
@@ -52,6 +54,30 @@ class dym extends Component{
                 }
             })
         }
+    }
+
+    sendNodification(){
+
+        Proxy.post({
+            url:Config.server+'/svr/request?request=uploadPortrait&suffix=jpg',
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'sendNotification',
+
+            }
+        },(json)=> {
+            if(json.re==1){
+                console.log('发送成功');
+            }
+            else{
+                console.log('发送失败');
+            }
+        }, (err) =>{
+        });
     }
 
     constructor(props) {
@@ -92,6 +118,15 @@ class dym extends Component{
                              }}>
                       <View>
                           <Text style={{fontSize: 30}}>PasswordForget</Text>
+                      </View>
+
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
+                        this.sendNodification();
+                             }}>
+                      <View>
+                          <Text style={{fontSize: 30}}>send nodification</Text>
                       </View>
 
                   </TouchableOpacity>
@@ -238,9 +273,18 @@ var styles = StyleSheet.create({
     },
 });
 
+const mapStateToProps = (state, ownProps) => {
 
-module.exports = connect(state=>({
+    var {personInfo,accessToken,score}=state.user;
 
-    })
+    return {
+        personInfo,
+        score,
+        accessToken,
+        ...ownProps,
+    }
+}
+
+module.exports = connect(mapStateToProps
 )(dym);
 

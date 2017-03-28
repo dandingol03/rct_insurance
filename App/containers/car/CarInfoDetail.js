@@ -236,6 +236,7 @@ class CarInfoDetail extends Component{
                             this.refresh();
                         }}
                         accessToken={this.props.accessToken}
+                        dispatch={this.props.dispatch}
                     />
 
                 </Modal>
