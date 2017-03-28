@@ -11,7 +11,8 @@ import {
     BackAndroid,
     ToastAndroid,
     Platform,
-    Alert
+    TouchableOpacity,
+    TouchableHighlight
 } from 'react-native';
 
 
@@ -31,7 +32,8 @@ import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
     downloadGeneratedTTS,
-    alertWithType
+    alertWithType,
+    notificationRecved,
 } from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
 import AudioExample from '../../AudioExample';
@@ -39,22 +41,7 @@ import DropdownAlert from 'react-native-dropdownalert'
 
 var WeChat = require('react-native-wechat');
 
-
 class App extends React.Component {
-
-    navigate2AudioExample(path){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'audioExample',
-                component: AudioExample,
-                params: {
-                    path:path
-                }
-            })
-        }
-    }
-
 
     onNotificationRecv(payload)
     {
@@ -112,9 +99,8 @@ class App extends React.Component {
                                     }, 100);
 
                                     //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
+                                    this.props.dispatch(notificationRecved(true));
                                     this.props.dispatch(alertWithType({msg:content}));
-
-
 
                                 }
                            });
@@ -183,7 +169,7 @@ class App extends React.Component {
             tab:'product',
             selectedTab:'home',
             name:null,
-            recved:false,
+            recved:this.props.notification.recved,
         }
     }
 
@@ -204,8 +190,37 @@ class App extends React.Component {
                 break;
         }
 
+        var routeMapper = {
+            LeftButton(route, navigator, index, navState) {
+                if (index > 0) {
+                    return (
+                        <TouchableHighlight style={{ marginTop: 10 }} onPress={() => {
+                            if (index > 0) {
+                                navigator.pop();
+                            }
+                        } }>
+                            <Text>Back</Text>
+                        </TouchableHighlight>
+                    )
+                } else {
+                    return null
+                }
+            },
 
+            RightButton(route, navigator, index, navState) {
+                return null;
+            },
 
+            Title(route, navigator, index, navState) {
+                return (
+                    <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                        <Text style={{ color: 'white', margin: 10, fontSize: 16 }}>
+                            Data Entry
+                        </Text>
+                    </TouchableOpacity>
+                );
+            }
+        };
 
         return (
             <TabNavigator.Item
@@ -220,19 +235,25 @@ class App extends React.Component {
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
 
-
                 <View style={{flex:1}}>
+
+                    <StatusBarAlert
+                        backgroundColor="#3CC29E"
+                        color="white"
+                        visible={this.state.recved}
+                        message="got message"
+                        onPress={() => this.setState({recved: false})}
+                    />
 
                     <Navigator
                         initialRoute={{ name: route, component:component }}
                             configureScene={(route) => {
-                            return Navigator.SceneConfigs.HorizontalSwipeJumpFromRight;
+                            return Navigator.SceneConfigs.HoriNOTIFICATION_RECVzontalSwipeJumpFromRight;
                           }}
                         renderScene={(route, navigator) => {
                             let Component = route.component;
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
-
                     />
 
                 </View>
@@ -293,14 +314,11 @@ class App extends React.Component {
             JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
         ]
         WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
-
         })
 
-        setTimeout(()=>{
-            this.setState({recved:true});
-        },8000)
-
-
+        // setTimeout(()=>{
+        //     this.setState({recved:true});
+        // },12000)
 
     }
 
@@ -359,6 +377,7 @@ var styles = StyleSheet.create({
 export default connect(
     (state) => ({
         auth: state.user.auth,
-        notification:state.notification
+        notification:state.notification,
+        recved:state.notification.recved,
     })
 )(App);

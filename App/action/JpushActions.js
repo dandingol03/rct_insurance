@@ -8,6 +8,7 @@ import JPush from 'react-native-jpush'
 var RNFS = require('react-native-fs');
 import RNFetchBlob from 'react-native-fetch-blob'
 import {
+    NOTIFICATION_RECVED,
     MAKE_MESSAGE_POP,
     ON_MESSAGE_CLOSE
 } from '../constants/JpushConstants';
@@ -61,9 +62,7 @@ export let downloadGeneratedTTS=(payload)=>{
     }
 }
 
-
 export let updateRegistrationId=function (payload) {
-
 
         return new Promise((resolve, reject) => {
 
@@ -146,7 +145,6 @@ export let sendCustomMessage=(payload)=>{
                 };
             }
 
-
             Proxy.postes({
                 url: Config.server + '/svr/request',
                 headers: {
@@ -168,10 +166,7 @@ export let sendCustomMessage=(payload)=>{
     }
 }
 
-
-
 export  let createNotification=(payload,type)=>{
-
 
     return (dispatch,getState)=>{
         return new Promise((resolve, reject) => {
@@ -213,6 +208,12 @@ export  let createNotification=(payload,type)=>{
 }
 
 
+export let notificationRecved=(payload)=>{
+    return {
+        type:NOTIFICATION_RECVED,
+        payload:payload
+    }
+}
 
 let makeMessagePop=(payload)=>{
     return {
@@ -221,10 +222,8 @@ let makeMessagePop=(payload)=>{
     }
 }
 
-
 export let alertWithType=(payload)=>{
     return (dispatch,getState)=> {
-
         dispatch(makeMessagePop(payload));
     }
 }

@@ -174,21 +174,6 @@ class Home extends Component{
         };
     }
 
-    showSilentAlert() {
-        this.setState({
-            alerts: [{
-                message: 'Silent Switch ON',
-                backgroundColor:"#FF6245"
-            }]
-        })
-    }
-
-    hideSilentAlert() {
-        this.setState({
-            alerts: this.state.alerts.filter(alert => alert.message !== 'Silent Switch ON')
-        })
-    }
-
     render(){
         var username='danding';
         var {goodInfo}=this.state;
@@ -198,22 +183,9 @@ class Home extends Component{
 
         return (
             <View style={{flex:1}}>
-                <StatusBarAlert
-                    backgroundColor="#3CC29E"
-                    color="white"
-                    visible={this.state.notification}
-                />
 
                 {/* header bar */}
-                <TouchableOpacity style={styles.logo}
-                                  onPress={ ()=>{
-                                        this.showSilentAlert();
-
-                                              }}>
-                    <Image source={require('../../img/newBanner@2x.png')} />
-                </TouchableOpacity>
-
-                {/*<Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />*/}
+                <Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />
 
                 {/* body*/}
                 <Image style={{width:width,height:height-230}} source={require('../../img/bkg1@2x.png')}>

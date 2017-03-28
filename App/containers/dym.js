@@ -226,7 +226,6 @@ class dym extends Component{
 
               </View>
 
-
               {
                   this.state.toolsShowFlag?
                   <Animated.View style={{flex:2,backgroundColor:'#ddd',justifyContent:'flex-start',alignItems: 'center',
@@ -241,15 +240,11 @@ class dym extends Component{
                   </Animated.View>:null
               }
 
-
-
-
           </View>
         )
     }
 
 }
-
 
 var styles = StyleSheet.create({
     container: {
@@ -261,7 +256,6 @@ var styles = StyleSheet.create({
         marginTop: 30
     },
 });
-
 
 module.exports = connect(state=>({
     accessToken:state.user.accessToken
