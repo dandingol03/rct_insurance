@@ -17,6 +17,8 @@ import {
 } from 'react-native-baidu-map';
 
 var bluebird = require('bluebird');
+import RNFetchBlob from 'react-native-fetch-blob'
+
 
 export let updateServiceOrders=(payload)=>{
     return {
@@ -1133,6 +1135,66 @@ export let fetchServicePersonByDetectUnitId=(payload)=>{
                reject(err);
             });
 
+
+
+        });
+    }
+}
+
+//生成视频的thumbnail
+export let generateVideoThumbnail=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {videoPath}=payload;
+            if(videoPath)
+            {
+
+                var data = new FormData();
+                data.append('file', {uri: videoPath, name: 'serviceVideo.mp4', type: 'multipart/form-data'});
+
+                Proxy.postes({
+                    url: Config.server + '/svr/request?request=generatedThumbnail',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    body: data
+                }).then((json)=>{
+
+                    if(json.re==1)
+                    {
+                        var thumbnail=json.path;
+
+                        //TODO:make this to thumbnail download
+
+                        var dirs = RNFetchBlob.fs.dirs
+                        RNFetchBlob
+                            .config({
+                                fileCache : true,
+                                appendExt : 'mp3',
+                                path : dirs.DocumentDir + '/video-thumbnail.png'
+                            })
+                            .fetch('POST',url, {
+                                    Authorization : 'Bearer '+accessToken,
+                                    "Content-Type":"application/json"
+                                },
+                                JSON.stringify({
+                                    request:'downloadGeneratedThumbnail'
+                                })
+                            ).then((res)=>{
+
+                            resolve({re:1,data:res.path()});
+                        });
+
+                    }
+                }).catch((e)=>{
+                    reject(e)
+                })
+
+            }
 
 
         });
