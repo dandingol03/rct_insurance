@@ -135,7 +135,7 @@ class CarInfoEdit extends Component{
                                       onPress={()=>{
                                     this.close();
                             }}>
-                            <Icon name="angle-left" size={35} color="#222"/>
+                            <Icon name="angle-down" size={35} color="#222"/>
                     </TouchableOpacity>
 
                     <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>

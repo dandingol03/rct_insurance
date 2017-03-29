@@ -29,7 +29,8 @@ import{
     enableServiceOrdersRefresh,
     disableServiceOrdersRefresh,
     enableServiceOrdersClear,
-    updateCandidateState
+    updateCandidateState,
+    getServicePersonsByDetectUnites
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -192,10 +193,12 @@ class MapAdministrateConfirm extends Component{
             })
 
         }else{
-            //未选定维修厂,批量选中
+            //批量选中维修厂
             var order = null;
             var servicePersonIds = [];
             var personIds = [];
+            var {verify}=this.state.carManage;
+
             this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
                 if(json.re==1)
                 {
@@ -357,10 +360,74 @@ class MapAdministrateConfirm extends Component{
 
                         }
 
-
-
-
                     }else{
+                        //范围选择
+                        var servicePersonIds = [];
+                        var personIds = [];
+                       this.props.dispatch(getServicePersonsByDetectUnites({detectUnites:detectUnites}))
+                           .then((json)=>{
+                               if(json.re==1)
+                               {
+                                   //寻找符合时间段的服务人员
+                                   json.data.map(function(servicePerson,i) {
+                                       var flag=this.verifyServiceSegment(servicePerson);
+                                       if(flag==false)
+                                       {}else{
+                                           servicePersonIds.push(servicePerson.servicePersonId);
+                                           personIds.push(servicePerson.personId);
+                                       }
+                                   });
+
+
+                                   if(servicePersonIds.length==0)
+                                   {
+
+                                       Alert.alert(
+                                           '错误',
+                                           '你所选的预约时间没有合适的服务人员,请重新选择'
+                                       );
+                                       return {re:-1};
+
+                                   }else {
+                                       this.state.carManage.verify={
+                                           servicePersonIds:servicePersonIds,
+                                           personIds:personIds
+                                       };
+                                       return {re:1};
+                                   }
+                               }
+                       }).then((json)=>{
+                           if(json.re==1)
+                           {
+                               if(carManage.destination!==undefined&&carManage.destination!==null&&
+                                   (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
+                               {
+
+                                   //TODO:create a new destination
+                                   createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                                       if(json.re==1) {
+                                           var customerPlace=json.data;
+                                           this.state.carManage.destination=customerPlace;
+
+                                           this.applyCarServiceOrder();
+                                       }else if(json.re==2) {
+                                           this.state.doingBusiness=false;
+                                       }else{
+                                           this.state.doingBusiness=false;
+                                       }
+                                   }).catch((err)=>{
+                                       Alert.alert(
+                                           '错误',
+                                           err
+                                       );
+                                   });
+                               }else{
+                                   this.applyCarServiceOrder();
+                               }
+                           }
+                       }).catch((e)=>{
+                           alert(e);
+                       })
 
                     }
 
@@ -556,9 +623,9 @@ class MapAdministrateConfirm extends Component{
                         backgroundColor: '#F5FCFF',position:'relative',}}>
 
                     {/*header part*/}
-                    <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                    <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                        <View style={[styles.row,{marginTop:20}]}>
+                        <View style={[styles.row,{marginTop:0}]}>
 
                             <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                               onPress={()=>{
@@ -642,57 +709,56 @@ class MapAdministrateConfirm extends Component{
 
 
                     {/*检测公司*/}
-                    <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                        <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
+                    {
+                        state.detectUnit!==undefined&&state.detectUnit!==null?
+                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
+                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:5,paddingHorizontal:4}}>
 
 
-                            <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
+                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                <Text style={{color:'#bf530c',fontSize:14}} >
-                                    检测公司
-                                </Text>
-                            </View>
+                                        <Text style={{color:'#bf530c',fontSize:14}} >
+                                            检测公司
+                                        </Text>
+                                    </View>
 
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
 
-                                <Text style={{fontSize:14,color:'#222'}}>
-                                    {state.detectUnit.name}
-                                </Text>
-
-                            </View>
-
-
-
-                        </View>
-                    </View>
+                                        <Text style={{fontSize:14,color:'#222'}}>
+                                            {state.detectUnit.name}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>:null
+                    }
 
                     {/*服务人员*/}
-                    <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                        <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
+
+                    {
+                        state.carManage.servicePerson!==undefined&&state.carManage.servicePerson!==null?
+                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
+                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:5,paddingHorizontal:4}}>
 
 
-                            <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
+                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                <Text style={{color:'#bf530c',fontSize:14}} >
-                                    服务人员
-                                </Text>
-                            </View>
+                                        <Text style={{color:'#bf530c',fontSize:14}} >
+                                            服务人员
+                                        </Text>
+                                    </View>
 
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
 
-                                {
-                                    state.carManage.servicePerson?
                                         <Text style={{fontSize:14,color:'#222'}}>
                                             {state.carManage.servicePerson.perName}
-                                        </Text>:null
-                                }
+                                        </Text>
+                                    </View>
 
-                            </View>
-
-                        </View>
-                    </View>
+                                </View>
+                            </View>:null
+                    }
 
                     {/*选择车*/}
                     <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>

@@ -342,9 +342,9 @@ class ServiceOrders extends Component{
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:20}]}>
+                    <View style={[styles.row,{marginTop:0}]}>
 
                         <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                           onPress={()=>{
@@ -355,12 +355,12 @@ class ServiceOrders extends Component{
                         </TouchableOpacity>
 
                         <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#fff',fontSize:17}}>我的积分</Text>
+                            <Text style={{color:'#fff',fontSize:17}}>服务订单</Text>
                         </View>
 
-                        <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
-                            padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-                            <Text style={{fontSize:12}}>积分提现</Text>
+                        <View style={{width:80,alignItems:'center',padding:10,justifyContent:'center',
+                            borderRadius:8,marginBottom:1}}>
+                            <Icon name="refresh" size={20} color="#fff" style={{marginLeft:8}}></Icon>
                         </View>
 
                     </View>

@@ -983,6 +983,125 @@ export let fetchServicePersonByUnitId=(payload)=>{
     }
 }
 
+export let getServicePersonsByUnits=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {units}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getServicePersonsByUnits',
+                    info:{
+                        units:units
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+
+export let getServicePersonsByPlaces=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {places}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getServicePersonsByPlaces',
+                    info:{
+                        places:places
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+export let getServicePersonsByDetectUnites=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {detectUnites}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getServicePersonsByDetectUnites',
+                    info:{
+                        detectUnites:detectUnites
+                    }
+                }
+            }).then((json)=>{
+                resolve(json);
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+//根据车管所拉取服务人员
+export let fetchServicePersonByPlaceId=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {place}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getServicePersonByPlaceId',
+                    info:{
+                        placeId:place.placeId
+                    }
+                }
+            }).then((json)=>{
+
+                resolve(json);
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+
 //根据维修厂拉取服务人员
 export let fetchServicePersonByDetectUnitId=(payload)=>{
     return (dispatch,getState)=> {
