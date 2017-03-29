@@ -210,49 +210,47 @@ class AppendLifeInsurer extends Component{
                                             var json=res.data;
                                             if(json.re==1){
                                                 perIdAttachId2=json.data;
-                                                return $http({
-                                                    method: "POST",
-                                                    url: Proxy.local()+"/svr/request",
+                                                return Proxy.post({
+                                                    url:Config.server+'/svr/request',
                                                     headers: {
-                                                        'Authorization': "Bearer " + $rootScope.access_token,
+                                                        'Authorization': "Bearer " + this.state.accessToken,
+                                                        'Content-Type': 'application/json'
                                                     },
-                                                    data:
-                                                        {
-                                                            request:'createInsuranceInfoPersonInfo',
-                                                            info:{
-                                                                perIdAttachId1:perIdAttachId1,
-                                                                perIdAttachId2:perIdAttachId2,
-                                                                personId:personId
-                                                            }
+                                                    body: {
+                                                        request:'createInsuranceInfoPersonInfo',
+                                                        info: {
+                                                            perIdAttachId1:perIdAttachId1,
+                                                            perIdAttachId2:perIdAttachId2,
+                                                            personId:personId
                                                         }
+                                                    }
                                                 });
                                             }
                                         }).then(function(res) {
                                             alert('insuranceInfoPersonInfo create successfully');
                                             var json=res.data;
                                             if(json.re==1) {
-                                                return $http({
-                                                    method: "POST",
-                                                    url: Proxy.local()+"/svr/request",
+                                                return Proxy.post({
+                                                    url:Config.server+'/svr/request',
                                                     headers: {
-                                                        'Authorization': "Bearer " + $rootScope.access_token,
+                                                        'Authorization': "Bearer " + this.state.accessToken,
+                                                        'Content-Type': 'application/json'
                                                     },
-                                                    data:
-                                                        {
-                                                            request:'getInfoPersonInfoByPersonId',
-                                                            info:{
-                                                                personId:personId
-                                                            }
+                                                    body: {
+                                                        request:'getInfoPersonInfoByPersonId',
+                                                        info: {
+                                                            personId:personId
                                                         }
+                                                    }
                                                 });
+
                                             }
                                         }).then(function(res) {
                                             var json=res.data;
                                             if(json.re==1) {
                                                 var person=json.data;
-                                                $scope.insurer=person;
-                                                $rootScope.life_insurance.insurer=person;
-                                                $state.go('life');
+                                                this.state.insurer=person;
+                                                this.goBack();
                                             }
                                         });
                                 }
