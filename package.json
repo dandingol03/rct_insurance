@@ -28,6 +28,7 @@
     "react-native-file-upload": "^1.0.4",
     "react-native-fs": "^2.1.0-rc.1",
     "react-native-grid-view": "^0.4.1",
+    "react-native-image-picker": "^0.26.2",
     "react-native-jpush": "^1.0.9",
     "react-native-material-kit": "^0.4.1",
     "react-native-material-switch": "0.0.4",
