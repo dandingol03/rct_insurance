@@ -20,6 +20,8 @@ import { connect } from 'react-redux';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
+import Register from './Register';
+import PasswordForget from './PasswordForget';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Sound from 'react-native-sound';
 import StatusBarAlert from 'react-native-statusbar-alert';
@@ -33,13 +35,18 @@ import {
     createNotification,
     downloadGeneratedTTS,
     alertWithType,
-    notificationRecved,
+    closeMessage
 } from '../action/JpushActions';
 import {enableCarOrderRefresh} from '../action/CarActions';
-import AudioExample from '../../AudioExample';
-import DropdownAlert from 'react-native-dropdownalert'
+import {
+    PAGE_LOGIN,
+    PAGE_REGISTER,
+    PAGE_PASSWORDFORGET,
+
+} from '../constants/PageStateConstants';
 
 var WeChat = require('react-native-wechat');
+import ws from '../components/utils/WebSocket';
 
 class App extends React.Component {
 
@@ -48,6 +55,7 @@ class App extends React.Component {
 
         var {type}=payload;
         console.log('type='+type);
+
         switch(type)
         {
             case 'from-service':
@@ -63,21 +71,18 @@ class App extends React.Component {
                    {
                         //TODO:获取accessToken并进行页面跳转
 
-                       this.props.dispatch(createNotification(payload,'service'))
 
+                       this.props.dispatch(createNotification(payload,'service'))
                            .then( (json) =>{
                                 //TODO:下载音频文件
                                 console.log('go get tts');
                                 return this.props.dispatch(downloadGeneratedTTS({content:content}));
-
                            })
                            .then( (json)=> {
                                 if(json.re==1)
                                 {
                                     var path=json.data;
-                                    console.log('path='+path);
                                     //TODO:播放音频文件
-
                                     var sound = new Sound(json.data, '', (error) => {
                                         if (error) {
                                             console.log('failed to load the sound', error);
@@ -99,8 +104,8 @@ class App extends React.Component {
                                     }, 100);
 
                                     //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
-                                    this.props.dispatch(notificationRecved(true));
                                     this.props.dispatch(alertWithType({msg:content}));
+
 
                                 }
                            });
@@ -143,14 +148,38 @@ class App extends React.Component {
                                             return this.props.dispatch(downloadGeneratedTTS({content:msg}));
                                         })
                                         .then(function (json) {
+
                                             if(json.re==1)
                                             {
                                                 var path=json.data;
-                                                //TODO:播放文件
+                                                //TODO:播放音频文件
+                                                var sound = new Sound(json.data, '', (error) => {
+                                                    if (error) {
+                                                        console.log('failed to load the sound', error);
+                                                    }
+                                                });
+                                                this.state.soundMounted=sound;
+                                                setTimeout(() => {
+                                                    sound.play((success) => {
+                                                        if (success) {
+                                                            console.log('successfully finished playing');
+                                                            sound.release();
+                                                            this.state.soundMounted=null;
+                                                        } else {
+                                                            console.log('playback failed due to audio decoding errors');
+                                                            sound.release();
+                                                            this.state.soundMounted=null;
+                                                        }
+                                                    });
+                                                }, 100);
 
-                                                //TODO:popup插件
+                                                //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
+                                                this.props.dispatch(alertWithType({msg:content}));
+
 
                                             }
+
+
                                         })
                                 }
                             })
@@ -190,6 +219,8 @@ class App extends React.Component {
                 break;
         }
 
+
+
         var routeMapper = {
             LeftButton(route, navigator, index, navState) {
                 if (index > 0) {
@@ -222,6 +253,8 @@ class App extends React.Component {
             }
         };
 
+
+
         return (
             <TabNavigator.Item
                 selected={this.state.selectedTab === route}
@@ -235,25 +268,38 @@ class App extends React.Component {
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
 
+
                 <View style={{flex:1}}>
 
                     <StatusBarAlert
                         backgroundColor="#3CC29E"
                         color="white"
-                        visible={this.state.recved}
-                        message="got message"
-                        onPress={() => this.setState({recved: false})}
+                        visible={this.props.notification.validate}
+                        message={this.props.notification.msg}
+                        onPress={() => {
+
+                            //如果挂载音频不为空，则点击停止
+                            if(this.state.soundMounted!==undefined&&this.state.soundMounted!==null)
+                            {
+                                var sound=this.state.soundMounted;
+                                sound.stop();
+                                sound.release();
+                                this.state.soundMounted=null;
+                            }
+                            this.props.dispatch(closeMessage());
+                        }}
                     />
 
                     <Navigator
                         initialRoute={{ name: route, component:component }}
                             configureScene={(route) => {
-                            return Navigator.SceneConfigs.HoriNOTIFICATION_RECVzontalSwipeJumpFromRight;
+                            return Navigator.SceneConfigs.HorizontalSwipeJumpFromRight;
                           }}
                         renderScene={(route, navigator) => {
                             let Component = route.component;
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
+
                     />
 
                 </View>
@@ -265,6 +311,7 @@ class App extends React.Component {
 
     render() {
 
+        var props=this.props;
         let auth=this.props.auth;
         if(auth==true)
         {
@@ -276,7 +323,18 @@ class App extends React.Component {
                 </TabNavigator>
             );
         }else{
-            return (<Login/>);
+            switch(props.page.state)
+            {
+                case PAGE_LOGIN:
+                    return (<Login/>);
+                    break;
+                case PAGE_REGISTER:
+                    return (<Register/>);
+                    break;
+                case PAGE_PASSWORDFORGET:
+                    return (<PasswordForget/>);
+                    break;
+            }
         }
     }
 
@@ -314,14 +372,22 @@ class App extends React.Component {
             JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
         ]
         WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
+
         })
+
+
+
+        var socket=new window.WebSocket('ws://139.129.96.231:3010');
+
+        //进行websocket连接
+        ws.connect();
 
         // setTimeout(()=>{
         //     this.setState({recved:true});
         // },12000)
 
-    }
 
+    }
     onReceiveMessage(message) {
         //TODO:make a notification through
         var notification=message._data;
@@ -329,7 +395,8 @@ class App extends React.Component {
     }
 
     onOpenMessage(message) {
-        alert(message);
+        console.log(message);
+
     }
 
 }
@@ -378,6 +445,6 @@ export default connect(
     (state) => ({
         auth: state.user.auth,
         notification:state.notification,
-        recved:state.notification.recved,
+        page:state.page
     })
 )(App);

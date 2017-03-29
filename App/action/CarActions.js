@@ -12,6 +12,34 @@ export let enableCarOrderRefresh=()=>{
     }
 }
 
+//保存车辆信息
+export let postCarInfo=function (payload) {
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+            const state = getState();
+            var accessToken = state.user.accessToken;
+            var {carInfo}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'uploadCarAndOwnerInfo',
+                    info:carInfo
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e);
+            })
+        });
+    }
+}
+
+
 //审车订单中用于搜索不在订单状态的车辆
 export let fetchCarsNotInDetectState=function () {
 

@@ -19,28 +19,34 @@ import {
     TabBarIOS,
     TouchableOpacity,
     Dimensions,
-    Modal
+    Modal,
+    Platform
 } from 'react-native';
 
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {loginAction,setTimerAction} from '../action/actionCreator';
+var Proxy = require('../proxy/Proxy');
+import {
+    loginAction,
+    setTimerAction
+} from '../action/actionCreator';
+
 
 import {
-    MapView,
-    MapTypes,
-    Geolocation
-} from 'react-native-baidu-map';
+    updatePageState
+} from '../action/PageStateActions';
 
-var Proxy = require('../proxy/Proxy');
-
+import {
+    PAGE_REGISTER,
+    PAGE_PASSWORDFORGET,
+} from '../constants/PageStateConstants';
+import PreferenceStore from '../components/utils/PreferenceStore';
 var MessageBarAlert = require('react-native-message-bar').MessageBar;
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 import Sound from 'react-native-sound';
-const requireAudio = require('../../serviceAudio.wav');
 
-var Promise = require('bluebird');
+
 
 var  Login =React.createClass({
 
@@ -74,6 +80,16 @@ var  Login =React.createClass({
             }
         }else{}
 
+    },
+
+    navigate2Register:function(){
+        //TODO:dispatch a action
+        this.props.dispatch(updatePageState({state:PAGE_REGISTER}))
+    },
+
+    navigate2PasswordForget:function(){
+        //TODO:dispatch a action
+        this.props.dispatch(updatePageState({state:PAGE_PASSWORDFORGET}))
     },
 
     onPress:function () {
@@ -209,14 +225,21 @@ var  Login =React.createClass({
 
                         <View style={{flexDirection:'row',justifyContent:'center'}}>
                             <View style={[styles.row,{borderBottomWidth:0,marginBottom:10,width:width*3/5}]}>
-                                <View style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10
-                                    ,backgroundColor:'transparent'}}>
+                                <TouchableOpacity style={{flex:1,justifyContent:'flex-start',flexDirection:'row',marginLeft:10
+                                    ,backgroundColor:'transparent'}}
+                                                  onPress={()=>{
+                                        this.navigate2Register();
+                                    }}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>注册</Text>
-                                </View>
-                                <View style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
-                                     backgroundColor:'transparent'}}>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={{flex:1,justifyContent:'flex-end',flexDirection:'row',marginRight:10,
+                                     backgroundColor:'transparent'}}
+                                                  onPress={()=>{
+                                        this.navigate2PasswordForget();
+                                    }}>
                                     <Text style={{color:'rgba(66, 162, 136, 0.97)',fontSize:16}}>忘记密码</Text>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
@@ -259,8 +282,6 @@ var  Login =React.createClass({
 
                     </View>
 
-
-
                     <MessageBarAlert ref="alert" />
                     <MessageBarAlert ref="msg" />
 
@@ -275,55 +296,38 @@ var  Login =React.createClass({
     componentDidMount() {
         MessageBarManager.registerMessageBar(this.refs.alert);
 
-        setTimeout(function () {
-            Sound.setCategory('Playback', true)
-            const s = new Sound('./serviceAudio.wav',  Sound.MAIN_BUNDLE,(e) => {
-                if (e) {
-                    alert(e)
-                    return;
-                }
-
-                s.play(() => s.release());
-            });
-        },1000)
-
-        // var  makePromise=(name, delay) =>{
-        //     return new Promise((resolve) => {
-        //         console.log(`${name} started`);
-        //         setTimeout(() => {
-        //             console.log(`${name} completed`);
-        //             resolve(name);
-        //         }, delay);
-        //     });
-        // }
-        //
-        // var data = [2000, 1, 1000];
-        // Promise.reduce(data, ( item, index) => {
-        //     return makePromise(index, item).then(res => {
-        //         return  res;
-        //     });
-        // }, 0).then(res => {
-        //     console.log(res);
-        // });
-
-
-        // MessageBarManager.showAlert({
-        //     title: "John Doe", // Title of the alert
-        //     message: "Hello, any suggestions?", // Message of the alert
-        //     avatar: require('../img/person.jpg'),
-        //     titleNumberOfLines: 1,
-        //     messageNumberOfLines: 0,
-        //     titleStyle: {color: 'white', fontSize: 18, fontWeight: 'bold' },
-        //     messageStyle: { color: 'white', fontSize: 16 ,},
-        //     avatarStyle: { height: 40, width: 40, borderRadius: 20 },
-        //     animationType: 'SlideFromLeft',
-        //     shouldHideAfterDelay:false,
-        //     stylesheetExtra:{backgroundColor:'rgba(180,180,180,0.5)',strokeColor:'transparent'}
-        // });
-        //
         // setTimeout(function () {
-        //     MessageBarManager.hideAlert();
-        // }.bind(this),1000);
+        //     Sound.setCategory('Playback', true)
+        //     const s = new Sound('./serviceAudio.wav',  Sound.MAIN_BUNDLE,(e) => {
+        //         if (e) {
+        //             alert(e)
+        //             return;
+        //         }
+        //
+        //         s.play(() => s.release());
+        //     });
+        // },1000)
+
+        //fetch username and password
+        var username=null;
+        var password=null;
+       PreferenceStore.get('username').then((val)=>{
+            username=val;
+            return PreferenceStore.get('password');
+       }).then((val)=>{
+            password=val;
+            if(username!==undefined&&username!==null&&username!=''
+                &&password!==undefined&&password!==null&&password!='')
+            {
+                //TODO:auto-login
+                this.setState({user:{
+                    username:username,
+                    password:password
+                }})
+                this.onLoginPressed();
+            }
+       })
+
 
     },
     componentWillUnmount() {
@@ -335,6 +339,7 @@ var  Login =React.createClass({
 
 
 export default connect(
+
 )(Login);
 
 

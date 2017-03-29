@@ -33,22 +33,12 @@ import BaiduHome from '../map/BaiduHome';
 
 import Camera from 'react-native-camera';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-import Sound from 'react-native-sound';
+
 import {
     updateMaintainBusiness
 } from '../../action/MaintainActions';
 import MaintainPlan from '../../components/modal/MaintainPlan';
-
-
-
-var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
-    if (error) {
-        console.log('failed to load the sound', error);
-        return;
-    }
-    // loaded successfully
-    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-});
+import RNAssetThumbnail from  'react-native-asset-thumbnail';
 
 
 class Maintain extends Component{
@@ -60,7 +50,8 @@ class Maintain extends Component{
         }
     }
 
-    navigate2AudioExample(path){
+    navigate2AudioExample(path)
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
@@ -73,21 +64,8 @@ class Maintain extends Component{
         }
     }
 
-    navigate2MaintainPlan(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'maintain_plan',
-                component: MaintainPlan,
-                params: {
-                    miles:this.state.miles,
-                    routineName:this.state.routineName,
-                }
-            })
-        }
-    }
-
-    navigate2VideoPlayer(videoPath){
+    navigate2VideoPlayer(videoPath)
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
@@ -100,7 +78,8 @@ class Maintain extends Component{
         }
     }
 
-    navigate2Audio(){
+    navigate2Audio()
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
@@ -128,7 +107,8 @@ class Maintain extends Component{
         }
     }
 
-    checkMaintainPlan(){
+    checkMaintainPlan()
+    {
 
         var {miles} = this.state;
         var reg=/\D/;
@@ -185,10 +165,10 @@ class Maintain extends Component{
 
     }
 
-    show(actionSheet) {
+    show(actionSheet)
+    {
         this[actionSheet].show();
     }
-
 
     takePicture = () => {
         if (this.camera) {
@@ -255,6 +235,9 @@ class Maintain extends Component{
                             'videoPath='+path);
                     },1000)
                     this.setState({cameraModalVisible:false,videoPath:path});
+                    // var thumbnail = RNAssetThumbnail.generateThumbnail(path, 70, 70);
+                    // console.log('this.state.thumbnail='+thumbnail);
+                    // this.setState({thumbnail:thumbnail});
 
                 })
                 .catch(err => console.error(err));
@@ -264,7 +247,6 @@ class Maintain extends Component{
         }
     }
 
-
     stopRecording = () => {
         if (this.camera) {
             this.camera.stopCapture()
@@ -272,6 +254,19 @@ class Maintain extends Component{
                 isRecording: false,cameraModalVisible:false
             });
         }
+
+        let promiseArr = [];
+        promiseArr.push(RNAssetThumbnail.generateThumbnail(this.state.videoPath, 70, 70));
+        Promise.all(promiseArr).then(thumbnails => {
+            this.setState({thumbnails});
+        });
+
+
+    }
+
+    renderThumbnails(thumbnail, index) {
+        console.log('......thumbnail='+thumbnail);
+        return <Image key={index} style={styles.imageStyle} source={{uri:thumbnail,scale: 3}}/>
     }
 
     //音频录制
@@ -288,24 +283,6 @@ class Maintain extends Component{
     componentDidMount() {
 
 
-        this._checkPermission().then((hasPermission) => {
-            this.setState({ hasPermission });
-
-            if (!hasPermission) return;
-
-            this.prepareRecordingPath(this.state.audioPath);
-
-            AudioRecorder.onProgress = (data) => {
-                this.setState({currentTime: Math.floor(data.currentTime)});
-            };
-
-            AudioRecorder.onFinished = (data) => {
-                // Android callback comes in the form of a promise instead.
-                if (Platform.OS === 'ios') {
-                    this._finishRecording(data.status === "OK", data.audioFileURL);
-                }
-            };
-        });
     }
 
     _checkPermission() {
@@ -365,7 +342,6 @@ class Maintain extends Component{
         }
     }
 
-
     recordAudio(){
         if(this.state.recording==true){
             this._stop();
@@ -405,8 +381,6 @@ class Maintain extends Component{
         this.navigate2AudioExample(filePath);
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
-
-
 
     //进行维修业务的保存
     updateMaintainBusiness(tabIndex)
@@ -468,7 +442,6 @@ class Maintain extends Component{
             accidentType:'',
             disabled: false,
             description:{
-
             },
             miles:0,
             routineName:'',
@@ -479,7 +452,6 @@ class Maintain extends Component{
             stoppedRecording: false,
             finished: false,
             hasPermission: undefined,
-
             videoPath:'',
             cameraModalVisible:false,
             maintainPlanModal:false,
@@ -491,13 +463,16 @@ class Maintain extends Component{
                 flashMode: Camera.constants.FlashMode.auto,
             },
             portrait:null,
+
+            thumbnails:[],
+
         };
     }
 
     render(){
 
         var dailyChecked = [];
-
+        let {thumbnails} = this.state;
 
         var miles = this.state.miles;
 
@@ -512,9 +487,10 @@ class Maintain extends Component{
 
         return (
             <View style={{flex:1}}>
-                {/*body*/}
+
                 <Image resizeMode="stretch" source={require('../../img/bkg_old@2x.png')} style={{width:width,height:height}}>
 
+                    {/*head*/}
                     <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
                     backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                         <TouchableOpacity style={{flex:1}} onPress={()=>{
@@ -529,10 +505,12 @@ class Maintain extends Component{
                         <View style={{flex:1,padding:0}}></View>
                     </View>
 
+                    {/*body*/}
                     <View style={{flex:1,width:width,position:'relative',marginTop:10}}>
                         <ScrollableTabView style={{flex:1}}
                                            renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
+                            {/*日常保养*/}
                             <View tabLabel='日常保养' style={{flex:1,padding:5}}>
 
                                 <ScrollView>
@@ -771,6 +749,7 @@ class Maintain extends Component{
 
                             </View>
 
+                            {/*故障维修*/}
                             <ScrollView tabLabel='故障维修' style={{flex:1,padding:10}}>
 
                                 {/*文本描述*/}
@@ -885,9 +864,16 @@ class Maintain extends Component{
 
                                     </View>
 
-
                                 </View>
 
+                                {this.state.thumbnails.length>0?
+                                    <View style={{flex:1,padding:10}}>
+                                        <Text>视频第一帧图像</Text>
+                                        {thumbnails.map(this.renderThumbnails.bind(this))}
+
+
+                                    </View>:null
+                                }
 
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
 
@@ -904,6 +890,7 @@ class Maintain extends Component{
 
                             </ScrollView>
 
+                            {/*事故维修*/}
                             <View tabLabel='事故维修' style={{flex:1,padding:12}}>
 
                                 {/*已报案*/}
@@ -1161,6 +1148,12 @@ var styles = StyleSheet.create({
     },
     buttonsSpace: {
         width: 10,
+    },
+    imageStyle: {
+        width: 70,
+        height: 70,
+        marginTop: 10,
+        borderWidth:2,
     },
 
 

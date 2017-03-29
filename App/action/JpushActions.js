@@ -10,8 +10,53 @@ import RNFetchBlob from 'react-native-fetch-blob'
 import {
     NOTIFICATION_RECVED,
     MAKE_MESSAGE_POP,
-    ON_MESSAGE_CLOSE
+    ON_MESSAGE_CLOSE,
+    UPDATE_NOTIFICATIONS
 } from '../constants/JpushConstants';
+
+
+
+
+export let updateNotifications=(payload)=>{
+    return (dispatch,getState)=> {
+        dispatch({
+            type:UPDATE_NOTIFICATIONS,
+            payload:payload
+        });
+    }
+}
+
+
+//拉取用户目前的消息
+export let fetchNotifications=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'fetchNotifications',
+                    info:{
+                        side:'customer'
+                    }
+                }
+            }).then((json)=>{
+                resolve(json);
+            }).catch((e)=>{
+              reject(e);
+            })
+
+
+        });
+    }
+}
+
 
 //下载生成的订单播报文件
 export let downloadGeneratedTTS=(payload)=>{
@@ -66,7 +111,7 @@ export let updateRegistrationId=function (payload) {
 
         return new Promise((resolve, reject) => {
 
-            console.log(Platform.OS);
+
             if(Platform.OS=='ios'||Platform.OS=='android')
             {
                 JPush.getRegistrationID().then(function (res) {

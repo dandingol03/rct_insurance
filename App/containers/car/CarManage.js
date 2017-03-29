@@ -28,6 +28,7 @@ import Proxy from '../../proxy/Proxy';
 import NewCarBind from '../../components/modal/NewCarBind';
 import UpdateCarInfo from '../../components/UpdateCarInfo';
 import CarInsurance from './CarInsurance';
+import CarInfoDetail from './CarInfoDetail';
 
 class CarManage extends Component{
 
@@ -62,54 +63,19 @@ class CarManage extends Component{
         }
     }
 
-    getCommoditiesByPriceId(priceId){
-
-        var merchantId=this.props.merchantId;
-        Proxy.post({
-            url:Config.server+'supnuevo/supnuevoGetSupnuevoBuyerCommodityPriceFormListOfGroupMobile.do',
-            headers: {
-                'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: "priceId=" + priceId + "&merchantId=" + merchantId
-        },(json)=> {
-            var errorMsg=json.errorMsg;
-            if(errorMsg !== null && errorMsg !== undefined && errorMsg !== ""){
-                alert(errorMsg);
-
-            }else{
-                var relatedGoods=json.array;
-                if(relatedGoods!==undefined&&relatedGoods!==null)
-                {
-                    relatedGoods.map(function(good,i) {
-                        if (good.priceId == priceId) {
-                            good.checked = true;
-                        }else{
-                            good.checked=false;
-                        }
-                        if(good.sizeValue!=undefined&&good.sizeValue!=null
-                            &&good.sizeUnit!=undefined&&good.sizeUnit!=null)
-                        {
-                            good.goodName=good.nombre+','+
-                                good.sizeValue+','+good.sizeUnit;
-                        }else{
-                            good.goodName=good.nombre;
-                        }
-                    });
-
-                    this.setState({relatedGoods: relatedGoods,dataSource:this.state.dataSource.cloneWithRows(relatedGoods)});
-                }else{
-
+    navigate2CarInfoDetail(carInfo)
+    {
+        const {navigator} =this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'CarInfoDetail',
+                component: CarInfoDetail,
+                params: {
+                    carInfo: carInfo
                 }
-            }
-        }, (err) =>{
-            alert(err);
-        });
-
-
-
+            })
+        }
     }
-
 
     navigate2NewCarCreate(carNum,city)
     {
@@ -259,9 +225,12 @@ class CarManage extends Component{
                         </View>
                     </TouchableOpacity>
 
-                    <View style={{width:50,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                    <TouchableOpacity style={{width:50,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                                      onPress={()=>{
+                                           this.navigate2CarInfoDetail(rowData);
+                                      }}>
                         <Icon name="angle-right" size={42} color="#343434"></Icon>
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
 
@@ -384,6 +353,7 @@ class CarManage extends Component{
                                 placeholder='请输入车牌号作为搜索条件'
                                 placeholderTextColor="#aaa"
                                 underlineColorAndroid="transparent"
+                                autoCapitalize="characters"
                             />
                         </View>
                         <View style={{width:60,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#00c9ff',

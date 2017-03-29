@@ -14,7 +14,8 @@ import  {
     Alert,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal
+    Modal,
+    BackAndroid
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -31,6 +32,14 @@ import CarOrders from '../car/CarOrders';
 import Camera from 'react-native-camera';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
+import HelpAndConfig from '../../components/Help/HelpAndConfig';
+import PasswordModify from '../PasswordModify';
+import Portrait from '../Portrait';
+import WxShareModal from '../../components/modal/WxShareModal';
+import Notification from '../Notification';
+var WeChat = require('react-native-wechat');
+var resolveAssetSource= require('resolveAssetSource')
+
 
 class My extends Component{
 
@@ -41,6 +50,95 @@ class My extends Component{
         }
     }
 
+    wxShare(shareType)
+    {
+        var imageResource = require('../../img/logo.png');
+        switch (shareType) {
+            case '好友':
+                WeChat.shareToSession({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            case '朋友圈':
+                WeChat.shareToTimeline({
+                    type: 'news',
+                    title: '我正在使用捷惠宝App,想与您一起分享',
+                    description: 'share resource image to time line',
+                    mediaTagName: 'email signature',
+                    messageAction: undefined,
+                    messageExt: undefined,
+                    webpageUrl:'http://139.129.96.231:3000/wx',
+                });
+                break;
+            default:
+                break;
+        }
+
+        this.setState({wxVisible:false});
+
+    }
+
+    navigate2Notification()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Notification',
+                component: Notification,
+                params: {
+
+                }
+            })
+        }
+    }
+
+    navigate2Portrait()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'Portrait',
+                component: Portrait,
+                params: {
+
+                }
+            })
+        }
+    }
+
+    navigate2HelpAndConfig()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'HelpAndConfig',
+                component: HelpAndConfig,
+                params: {
+
+                }
+            })
+        }
+    }
+
+    navigate2PasswordModify()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'PasswordModify',
+                component: PasswordModify,
+                params: {
+
+                }
+            })
+        }
+    }
 
     navigate2ContactInfo()
     {
@@ -115,21 +213,6 @@ class My extends Component{
         }
     }
 
-    navigate2CarOrders()
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'CarOrders',
-                component: CarOrders,
-                params: {
-
-                }
-            })
-        }
-    }
-
-
     showPopover(ref){
         this.refs[ref].measure((ox, oy, width, height, px, py) => {
             this.setState({
@@ -142,7 +225,6 @@ class My extends Component{
     closePopover(){
         this.setState({menuVisible: false});
     }
-
 
     takePicture = () => {
         if (this.camera) {
@@ -198,8 +280,6 @@ class My extends Component{
         }
     }
 
-
-
     startRecording = () => {
         if (this.camera) {
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
@@ -231,7 +311,8 @@ class My extends Component{
                 flashMode: Camera.constants.FlashMode.auto
             },
             cameraModalVisible:false,
-            portrait:null
+            portrait:null,
+            wxVisible:false,
         };
     }
 
@@ -257,7 +338,10 @@ class My extends Component{
 
                        <View style={{height:90,marginTop:40,width:width,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
 
-                           <TouchableOpacity   onPress={() => {this.setState({cameraModalVisible:true})}}>
+                           <TouchableOpacity   onPress={() => {
+                               //this.setState({cameraModalVisible:true});
+                               this.navigate2Portrait();
+                           }}>
                                {
                                    state.portrait!==undefined&&state.portrait!==null?
                                        <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
@@ -276,7 +360,7 @@ class My extends Component{
 
                        <View style={{width:width,height:50,position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center',
                             justifyContent:'flex-start'}}>
-                            <View style={{padding:8,flexDirection:'row',alignItems:'center'}}>
+                            <View style={{width:120,padding:8,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{color:'#eee',fontWeight:'bold',fontSize:12,marginRight:4}}>
                                     积分:
                                 </Text>
@@ -284,6 +368,19 @@ class My extends Component{
                                     {props.score}
                                 </Text>
                             </View>
+
+                            <View style={{flex:1}}></View>
+
+                            <TouchableOpacity style={{width:80,padding:8,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
+                                              onPress={() => {
+                               this.navigate2Notification();
+                           }}>
+                                <Icon name="comments" size={20} color="#eee"></Icon>
+                                <Text style={{marginLeft:5,color:'#fff',fontSize:12}}>通知</Text>
+                            </TouchableOpacity>
+
+
+
                        </View>
 
                    </Image>
@@ -300,10 +397,7 @@ class My extends Component{
                             marginRight:1}}
                                           onPress={()=>{
                                               this.navigate2ContactInfo();
-                                          }}
-                        >
-
-
+                                          }}>
                                 <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_info.png')}
                                        onPress={()=>{
                                                    Alert.alert(
@@ -378,12 +472,16 @@ class My extends Component{
 
                     <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*推荐有礼*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                                          onPress={()=>{
+                                              this.setState({wxVisible:true});
+                                          }}
+                        >
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 推荐有礼
                             </Text>
-                        </View>
+                        </TouchableOpacity>
 
                         {/*关于我们*/}
                         <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
@@ -414,7 +512,6 @@ class My extends Component{
                 </View>
 
 
-
                 {/*popover part*/}
                 <Popover
                     isVisible={this.state.menuVisible}
@@ -425,11 +522,13 @@ class My extends Component{
                     style={{backgroundColor:'transparent'}}
                 >
 
-                    <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row'}]}
+                    <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row',justifyContent:'flex-start'}]}
                                       onPress={()=>{
-
                                               this.closePopover();
-                                              //this.navigateGoodAdd();
+                                              setTimeout(()=>{
+                                                   BackAndroid.exitApp();
+                                              },300);
+
                                           }}>
                         <Icon name="power-off" size={20} color="#444"></Icon>
                         <Text style={[styles.popoverText]}>退出</Text>
@@ -438,16 +537,20 @@ class My extends Component{
                     <TouchableOpacity style={[styles.popoverContent,{borderBottomWidth:1,borderBottomColor:'#ddd',flexDirection:'row'}]}
                                       onPress={()=>{
                                               this.closePopover();
-
+                                                 setTimeout(()=>{
+                                                  this.navigate2PasswordModify();
+                                              },300);
                                           }}>
                         <Icon name="gear" size={20} color="#444"></Icon>
-                        <Text style={[styles.popoverText]}>设置</Text>
+                        <Text style={[styles.popoverText]}>修改密码</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.popoverContent,{flexDirection:'row'}]}
+                    <TouchableOpacity style={[styles.popoverContent,{flexDirection:'row',justifyContent:'flex-start'}]}
                                       onPress={()=>{
                                               this.closePopover();
-
+                                              setTimeout(()=>{
+                                                  this.navigate2HelpAndConfig();
+                                              },300);
                                           }}>
                         <Icon name="exclamation-circle" size={20} color="#444"></Icon>
                         <Text style={[styles.popoverText]}>帮助</Text>
@@ -473,6 +576,13 @@ class My extends Component{
                         flashMode={this.state.camera.flashMode}
                         defaultTouchToFocus
                         mirrorImage={false}
+                        onBarCodeRead={(barcode)=>{
+                            var {type,data,bounds}=barcode;
+
+                            //TODO:
+                            //this is your barcode
+                            console.log('barcode data='+data);
+                        }}
                     />
                     <View style={[styles.overlay, styles.topOverlay]}>
                         <TouchableOpacity
@@ -530,6 +640,28 @@ class My extends Component{
                             </TouchableOpacity>
                         }
                     </View>
+
+                </Modal>
+
+                {/*Wechat share*/}
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.wxVisible}
+                    onRequestClose={() => {
+                        console.log("Modal has been closed.");
+                    }}
+                >
+
+                    <WxShareModal
+                        onClose={()=>{
+                            this.setState({wxVisible:false});
+                        }}
+                        wxShare={(shareType)=>{
+                            this.wxShare(shareType);
+                        }}
+                        accessToken={this.props.accessToken}
+                    />
 
                 </Modal>
 

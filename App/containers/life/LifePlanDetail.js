@@ -200,6 +200,12 @@ class LifePlanDetails extends Component{
                         style={{flex:2,fontSize:12,color:'#343434'}}
                         onChangeText={(productCount) =>
                           {
+                              var additions = this.state.additions;
+                              additions.map((addition,index)=>{
+                                  if(addition.itemId==rowData.itemId)
+                                      addition.productCount = productCount;
+                              })
+                              this.setState({additions:additions});
 
                            }}
                         value={
@@ -228,7 +234,7 @@ class LifePlanDetails extends Component{
             insuranceQuota:planDetail.insuranceQuota,//保额
             insuranceFee:planDetail.insuranceFee, //主险保费
             feeYearType:planDetail.feeYearType,//缴费年限
-            productCount:null,
+            additions:null,
             modefied:false,
         };
     }
@@ -246,13 +252,14 @@ class LifePlanDetails extends Component{
                     main = item;
                 }
             })
+            this.state.additions = additions;
         }
 
         var listView=null;
-        if(additions!==undefined&&additions!==null&&additions.length>0)
+        if(this.state.additions!==undefined&&this.state.additions!==null&&this.state.additions.length>0)
         {
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-            var dataSource=ds.cloneWithRows(additions);
+            var dataSource=ds.cloneWithRows(this.state.additions);
 
             listView=
                 <ScrollView style={{flex:8}}>
@@ -433,7 +440,7 @@ class LifePlanDetails extends Component{
 
                             <View style={{flex:1,backgroundColor:'#387ef5',margin:20,borderRadius:8,alignItems:'center',justifyContent:'center'}}>
                                <TouchableOpacity onPress={()=>{
-                                   this.saveModified(planDetail,main,additions);
+                                   this.saveModified(planDetail,main,this.state.additions);
                                }}>
                                    <Text style={{color:'#fff'}}>保存修改</Text>
                                </TouchableOpacity>

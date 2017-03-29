@@ -20,7 +20,8 @@ const initialState = {
     personInfo:null,
     contactInfo:null,
     score:null,
-    ttsToken:null
+    ttsToken:null,
+    portrait:null
 };
 
 let user = (state = initialState, action) => {

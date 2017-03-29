@@ -302,7 +302,6 @@ class NewCarBind extends Component{
                 </View>
 
 
-
                 <View style={{flex:2,padding:10}}>
                     <View style={styles.row}>
 
@@ -345,13 +344,15 @@ class NewCarBind extends Component{
                                 editable = {true}
                                 height={40}
                                 onChangeText={
-                                    (carNum)=>this.setState({carNum:carNum})
+
+                                    (carNum)=>this.setState({carNum:  carNum.toUpperCase()})
                                 }
                                 value={this.state.carNum}
                                 placeholder='请输入将要创建的车牌号'
                                 placeholderTextColor="#aaa"
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="characters"
+
                             />
                         </View>
 
