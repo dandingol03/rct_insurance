@@ -128,8 +128,8 @@ class BaiduHome extends Component{
                 <View style={{ flex: 1,justifyContent: 'flex-start',alignItems: 'center',
                         backgroundColor: '#F5FCFF',position:'relative'}}>
                     {/*header bar*/}
-                    <TouchableOpacity style={[styles.card,{height:45,width:width*4/5,marginLeft:width/10,
-                            position:'absolute',top:10,zIndex:1000,flexDirection:'row',justifyContent:'center'}]}
+                    <TouchableOpacity style={[styles.card,{height:42,width:width*4/5,marginLeft:width/10,borderRadius:6,
+                            position:'absolute',top:10,zIndex:1000,flexDirection:'row',justifyContent:'center',alignItems:'center'}]}
                                       onPress={()=>{
                                          this.navigate2MapServiceSelect();
                                       }}

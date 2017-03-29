@@ -232,20 +232,18 @@ class Maintain extends Component{
     }
 
 
-    startRecording = () => {
+    startVideoCapture = () => {
         if (this.camera) {
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
                 .then((data) => {
                     var path=data.path;
                     console.log(data);
                     this.state.videoPath=path;
-                    setTimeout(function () {
-                        Alert.alert(
-                            'info',
-                            'videoPath='+path);
-                    },1000)
+                    console.log('video path='+path);
                     this.setState({cameraModalVisible:false,videoPath:path});
-
+                    console.log('======thumb nail=====')
+                    ProcessingManager.getPreviewForSecond(path, 1)
+                        .then((data) => console.log(data))
                 })
                 .catch(err => console.error(err));
             this.setState({
@@ -255,7 +253,7 @@ class Maintain extends Component{
     }
 
 
-    stopRecording = () => {
+    stopVideoCapture = () => {
         if (this.camera) {
             this.camera.stopCapture()
             this.setState({
@@ -1045,7 +1043,7 @@ class Maintain extends Component{
                             &&
                             <TouchableOpacity
                                 style={styles.captureButton}
-                                onPress={this.startRecording}
+                                onPress={this.startVideoCapture}
                             >
                                 <Image
                                     source={require('../../../assets/ic_videocam_36pt.png')}
@@ -1054,7 +1052,7 @@ class Maintain extends Component{
                             ||
                             <TouchableOpacity
                                 style={styles.captureButton}
-                                onPress={this.stopRecording}
+                                onPress={this.stopVideoCapture}
                             >
                                 <Image
                                     source={require('../../../assets/ic_stop_36pt.png')}

@@ -1,3 +1,6 @@
+/**
+ * Created by danding on 17/3/29.
+ */
 
 import React,{Component} from 'react';
 import _ from 'lodash';
@@ -21,7 +24,7 @@ import DatePicker from 'react-native-datepicker';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
-    fetchServicePersonByDetectUnitId,
+    fetchServicePersonByPlaceId,
     createNewCustomerPlace,
     generateCarServiceOrderFee,
     generateCarServiceOrder,
@@ -30,7 +33,7 @@ import{
     disableServiceOrdersRefresh,
     enableServiceOrdersClear,
     updateCandidateState,
-    getServicePersonsByDetectUnites
+    getServicePersonsByPlaces
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -58,7 +61,7 @@ const wholeHeight=Dimensions.get('window').height-80;
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
 
-class MapAdministrateConfirm extends Component{
+class MapPaperValidateConfirm extends Component{
 
 
     goBack(){
@@ -97,14 +100,16 @@ class MapAdministrateConfirm extends Component{
     }
 
 
-    //周边搜索
-    fetchServicePersonByDetectUnitId()
+    //获取车管所的服务人员信息
+    fetchServicePersonByPlaceId()
     {
-        var {detectUnit}=this.state;
-        this.props.dispatch(fetchServicePersonByDetectUnitId({detectUnit:detectUnit})).then((json)=>{
-            var {carManage}=this.state;
-            carManage.servicePerson=json.data;
-            this.setState({carManage:carManage});
+        var {place}=this.state;
+        this.props.dispatch(fetchServicePersonByPlaceId({place:place})).then((json)=>{
+            if(json.re==1)
+            {
+                var {carManage}=this.state;
+                this.setState({carManage:Object.assign(carManage,{servicePerson:json.data})});
+            }
         });
     }
 
@@ -141,13 +146,13 @@ class MapAdministrateConfirm extends Component{
     generateServiceOrder()
     {
 
-        var {detectUnit,detectUnites,carManage,carInfo,verify}=this.state;
+        var {place,places,carManage,carInfo,verify}=this.state;
         carManage.carId=carInfo.carId;
         //审车----选择检测公司
-        carManage.serviceType=21;
-        if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
+        carManage.serviceType=22;
+        if(place!==undefined&&place!==null)//已选车管所
         {
-            carManage.servicePlaceId=detectUnit.placeId;
+            carManage.servicePlaceId=place.placeId;
             if( carManage.servicePerson.servicePersonId!==undefined&& carManage.servicePerson.servicePersonId!==null){
                 carManage.servicePersonId=carManage.servicePerson.servicePersonId;
             }
@@ -157,7 +162,7 @@ class MapAdministrateConfirm extends Component{
 
                 if(json.re==1)
                 {
-                    var serviceName = '车驾管-审车';
+                    var serviceName = '车驾管-审证';
                     var order=json.data;
 
                     this.props.dispatch(sendCustomMessage({order:order,serviceName:serviceName,category:'carManage'}))
@@ -318,10 +323,9 @@ class MapAdministrateConfirm extends Component{
             this.state.doingBusiness=true;
             if(this.state.estimateTime)
             {
-                if(this.state.carInfo&&this.state.carInfo.carId)
-                {
-                    var {detectUnit,detectUnites,carManage}=this.state;
-                    if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
+
+                    var {place,places,carManage}=this.state;
+                    if(place!==undefined&&place!==null)//已选检测公司
                     {
                         var access = this.verifyServiceSegment(carManage.servicePerson);
                         if (access == false) {
@@ -364,79 +368,74 @@ class MapAdministrateConfirm extends Component{
                         //范围选择
                         var servicePersonIds = [];
                         var personIds = [];
-                       this.props.dispatch(getServicePersonsByDetectUnites({detectUnites:detectUnites}))
-                           .then((json)=>{
-                               if(json.re==1)
-                               {
-                                   //寻找符合时间段的服务人员
-                                   json.data.map(function(servicePerson,i) {
-                                       var flag=this.verifyServiceSegment(servicePerson);
-                                       if(flag==false)
-                                       {}else{
-                                           servicePersonIds.push(servicePerson.servicePersonId);
-                                           personIds.push(servicePerson.personId);
-                                       }
-                                   });
+                        this.props.dispatch(getServicePersonsByPlaces({places:places}))
+                            .then((json)=>{
+                                if(json.re==1)
+                                {
+                                    //寻找符合时间段的服务人员
+                                    json.data.map(function(servicePerson,i) {
+                                        var flag=this.verifyServiceSegment(servicePerson);
+                                        if(flag==false)
+                                        {}else{
+                                            servicePersonIds.push(servicePerson.servicePersonId);
+                                            personIds.push(servicePerson.personId);
+                                        }
+                                    });
 
 
-                                   if(servicePersonIds.length==0)
-                                   {
+                                    if(servicePersonIds.length==0)
+                                    {
 
-                                       Alert.alert(
-                                           '错误',
-                                           '你所选的预约时间没有合适的服务人员,请重新选择'
-                                       );
-                                       return {re:-1};
+                                        Alert.alert(
+                                            '错误',
+                                            '你所选的预约时间没有合适的服务人员,请重新选择'
+                                        );
+                                        return {re:-1};
 
-                                   }else {
-                                       this.state.carManage.verify={
-                                           servicePersonIds:servicePersonIds,
-                                           personIds:personIds
-                                       };
-                                       return {re:1};
-                                   }
-                               }
-                       }).then((json)=>{
-                           if(json.re==1)
-                           {
-                               if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                   (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                               {
+                                    }else {
+                                        this.state.carManage.verify={
+                                            servicePersonIds:servicePersonIds,
+                                            personIds:personIds
+                                        };
+                                        return {re:1};
+                                    }
+                                }
+                            }).then((json)=>{
+                            if(json.re==1)
+                            {
+                                if(carManage.destination!==undefined&&carManage.destination!==null&&
+                                    (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
+                                {
 
-                                   //TODO:create a new destination
-                                   createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                       if(json.re==1) {
-                                           var customerPlace=json.data;
-                                           this.state.carManage.destination=customerPlace;
+                                    //TODO:create a new destination
+                                    createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                                        if(json.re==1) {
+                                            var customerPlace=json.data;
+                                            this.state.carManage.destination=customerPlace;
 
-                                           this.applyCarServiceOrder();
-                                       }else if(json.re==2) {
-                                           this.state.doingBusiness=false;
-                                       }else{
-                                           this.state.doingBusiness=false;
-                                       }
-                                   }).catch((err)=>{
-                                       Alert.alert(
-                                           '错误',
-                                           err
-                                       );
-                                   });
-                               }else{
-                                   this.applyCarServiceOrder();
-                               }
-                           }
-                       }).catch((e)=>{
-                           alert(e);
-                       })
+                                            this.applyCarServiceOrder();
+                                        }else if(json.re==2) {
+                                            this.state.doingBusiness=false;
+                                        }else{
+                                            this.state.doingBusiness=false;
+                                        }
+                                    }).catch((err)=>{
+                                        Alert.alert(
+                                            '错误',
+                                            err
+                                        );
+                                    });
+                                }else{
+                                    this.applyCarServiceOrder();
+                                }
+                            }
+                        }).catch((e)=>{
+                            alert(e);
+                        })
 
                     }
 
-                }else{
-                    Alert.alert(
-                        '错误',
-                        '请先选择车辆'
-                    );
-                }
+
             }else{
                 Alert.alert(
                     '错误',
@@ -558,15 +557,16 @@ class MapAdministrateConfirm extends Component{
         super(props);
 
         var contentInfo=props.contentInfo;
-        var detectUnit=null;
-        var detectUnites=null;
+        var place=null;
+        var places=null;
         var carInfo=null;
         if (contentInfo !== undefined && contentInfo !== null) {
 
-            if(contentInfo.detectUnit!==undefined&&contentInfo.detectUnit!==null)
-                detectUnit = contentInfo.detectUnit;
-            if(contentInfo.detectUnites!==undefined&&contentInfo.detectUnites!==null)
-                detectUnites=contentInfo.detectUnites;
+            if(contentInfo.place!==undefined&&contentInfo.place!==null)
+                place=contentInfo.place;
+            if(contentInfo.places!==undefined&&contentInfo.places!==null)
+                places=contentInfo.places;
+
             if(contentInfo.carInfo!==undefined&&contentInfo.carInfo!==null)
                 carInfo=contentInfo.carInfo;
             else
@@ -576,8 +576,8 @@ class MapAdministrateConfirm extends Component{
 
         this.state={
             contentInfo:contentInfo,
-            detectUnit:detectUnit,
-            detectUnites:detectUnites,
+            place:place,
+            places:places,
             carManage:{},
             actionSheetCallbacks:[],
             doingBusiness:false,
@@ -607,9 +607,9 @@ class MapAdministrateConfirm extends Component{
             panelScaffoldedStyle={height:0};
         }
 
-        if(state.detectUnit&&(state.carManage.servicePerson==undefined||state.carManage.servicePerson==null))
+        if(state.place&&(state.carManage.servicePerson==undefined||state.carManage.servicePerson==null))
         {
-            this.fetchServicePersonByDetectUnitId();
+            this.fetchServicePersonByPlaceId();
         }else{
 
         }
@@ -636,7 +636,7 @@ class MapAdministrateConfirm extends Component{
                             </TouchableOpacity>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:12}}>
-                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>选择检测公司</Text>
+                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>确认审证订单</Text>
                             </View>
 
                             <View style={{width:80,alignItems:'center',marginRight:20,
@@ -707,199 +707,26 @@ class MapAdministrateConfirm extends Component{
                         </View>
                     </View>
 
-
-                    {/*检测公司*/}
-                    {
-                        state.detectUnit!==undefined&&state.detectUnit!==null?
-                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
-                            padding:5,paddingHorizontal:4}}>
-
-
-                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
-                                    justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                        <Text style={{color:'#bf530c',fontSize:14}} >
-                                            检测公司
-                                        </Text>
-                                    </View>
-
-                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-
-                                        <Text style={{fontSize:14,color:'#222'}}>
-                                            {state.detectUnit.name}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>:null
-                    }
-
-                    {/*服务人员*/}
-
-                    {
-                        state.carManage.servicePerson!==undefined&&state.carManage.servicePerson!==null?
-                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
-                            padding:5,paddingHorizontal:4}}>
-
-
-                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
-                                    justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                        <Text style={{color:'#bf530c',fontSize:14}} >
-                                            服务人员
-                                        </Text>
-                                    </View>
-
-                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-
-                                        <Text style={{fontSize:14,color:'#222'}}>
-                                            {state.carManage.servicePerson.perName}
-                                        </Text>
-                                    </View>
-
-                                </View>
-                            </View>:null
-                    }
-
-                    {/*选择车*/}
+                    {/*车管所*/}
                     <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
                         <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
-                            padding:3,paddingHorizontal:4}}>
-
+                            padding:5,paddingHorizontal:4}}>
 
                             <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
-                                    justifyContent:'center',alignItems:'center'}}>
-                                <Icon name="car" size={22} color="#bf530c"></Icon>
+                                    justifyContent:'center',alignItems:'center',paddingVertical:5}}>
+                                <Text style={{color:'#bf530c',fontSize:14}} >
+                                    车管所
+                                </Text>
                             </View>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                {
-                                    state.carInfo&&state.carInfo.carNum?
-                                        <Text style={{fontSize:13}}>
-                                            {state.carInfo.carNum}
-                                        </Text>:
-                                        <Text style={{color:'#555',fontSize:13}}>
-                                            车牌号
-                                        </Text>
-                                }
-                            </View>
 
-                            <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
-                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
-                                              onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
-                                                if(json.data)
-                                                {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
-                                                    });
-                                                }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
-
-                                          });
-                                      }}>
-                                <Text style={{color:'#fff',fontSize:12}}>
-                                    选择车辆
+                                <Text style={{fontSize:14,color:'#222'}}>
+                                    {state.place.name}
                                 </Text>
-                            </TouchableOpacity>
-
+                            </View>
                         </View>
                     </View>
-
-                    {/*取送车*/}
-
-                    <View style={[styles.row,{width:width,padding:7,paddingHorizontal:12,alignItems:'center'}]}>
-
-                        <View style={{paddingRight:12,alignItems:'center',width:80}}>
-                            <Text style={{color:'#bf530c'}}>取送车</Text>
-                        </View>
-
-
-                        <View style={{width:120,}}>
-
-                            <Switch
-                                width={42}
-                                height={25}
-                                value={this.state.carManage.isAgent}
-                                backgroundActive="#f79916"
-                                backgroundInactive="#666"
-                                onSyncPress={value =>{
-                                   this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
-                                }}/>
-
-                        </View>
-
-                        {/*<Switch activeButtonColor="#fff"   inactiveButtonPressedColor="#666" activeBackgroundColor="#bf530c"*/}
-                        {/*onChangeState={(toggle)=>{*/}
-
-                        {/*console.log(toggle);*/}
-                        {/*this.setState({carManage:Object.assign(this.state.carManage,{isAgent:toggle})})*/}
-                        {/*}}*/}
-
-                        {/*onPress={(status)=>{*/}
-                        {/*alert(status);*/}
-                        {/*}}*/}
-                        {/*/>*/}
-                    </View>
-
-
-
-                    {/*选择取车地点*/}
-                    {
-                        this.state.carManage.isAgent==true?
-                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
-                            padding:3,paddingHorizontal:4}}>
-
-
-                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
-                                    justifyContent:'center',alignItems:'center'}}>
-                                        <Icon name="home" size={24} color="#bf530c"></Icon>
-                                    </View>
-
-                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                        {
-                                            state.carManage.destination?
-                                                <Text style={{fontSize:13}}>
-                                                    {state.carManage.destination.title}
-                                                </Text>:
-                                                <Text style={{color:'#aaa',fontSize:13}}>
-                                                    地点
-                                                </Text>
-                                        }
-                                    </View>
-
-                                    <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
-                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
-                                                      onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
-                                                if(json.data)
-                                                {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
-                                                    });
-                                                }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
-
-                                          });
-                                      }}>
-                                        <Text style={{color:'#fff',fontSize:12}}>
-                                            选择取车地点
-                                        </Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                            </View>:null
-                    }
-
-
 
                     <View style={[styles.row,{width:width,padding:6,paddingHorizontal:12,alignItems:'center',
                             justifyContent:'center',marginTop:10}]}>
@@ -909,7 +736,7 @@ class MapAdministrateConfirm extends Component{
                                           this.preCheck();
                                       }}
                         >
-                            <Text style={{color:'#fff'}}>提交审车订单</Text>
+                            <Text style={{color:'#fff'}}>提交审证订单</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -999,5 +826,5 @@ var styles = StyleSheet.create({
 
 
 
-module.exports = connect()(MapAdministrateConfirm);
+module.exports = connect()(MapPaperValidateConfirm);
 

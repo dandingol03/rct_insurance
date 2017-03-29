@@ -160,7 +160,7 @@ class MapServiceSelect extends Component{
                             >
 
                                 <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(64, 210, 116)',
-                            alignItems:'center',justifyContent:'center'}}>
+                                            alignItems:'center',justifyContent:'center'}}>
                                     <Icon name="plane" size={30} color="#fff"></Icon>
                                 </View>
                                 <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>
@@ -176,7 +176,7 @@ class MapServiceSelect extends Component{
                             >
 
                                 <View style={{width:60,height:60,borderRadius:30,backgroundColor:'rgb(225, 113, 255)',
-                            alignItems:'center',justifyContent:'center'}}>
+                                        alignItems:'center',justifyContent:'center'}}>
                                     <Icon name="train" size={30} color="#fff"></Icon>
                                 </View>
                                 <Text style={{color:'#222',fontWeight:'bold',marginTop:5}}>

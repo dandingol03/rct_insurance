@@ -174,6 +174,12 @@ class MapDistrictResult extends Component{
                         <View style={{padding:2,paddingLeft:20,paddingRight:20,width:width}}>
                             <View style={{borderBottomWidth:1,borderColor:'#eee',alignItems:'center',padding:8}}>
                                 <Text style={{color:'#222',fontSize:12}}>您可以选择以下区或者县的搜索结果</Text>
+                                {
+                                    state.service=='paper_validate'?
+                                        <Text style={{color:'#f00',fontSize:11,fontWeight:'bold',marginTop:7}}>
+                                            * 审证业务只针对C以下的驾驶证 *
+                                        </Text>:null
+                                }
                             </View>
                         </View>
                         {items}
@@ -191,9 +197,9 @@ class MapDistrictResult extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:20}]}>
+                    <View style={[styles.row,{marginTop:0}]}>
 
                         <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                           onPress={()=>{
@@ -207,8 +213,8 @@ class MapDistrictResult extends Component{
                             <Text style={{color:'#222',fontWeight:'bold'}}>
                                 {
                                     state.service=='administrator'?
-                                        '审车':state.service=='airport'?
-                                        '审证':state.service=='paper_validate'?
+                                        '审车':state.service=='paper_validate'?
+                                        '审证':state.service=='airport'?
                                         '接送机':state.service=='park_car'?
                                         '接送站':null
                                 }
@@ -228,7 +234,11 @@ class MapDistrictResult extends Component{
                 <View style={[styles.row,{padding:7,width:width,justifyContent:'center',backgroundColor:'#eee'}]}>
                     {
                         state.recordCount!==undefined&&state.recordCount!==null?
-                            <Text style={{color:'#666',fontSize:11}}>当前区域共搜索出{state.recordCount}条结果</Text>:
+                            <Text style={{color:'#666',fontSize:11}}>
+                                当前区域共搜索出
+                                <Text style={{color:'#f00',fontSize:14}}>{state.recordCount}</Text>
+                                条结果
+                            </Text>:
                             <Text style={{color:'#ff2e21',fontSize:11}}>无检索结果</Text>
                     }
                 </View>

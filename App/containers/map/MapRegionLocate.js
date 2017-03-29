@@ -28,6 +28,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import MapAdministrateConfirm from './MapAdministrateConfirm';
+import MapPaperValidateConfirm from './MapPaperValidateConfirm'
 import MapDailyConfirm from './MapDailyConfirm';
 import MapAirportConfirm from './MapAirportConfirm';
 import MapParkCarConfirm from './MapParkCarConfirm';
@@ -36,7 +37,7 @@ import{
 } from '../../action/ServiceActions';
 
 
-const wholeHeight=Dimensions.get('window').height-80;
+const wholeHeight=Dimensions.get('window').height-100;
 
 class MapRegionLocate extends Component{
 
@@ -57,19 +58,40 @@ class MapRegionLocate extends Component{
 
         if(navigator) {
         }
-        var {plot}=payload;
+        var {plot,places}=payload;
 
         var {service,mode,carInfo}=this.state;
         var params=null;
         switch(service)
         {
             case 'administrator':
-                params= {
-                    contentInfo: {detectUnit: plot}
-                };
+                if(places!==undefined&&places!==null&&places.length>0)
+                    params= {
+                        contentInfo: {detectUnites: places}
+                    };
+                else
+                    params= {
+                        contentInfo: {detectUnit: plot}
+                    };
                 navigator.push({
                     name: 'MapAdministrateConfirm',
                     component: MapAdministrateConfirm,
+                    params: params
+                })
+                break;
+            case 'paper_validate':
+
+                if(places!==undefined&&places!==null&&places.length>0)
+                    params= {
+                        contentInfo: {places: places}
+                    };
+                else
+                    params= {
+                        contentInfo: {place: plot}
+                    };
+                navigator.push({
+                    name: 'MapPaperValidateConfirm',
+                    component: MapPaperValidateConfirm,
                     params: params
                 })
                 break;
@@ -90,13 +112,25 @@ class MapRegionLocate extends Component{
                     [
                         {text: '取消'},
                         {text: '确认', onPress: () => {
-                        params={
-                            contentInfo:{
-                                mode:mode,
-                                unit:plot,
-                                carInfo:carInfo
-                            }
-                        };
+
+                        if(places!==undefined&&places!==null&&places.length>0)
+                        {
+                            params={
+                                contentInfo:{
+                                    mode:mode,
+                                    units:places,
+                                    carInfo:carInfo
+                                }
+                            };
+                        }else{
+                            params={
+                                contentInfo:{
+                                    mode:mode,
+                                    unit:plot,
+                                    carInfo:carInfo
+                                }
+                            };
+                        }
                             navigator.push({
                                 name: 'MapAirportConfirm',
                                 component: MapAirportConfirm,
@@ -151,12 +185,20 @@ class MapRegionLocate extends Component{
                 })
                 break;
 
-
         }
 
-
-
     }
+
+    SelectAll()
+    {
+        var {places}=this.state;
+        if(places!==undefined&&places!==null&&places.length>0)
+        {
+            this.navigate2OrderConfirm({places:places});
+        }
+    }
+
+
 
 
     //周边搜索
@@ -212,6 +254,7 @@ class MapRegionLocate extends Component{
         })
 
     }
+
 
     scaffoldToggle()
     {
@@ -288,6 +331,8 @@ class MapRegionLocate extends Component{
             if(state.populations.B!==undefined&&state.populations.B!==null)
                 tags=[];
 
+            var population=null
+            var plots=[];
             //当群体分布大于1个
             if(state.populations.B)
             {
@@ -318,55 +363,60 @@ class MapRegionLocate extends Component{
                         </TouchableOpacity>);
                 }
 
-                var population=state.populations[state.tag];
-                var plots=[];
-                population.plots.map( (plot, i) =>{
+                population=state.populations[state.tag];
 
-                    plots.push(
-                      <TouchableOpacity style={{width:width,flexDirection:'row',alignItems:'center',padding:10,
+            }else{
+                //只有一个群体
+                population=state.populations.A;
+            }
+
+            population.plots.map( (plot, i) =>{
+
+                plots.push(
+                    <TouchableOpacity style={{width:width,flexDirection:'row',alignItems:'center',padding:10,
                             borderBottomWidth:1,borderColor:'#ddd'}} key={i}
-                                        onPress={()=>{
+                                      onPress={()=>{
                                             this.navigate2OrderConfirm({plot:plot});
                                       }}>
 
-                          <View style={{flex:3,justifyContent:'center',alignItems:'flex-start'}}>
-                              <Text style={{color:'#222'}}>
-                                  {i}.{plot.name}
-                              </Text>
+                        <View style={{flex:3,justifyContent:'center',alignItems:'flex-start'}}>
+                            <Text style={{color:'#222',fontWeight:'bold'}}>
+                                {i+1}.{plot.name}
+                            </Text>
 
-                              <Text style={{color:'#222',fontSize:12,marginTop:5}}>
-                                  距离:{(plot.distance/1000).toFixed(2)}km
-                              </Text>
+                            <Text style={{color:'#222',fontSize:12,marginTop:5}}>
+                                距离:{(plot.distance/1000).toFixed(2)}km
+                            </Text>
 
-                              <Text style={{color:'#222',fontSize:12,marginTop:5}}>
-                                  地址:{plot.address}
-                              </Text>
+                            <Text style={{color:'#222',fontSize:12,marginTop:5}}>
+                                地址:{plot.address}
+                            </Text>
 
-                              <Text style={{color:'#222',fontSize:12,marginTop:5}}>
-                                  电话:{plot.phone}
-                              </Text>
+                            <Text style={{color:'#222',fontSize:12,marginTop:5}}>
+                                电话:{plot.phone}
+                            </Text>
 
-                          </View>
+                        </View>
 
-                          <View style={{width:110,justifyContent:'center',alignItems:'center'}}>
-                              <View style={{width:80,height:30,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                        <View style={{width:110,justifyContent:'center',alignItems:'center'}}>
+                            <View style={{width:80,height:30,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                     borderRadius:4,padding:4,paddingLeft:10,paddingRight:10,borderWidth:1,borderColor:'#f00'}}>
-                                   <Icon name="hand-pointer-o" size={17} color="#222"/>
-                                    <Text style={{color:'#222',fontSize:13}}>选择这里</Text>
-                              </View>
-                          </View>
+                                <Icon name="hand-pointer-o" size={17} color="#222"/>
+                                <Text style={{color:'#222',fontSize:13}}>选择这里</Text>
+                            </View>
+                        </View>
 
-                      </TouchableOpacity>
-                    );
-                });
+                    </TouchableOpacity>
+                );
+            });
 
 
-                results=(
-                    <View style={{flex:1}}>
-                        {plots}
-                    </View>);
+            results=(
+                <View style={{flex:1}}>
+                    {plots}
+                </View>);
 
-            }
+
 
 
 
@@ -486,7 +536,7 @@ class MapRegionLocate extends Component{
                                 {/*result header*/}
                                 <View style={{width:width,height:31,backgroundColor:'rgba(120,120,120,0.6)',flexDirection:'row'}}>
 
-                                    <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center',marginLeft:50}}
+                                    <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center',marginLeft:80}}
                                                       onPress={()=>{
                                                   this.scaffoldToggle();
                                               }}
@@ -495,11 +545,20 @@ class MapRegionLocate extends Component{
                                     </TouchableOpacity>
 
                                     <View style={{width:80,alignItems:'center',justifyContent:'center'}}>
-                                        <View style={{backgroundColor:'#2b984a',padding:4,paddingLeft:15,paddingRight:15,borderRadius:4}}>
-                                            <Text style={{color:'#fff',fontSize:12}}>
-                                                全选
-                                            </Text>
-                                        </View>
+
+                                        {
+                                            state.service=='paper_validate'?
+                                                null:
+                                                <TouchableOpacity style={{backgroundColor:'#2b984a',padding:4,paddingLeft:15,paddingRight:15,borderRadius:4}}
+                                                                  onPress={()=>{
+                                                  this.SelectAll();
+                                                                  }}>
+
+                                                    <Text style={{color:'#fff',fontSize:12}}>
+                                                        全选
+                                                    </Text>
+                                                </TouchableOpacity>
+                                        }
                                     </View>
 
                                 </View>
@@ -592,7 +651,7 @@ var styles = StyleSheet.create({
     },
     map: {
         width: Dimensions.get('window').width,
-        height: 250,
+        height: 230,
         marginBottom: 0
     },
     panel:{
