@@ -996,8 +996,5 @@ var styles = StyleSheet.create({
 
 });
 
-
-
-
 module.exports = connect()(MapAdministrateConfirm);
 

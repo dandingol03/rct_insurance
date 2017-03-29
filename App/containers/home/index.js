@@ -205,6 +205,7 @@ class Home extends Component{
             goodInfo:{},
             relatedGoods:null,
             selectAll:false,
+            alerts:[],
             dataSource : new ListView.DataSource({
                 rowHasChanged: (r1, r2)=> {
                     if (r1 !== r2) {
@@ -219,7 +220,6 @@ class Home extends Component{
         };
     }
 
-
     render(){
 
         var props=this.props;
@@ -233,6 +233,7 @@ class Home extends Component{
 
         return (
             <View style={{flex:1}}>
+
                 {/* header bar */}
                 <Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />
                 <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:195,

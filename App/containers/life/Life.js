@@ -301,6 +301,7 @@ class Life extends Component{
         const DESTRUCTIVE_INDEX = 1;
 
         const insuranceTypeButtons=['取消','重疾险','意外险','养老险','理财险','医疗险'];
+
         return (
 
             <View style={{flex:1}}>
@@ -316,13 +317,13 @@ class Life extends Component{
                 </View>
 
                 {/*body*/}
-                <Image resizeMode="stretch" source={require('../../img/login_background@2x.png')} style={{flex:20,width:width}}>
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
                     <View style={{flex:10,padding:10}}>
 
                         {/*投保人*/}
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>投保人:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>投保人:</Text>
                             </View>
                             {
                                 (insurer.perName!==undefined&&insurer.perName!==null)?
@@ -330,7 +331,7 @@ class Life extends Component{
                                         <Text style={{fontSize:15}}>{insurer.perName}</Text>
                                     </View>:
                                     <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>谁交保费</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>谁交保费</Text>
                                     </View>
 
                             }
@@ -340,16 +341,15 @@ class Life extends Component{
                                                   this.navigate2AppendLifeInsurer();
                                          console.log('选择投保人')
                                       }}>
-                                <View>
+
                                     <Text style={{color:'#fff',fontSize:12}}>选择</Text>
-                                </View>
                             </TouchableOpacity>
                         </View>
 
                         {/*被保险人*/}
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>被保险人:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>被保险人:</Text>
                             </View>
                             {
                                 (insuranceder.perName!==undefined&&insuranceder.perName!==null)?
@@ -357,7 +357,7 @@ class Life extends Component{
                                         <Text style={{fontSize:15}}>{insuranceder.perName}</Text>
                                     </View>:
                                     <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>谁享受保障</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>谁享受保障</Text>
                                     </View>
                             }
 
@@ -369,9 +369,8 @@ class Life extends Component{
                                                   this.navigate2AppendLifeInsuranceder();
                                          console.log('选择被保险人')
                                       }}>
-                                <View>
+
                                     <Text style={{color:'#fff',fontSize:12}}>选择</Text>
-                                </View>
                             </TouchableOpacity>
 
                         </View>
@@ -380,7 +379,7 @@ class Life extends Component{
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
 
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>受益人:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>受益人:</Text>
                             </View>
 
                             {
@@ -389,7 +388,7 @@ class Life extends Component{
                                         <Text style={{fontSize:15}}>{benefiter.perName}</Text>
                                     </View>:
                                     <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>谁领取保险金</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>谁领取保险金</Text>
                                     </View>
 
                             }
@@ -400,9 +399,8 @@ class Life extends Component{
                                                   this.navigate2AppendLifeBenefiter();
                                          console.log('选择受益人')
                                       }}>
-                                <View>
+
                                     <Text style={{color:'#fff',fontSize:12}}>选择</Text>
-                                </View>
                             </TouchableOpacity>
 
                         </View>
@@ -412,7 +410,7 @@ class Life extends Component{
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
 
                             <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>需要的保障:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>需要的保障:</Text>
                             </View>
                             <View style={{flex:5,padding:5,justifyContent:'center'}}>
                                 {
@@ -446,15 +444,15 @@ class Life extends Component{
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
 
                             <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>有无社保:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>有无社保:</Text>
                             </View>
                             {
                                 hasSocietyInsurance==0?
                                     <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>无</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>无</Text>
                                     </View>:
                                     <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15}}>有</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>有</Text>
                                     </View>
 
                             }
@@ -487,16 +485,16 @@ class Life extends Component{
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
 
                             <View style={{flex:6,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>有无商业保险:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>有无商业保险:</Text>
                             </View>
 
                             {
                                 hasCommerceInsurance==0?
                                     <View style={{flex:3,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15,}}>无</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>无</Text>
                                     </View>:
                                     <View style={{flex:3,padding:5,justifyContent:'center'}}>
-                                        <Text style={{fontSize:15,}}>有</Text>
+                                        <Text style={{fontSize:15,color:'#aaa'}}>有</Text>
                                     </View>
 
                             }
@@ -528,11 +526,11 @@ class Life extends Component{
                         <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
 
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{fontSize:16,flex:3,textAlign:'left',}}>计划保费:</Text>
+                                <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>计划保费:</Text>
                             </View>
                             <View style={{flex:5,padding:5,justifyContent:'center'}}>
                                 <TextInput
-                                    style={{height: 50,fontSize:15}}
+                                    style={{height: 50,fontSize:15,color:'#343434'}}
                                     onChangeText={(planFee) =>
                                     {
                                        this.state.planInsuranceFee=planFee;

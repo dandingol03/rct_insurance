@@ -42,7 +42,6 @@ class AppendCarInsuranceder extends Component{
         }
     }
 
-
     navigate2CarOrders()
     {
         const {navigator} =this.props;
@@ -197,8 +196,6 @@ class AppendCarInsuranceder extends Component{
         return row;
     }
 
-
-
     fetchData(personId){
         Proxy.post({
             url:Config.server+'/svr/request',
@@ -256,7 +253,6 @@ class AppendCarInsuranceder extends Component{
         });
     }
 
-
     constructor(props)
     {
         super(props);
@@ -299,11 +295,7 @@ class AppendCarInsuranceder extends Component{
 
     render(){
 
-
-
-
         var listView=null;
-
 
         if(this.state.relativePersons!==undefined&&this.state.relativePersons!==null)
         {

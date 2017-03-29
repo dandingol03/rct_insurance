@@ -50,9 +50,9 @@ import ws from '../components/utils/WebSocket';
 
 class App extends React.Component {
 
-
     onNotificationRecv(payload)
     {
+
         var {type}=payload;
         console.log('type='+type);
 
@@ -198,7 +198,7 @@ class App extends React.Component {
             tab:'product',
             selectedTab:'home',
             name:null,
-            recved:false
+            recved:this.props.notification.recved,
         }
     }
 
@@ -448,4 +448,3 @@ export default connect(
         page:state.page
     })
 )(App);
-

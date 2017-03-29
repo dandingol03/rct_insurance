@@ -33,22 +33,12 @@ import BaiduHome from '../map/BaiduHome';
 
 import Camera from 'react-native-camera';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-import Sound from 'react-native-sound';
+
 import {
     updateMaintainBusiness
 } from '../../action/MaintainActions';
 import MaintainPlan from '../../components/modal/MaintainPlan';
-
-
-
-var whoosh = new Sound('advertising.mp3', Sound.MAIN_BUNDLE, (error) => {
-    if (error) {
-        console.log('failed to load the sound', error);
-        return;
-    }
-    // loaded successfully
-    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-});
+import RNAssetThumbnail from  'react-native-asset-thumbnail';
 
 
 class Maintain extends Component{
@@ -60,21 +50,22 @@ class Maintain extends Component{
         }
     }
 
-    navigate2MaintainPlan(){
+    navigate2AudioExample(path)
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
-                name: 'maintain_plan',
-                component: MaintainPlan,
+                name: 'audioExample',
+                component: AudioExample,
                 params: {
-                    miles:this.state.miles,
-                    routineName:this.state.routineName,
+                    path:path
                 }
             })
         }
     }
 
-    navigate2VideoPlayer(videoPath){
+    navigate2VideoPlayer(videoPath)
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
@@ -87,7 +78,8 @@ class Maintain extends Component{
         }
     }
 
-    navigate2Audio(){
+    navigate2Audio()
+    {
         const { navigator } = this.props;
         if(navigator) {
             navigator.push({
@@ -115,7 +107,8 @@ class Maintain extends Component{
         }
     }
 
-    checkMaintainPlan(){
+    checkMaintainPlan()
+    {
 
         var {miles} = this.state;
         var reg=/\D/;
@@ -172,10 +165,10 @@ class Maintain extends Component{
 
     }
 
-    show(actionSheet) {
+    show(actionSheet)
+    {
         this[actionSheet].show();
     }
-
 
     takePicture = () => {
         if (this.camera) {
@@ -195,8 +188,6 @@ class Maintain extends Component{
                 .catch(err => console.error(err));
         }
     }
-
-
 
     storePicture(portrait){
 
@@ -232,7 +223,9 @@ class Maintain extends Component{
     }
 
 
+
     startVideoCapture = () => {
+
         if (this.camera) {
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
                 .then((data) => {
@@ -241,9 +234,11 @@ class Maintain extends Component{
                     this.state.videoPath=path;
                     console.log('video path='+path);
                     this.setState({cameraModalVisible:false,videoPath:path});
+
                     console.log('======thumb nail=====')
                     ProcessingManager.getPreviewForSecond(path, 1)
                         .then((data) => console.log(data))
+
                 })
                 .catch(err => console.error(err));
             this.setState({
@@ -260,6 +255,19 @@ class Maintain extends Component{
                 isRecording: false,cameraModalVisible:false
             });
         }
+
+        let promiseArr = [];
+        promiseArr.push(RNAssetThumbnail.generateThumbnail(this.state.videoPath, 70, 70));
+        Promise.all(promiseArr).then(thumbnails => {
+            this.setState({thumbnails});
+        });
+
+
+    }
+
+    renderThumbnails(thumbnail, index) {
+        console.log('......thumbnail='+thumbnail);
+        return <Image key={index} style={styles.imageStyle} source={{uri:thumbnail,scale: 3}}/>
     }
 
     //音频录制
@@ -276,24 +284,6 @@ class Maintain extends Component{
     componentDidMount() {
 
 
-        this._checkPermission().then((hasPermission) => {
-            this.setState({ hasPermission });
-
-            if (!hasPermission) return;
-
-            this.prepareRecordingPath(this.state.audioPath);
-
-            AudioRecorder.onProgress = (data) => {
-                this.setState({currentTime: Math.floor(data.currentTime)});
-            };
-
-            AudioRecorder.onFinished = (data) => {
-                // Android callback comes in the form of a promise instead.
-                if (Platform.OS === 'ios') {
-                    this._finishRecording(data.status === "OK", data.audioFileURL);
-                }
-            };
-        });
     }
 
     _checkPermission() {
@@ -347,11 +337,11 @@ class Maintain extends Component{
                 this._finishRecording(true, filePath);
             }
             return filePath;
+
         } catch (error) {
             console.error(error);
         }
     }
-
 
     recordAudio(){
         if(this.state.recording==true){
@@ -389,10 +379,9 @@ class Maintain extends Component{
 
     _finishRecording(didSucceed, filePath) {
         this.setState({ finished: didSucceed });
+        this.navigate2AudioExample(filePath);
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
-
-
 
     //进行维修业务的保存
     updateMaintainBusiness(tabIndex)
@@ -454,7 +443,6 @@ class Maintain extends Component{
             accidentType:'',
             disabled: false,
             description:{
-
             },
             miles:0,
             routineName:'',
@@ -464,8 +452,7 @@ class Maintain extends Component{
             recording: false,
             stoppedRecording: false,
             finished: false,
-            hasPermission: true,
-
+            hasPermission: undefined,
             videoPath:'',
             cameraModalVisible:false,
             maintainPlanModal:false,
@@ -475,16 +462,18 @@ class Maintain extends Component{
                 type: Camera.constants.Type.back,
                 orientation: Camera.constants.Orientation.auto,
                 flashMode: Camera.constants.FlashMode.auto,
-
             },
             portrait:null,
+
+            thumbnails:[],
+
         };
     }
 
     render(){
 
         var dailyChecked = [];
-
+        let {thumbnails} = this.state;
 
         var miles = this.state.miles;
 
@@ -499,9 +488,10 @@ class Maintain extends Component{
 
         return (
             <View style={{flex:1}}>
-                {/*body*/}
+
                 <Image resizeMode="stretch" source={require('../../img/bkg_old@2x.png')} style={{width:width,height:height}}>
 
+                    {/*head*/}
                     <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
                     backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                         <TouchableOpacity style={{flex:1}} onPress={()=>{
@@ -516,10 +506,12 @@ class Maintain extends Component{
                         <View style={{flex:1,padding:0}}></View>
                     </View>
 
+                    {/*body*/}
                     <View style={{flex:1,width:width,position:'relative',marginTop:10}}>
                         <ScrollableTabView style={{flex:1}}
                                            renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
+                            {/*日常保养*/}
                             <View tabLabel='日常保养' style={{flex:1,padding:5}}>
 
                                 <ScrollView>
@@ -694,7 +686,7 @@ class Maintain extends Component{
                                         </View>
                                     </View>
 
-                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa'}}>
+                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
                                         <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                             <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
                                             <TextInput
@@ -709,6 +701,7 @@ class Maintain extends Component{
                                                 placeholderTextColor="#aaa"
                                                 underlineColorAndroid="transparent"
                                             />
+
                                             <TouchableOpacity style={{flex:2,height:25,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                                           borderRadius:4,backgroundColor:'rgba(17, 17, 17, 0.6)'}}
                                                               onPress={()=>{
@@ -716,11 +709,9 @@ class Maintain extends Component{
                                                                 }}>
                                                 <Text style={{color:'#fff',fontSize:12}}>查看保养计划</Text>
                                             </TouchableOpacity>
+
                                         </View>
-
                                     </View>
-
-
 
                                     <TouchableOpacity style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
                                        justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}
@@ -728,6 +719,7 @@ class Maintain extends Component{
                                                         this.updateMaintainBusiness(0);
                                                         this.navigate2BaiduHome();
                                             }}>
+
                                         <Text style={{color:'#fff'}}>选择附近的维修厂</Text>
                                     </TouchableOpacity>
 
@@ -758,6 +750,7 @@ class Maintain extends Component{
 
                             </View>
 
+                            {/*故障维修*/}
                             <ScrollView tabLabel='故障维修' style={{flex:1,padding:10}}>
 
                                 {/*文本描述*/}
@@ -809,7 +802,7 @@ class Maintain extends Component{
 
                                                 <TouchableOpacity  onPress={
                                                 ()=>{
-                                                   console.log('播放音频');
+                                                    this._stop();
                                                 }
                                             }>
                                                     <View>
@@ -872,9 +865,16 @@ class Maintain extends Component{
 
                                     </View>
 
-
                                 </View>
 
+                                {this.state.thumbnails.length>0?
+                                    <View style={{flex:1,padding:10}}>
+                                        <Text>视频第一帧图像</Text>
+                                        {thumbnails.map(this.renderThumbnails.bind(this))}
+
+
+                                    </View>:null
+                                }
 
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
 
@@ -891,6 +891,7 @@ class Maintain extends Component{
 
                             </ScrollView>
 
+                            {/*事故维修*/}
                             <View tabLabel='事故维修' style={{flex:1,padding:12}}>
 
                                 {/*已报案*/}
@@ -1148,6 +1149,12 @@ var styles = StyleSheet.create({
     },
     buttonsSpace: {
         width: 10,
+    },
+    imageStyle: {
+        width: 70,
+        height: 70,
+        marginTop: 10,
+        borderWidth:2,
     },
 
 

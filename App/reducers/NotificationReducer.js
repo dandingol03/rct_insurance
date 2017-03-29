@@ -18,14 +18,12 @@ const initialState = {
     onFresh:true,
 };
 
-let maintainReducer = (state = initialState, action) => {
+let NotificationReducer = (state = initialState, action) => {
 
     switch (action.type) {
 
         case MAKE_MESSAGE_POP:
-
             var {msg}=action.payload;
-
             return Object.assign({}, state,{
                 num:state.num++,
                 msg:msg,
@@ -50,4 +48,4 @@ let maintainReducer = (state = initialState, action) => {
     }
 }
 
-export default maintainReducer;
+export default NotificationReducer;

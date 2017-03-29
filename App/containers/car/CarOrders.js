@@ -159,11 +159,6 @@ class CarOrders extends Component{
 
 
     render(){
-
-
-
-
-
         var applyedListView=null;
         var pricedListView=null;
         var historyListView=null;
