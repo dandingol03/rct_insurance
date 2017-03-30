@@ -89,13 +89,13 @@ class AppendLifeInsurer extends Component{
     }
 
     uploadNew(){
-        var insurer = {perTypeCode:'I',perName:'苹果'};
+        var insurer = {perTypeCode:'I'};
+        insurer.name = this.state.perName;
         var personId=null;
         var person = null;
         var perIdCard1_img = this.state.perIdCard1_img.uri;
         var perIdCard2_img = this.state.perIdCard2_img.uri;
         var accessToken = this.state.accessToken;
-
 
         if(this.state.perIdCard1_img!==undefined&&this.state.perIdCard1_img!==null){
             if(this.state.perIdCard2_img!==undefined&&this.state.perIdCard2_img!==null)

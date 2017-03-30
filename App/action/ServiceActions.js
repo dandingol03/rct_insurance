@@ -1143,56 +1143,112 @@ export let fetchServicePersonByDetectUnitId=(payload)=>{
 
 //生成视频的thumbnail
 export let generateVideoThumbnail=(payload)=>{
+    console.log('进入dispatch');
     return (dispatch,getState)=> {
         return new Promise((resolve, reject) => {
-
             var state=getState();
             var accessToken=state.user.accessToken;
-            var {videoPath}=payload;
+            var videoPath=payload;
+
+            console.log('=======payload='+payload);
+
             if(videoPath)
             {
-
                 var data = new FormData();
                 data.append('file', {uri: videoPath, name: 'serviceVideo.mp4', type: 'multipart/form-data'});
 
-                Proxy.postes({
+                console.log(' data.append===');
+
+                Proxy.post({
                     url: Config.server + '/svr/request?request=generatedThumbnail',
                     headers: {
                         'Authorization': "Bearer " + accessToken,
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type':'multipart/form-data',
                     },
-                    body: data
-                }).then((json)=>{
+                    body: data,
+                },(json)=> {
+                    for(var field in json) {
+                        console.log('field=' + field + '\r\n' + json[field]);
+                    }
+                     if(json.re==1)
+                     {
+                         console.log(' 生成成功===');
+                         var thumbnail=json.path;
+                         console.log('thumbnail='+json.data);
 
-                    if(json.re==1)
-                    {
-                        var thumbnail=json.path;
+                         //TODO:make this to thumbnail download
 
-                        //TODO:make this to thumbnail download
+                    var dirs = RNFetchBlob.fs.dirs
 
-                        var dirs = RNFetchBlob.fs.dirs
-                        RNFetchBlob
-                            .config({
-                                fileCache : true,
-                                appendExt : 'mp3',
-                                path : dirs.DocumentDir + '/video-thumbnail.png'
+                    RNFetchBlob
+                        .config({
+                            fileCache : true,
+                            appendExt : 'png',
+                            path : dirs.DocumentDir + '/video-thumbnail.png'
+                        })
+                        .fetch('POST',url, {
+                                Authorization : 'Bearer '+accessToken,
+                                "Content-Type":"application/json"
+                            },
+                            JSON.stringify({
+                                request:'downloadGeneratedThumbnail'
                             })
-                            .fetch('POST',url, {
-                                    Authorization : 'Bearer '+accessToken,
-                                    "Content-Type":"application/json"
-                                },
-                                JSON.stringify({
-                                    request:'downloadGeneratedThumbnail'
-                                })
-                            ).then((res)=>{
+                        ).then((res)=>{
 
-                            resolve({re:1,data:res.path()});
-                        });
+                        resolve({re:1,data:res.path()});
+                    });
 
                     }
-                }).catch((e)=>{
-                    reject(e)
-                })
+
+                }, (err) =>{
+                    Alert.alert(
+                        'error',
+                        err
+                    );
+                });
+
+
+
+                // Proxy.postes({
+                //     url: Config.server + '/svr/request?request=generatedThumbnail',
+                //     headers: {
+                //         'Authorization': "Bearer " + accessToken,
+                //         'Content-Type': 'multipart/form-data'
+                //     },
+                //     body: data
+                // }).then((json)=>{
+                //     for(var field in json) {
+                //         console.log('field=' + field + '\r\n' + json[field]);
+                //     }
+                //     // if(json.re==1)
+                //     // {
+                //         var thumbnail=json.path;
+                //         console.log(' 生成===');
+                //         //TODO:make this to thumbnail download
+                //
+                //         var dirs = RNFetchBlob.fs.dirs
+                //         RNFetchBlob
+                //             .config({
+                //                 fileCache : true,
+                //                 appendExt : 'mp3',
+                //                 path : dirs.DocumentDir + '/video-thumbnail.png'
+                //             })
+                //             .fetch('POST',url, {
+                //                     Authorization : 'Bearer '+accessToken,
+                //                     "Content-Type":"application/json"
+                //                 },
+                //                 JSON.stringify({
+                //                     request:'downloadGeneratedThumbnail'
+                //                 })
+                //             ).then((res)=>{
+                //
+                //             resolve({re:1,data:res.path()});
+                //         });
+                //
+                //     //}
+                // }).catch((e)=>{
+                //     reject(e)
+                // })
 
             }
 

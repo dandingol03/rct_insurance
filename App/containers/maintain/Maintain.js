@@ -37,8 +37,12 @@ import {AudioRecorder, AudioUtils} from 'react-native-audio';
 import {
     updateMaintainBusiness
 } from '../../action/MaintainActions';
+
+import {
+    generateVideoThumbnail
+} from '../../action/ServiceActions';
+
 import MaintainPlan from '../../components/modal/MaintainPlan';
-import RNAssetThumbnail from  'react-native-asset-thumbnail';
 
 
 class Maintain extends Component{
@@ -222,8 +226,6 @@ class Maintain extends Component{
         }
     }
 
-
-
     startVideoCapture = () => {
 
         if (this.camera) {
@@ -235,9 +237,11 @@ class Maintain extends Component{
                     console.log('video path='+path);
                     this.setState({cameraModalVisible:false,videoPath:path});
 
-                    console.log('======thumb nail=====')
-                    ProcessingManager.getPreviewForSecond(path, 1)
-                        .then((data) => console.log(data))
+                    this.props.dispatch(generateVideoThumbnail(path)).then((json)=>{
+                        var thumbnail=json.data;
+                        console.log('thumbnail'+thumbnail);
+                        this.setState({thumbnail:thumbnail});
+                    });
 
                 })
                 .catch(err => console.error(err));
@@ -256,19 +260,13 @@ class Maintain extends Component{
             });
         }
 
-        let promiseArr = [];
-        promiseArr.push(RNAssetThumbnail.generateThumbnail(this.state.videoPath, 70, 70));
-        Promise.all(promiseArr).then(thumbnails => {
-            this.setState({thumbnails});
+        this.props.dispatch(generateVideoThumbnail(this.state.videoPath)).then((json)=>{
+            var thumbnail=json.data;
+            console.log('thumbnail'+thumbnail);
+            this.setState({thumbnail:thumbnail});
         });
-
-
     }
 
-    renderThumbnails(thumbnail, index) {
-        console.log('......thumbnail='+thumbnail);
-        return <Image key={index} style={styles.imageStyle} source={{uri:thumbnail,scale: 3}}/>
-    }
 
     //音频录制
     prepareRecordingPath(audioPath){
@@ -464,8 +462,7 @@ class Maintain extends Component{
                 flashMode: Camera.constants.FlashMode.auto,
             },
             portrait:null,
-
-            thumbnails:[],
+            thumbnail:null,
 
         };
     }
@@ -823,33 +820,70 @@ class Maintain extends Component{
                                     {/*视频描述*/}
                                     <View style={{flex:1}}>
 
-                                        <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                        {
+                                            this.state.thumbnail==null?
+                                                <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                                 backgroundColor:'#444',borderRadius:8,height:110,}}>
-                                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                                    <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
-                                                {
-                                                    this.state.videoPath==''?
-                                                        <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
-                                                                          onPress={() => {
+                                                        {
+                                                            this.state.videoPath==''?
+                                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                                  onPress={() => {
                                                                   this.setState({cameraModalVisible:true})
                                                               }}>
 
-                                                            <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
+                                                                    <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
 
-                                                        </TouchableOpacity>:
+                                                                </TouchableOpacity>:
 
-                                                        <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
-                                                                          onPress={()=>{
+                                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                                  onPress={()=>{
                                                                 this.navigate2VideoPlayer(this.state.videoPath);
                                                               }}>
-                                                            <View>
-                                                                <Icon name="play-circle" color="#fff" size={35}></Icon>
-                                                            </View>
-                                                        </TouchableOpacity>
-                                                }
+                                                                    <View>
+                                                                        <Icon name="play-circle" color="#fff" size={35}></Icon>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                        }
 
-                                            </View>
-                                        </View>
+                                                    </View>
+                                                </View>:
+                                                <View>
+                                                    <Image resizeMode="stretch" source={this.state.thumbnail}
+                                                           style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                                borderRadius:8,height:110,}}>
+                                                    <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
+                                                        {
+                                                            this.state.videoPath==''?
+                                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                                  onPress={() => {
+                                                                  this.setState({cameraModalVisible:true})
+                                                              }}>
+
+                                                                    <Image style={{height:30,width:30,borderRadius:15}} source={require('../../img/sas@2x.png')}/>
+
+                                                                </TouchableOpacity>:
+
+                                                                <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                                                                                  onPress={()=>{
+                                                                this.navigate2VideoPlayer(this.state.videoPath);
+                                                              }}>
+                                                                    <View>
+                                                                        <Icon name="play-circle" color="#fff" size={35}></Icon>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                        }
+
+                                                    </View>
+                                                    </Image>
+                                                </View>
+
+
+
+
+                                        }
 
 
                                         {
@@ -867,14 +901,6 @@ class Maintain extends Component{
 
                                 </View>
 
-                                {this.state.thumbnails.length>0?
-                                    <View style={{flex:1,padding:10}}>
-                                        <Text>视频第一帧图像</Text>
-                                        {thumbnails.map(this.renderThumbnails.bind(this))}
-
-
-                                    </View>:null
-                                }
 
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
 
