@@ -56,7 +56,7 @@ class LifeOrderPay extends Component{
                 let source = { uri: response.uri };
                 console.log('Response.uri = ', response.uri);
 
-                switch(perIdCard_img)
+                switch(creditCard_img)
                 {
                     case 'creditCard1_img':
                         this.setState({creditCard1_img: source});
@@ -71,6 +71,191 @@ class LifeOrderPay extends Component{
             }
         });
     }
+
+    uploadNew(){
+
+        var creditCard1_img = this.state.creditCard1_img.uri;
+        var creditCard2_img = this.state.creditCard2_img.uri;
+        var accessToken = this.state.accessToken;
+
+        if(this.state.creditCard1_img!==undefined&&this.state.creditCard1_img!==null){
+            if(this.state.creditCard2_img!==undefined&&this.state.creditCard2_img!==null)
+            {
+
+                var personId=null;
+                var orderId = null;
+                var planIds = null;
+
+                personId = this.props.insurerId;
+                orderId = this.props.orderId;
+                planIds = this.props.planIds;
+
+                alert('orderId ='+orderId);
+
+                var suffix='';
+                var imageType='creditCard';
+                if($scope.insurer.creditCard1_img.indexOf('.jpg')!=-1)
+                    suffix='jpg';
+                else if($scope.insurer.creditCard1_img.indexOf('.png')!=-1)
+                    suffix='png';
+                else{}
+
+                var creditCardAttachId1=null;
+                var creditCardAttachId2=null;
+
+                var data = new FormData();
+                data.append('file', {uri: perIdCard1_img, name: 'perIdAttachId1', type: 'multipart/form-data'});
+
+                alert('data.append====='+data);
+
+                Proxy.post({
+                    url: Config.server + '/svr/request?request=uploadPhoto' +
+                    '&imageType=' + imageType + '&suffix=' + suffix +
+                    '&filename=' + 'creditCardAttachId1' + '&orderId=' + orderId,
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    body: data,
+                },(json)=> {
+                    alert('upload creditCard1 success');
+                    for(var field in json) {
+                        alert('field=' + field + '\r\n' + json[field]);
+                    }
+                    var su=null
+                    if(creditCard1_img.indexOf('.jpg')!=-1)
+                        su='jpg';
+                    else if(creditCard1_img.indexOf('.png')!=-1)
+                        su='png';
+                    alert('suffix=' + su);
+                    return Proxy.postes({
+                        url:Config.server+'/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request:'createPhotoAttachment',
+                            info: {
+                                imageType:'creditCard',
+                                filename:'creditCardAttachId1',
+                                suffix:su,
+                                docType:'I5' ,
+                                personId:personId,
+                                orderId:orderId
+                            }
+                        }
+                    }).then((json)=>{
+                        if(json.re==1)
+                        {
+                            creditCardAttachId1=json.data;
+                            alert('creditCardAttachId1=' + creditCardAttachId1);
+                            var su=null;
+                            if(creditCard2_img.indexOf('.jpg')!=-1)
+                                su='jpg';
+                            else if(creditCard2_img.indexOf('.png')!=-1)
+                                su='png';
+
+                            var data = new FormData();
+                            data.append('file', {uri:creditCard2_img, name: 'creditCard2_img', type: 'multipart/form-data'});
+
+                            Proxy.post({
+                                url: Config.server + '/svr/request?request=uploadPhoto' +
+                                '&imageType=' + imageType + '&suffix=' + suffix +
+                                '&filename=' + 'creditCardAttachId2' + '&orderId=' + orderId,
+                                headers: {
+                                    'Authorization': "Bearer " + accessToken,
+                                    'Content-Type': 'multipart/form-data',
+                                },
+                                body: data,
+                            },(json)=> {
+                                if(json.re==1) {
+                                    alert('upload creditCardAttachId2 success');
+                                    for(var field in json) {
+                                        alert('field=' + field + '\r\n' + json[field]);
+                                    }
+                                    return Proxy.postes({
+                                        url:Config.server+'/svr/request',
+                                        headers: {
+                                            'Authorization': "Bearer " + accessToken,
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: {
+                                            request:'createPhotoAttachment',
+                                            info: {
+                                                imageType:'creditCard',
+                                                filename:'creditCardAttachId2',
+                                                suffix:su,
+                                                docType:'I5' ,
+                                                personId:personId,
+                                                orderId:orderId
+                                            }
+                                        }
+                                    }).then((json)=>{
+                                        if(json.re==1){
+                                            creditCardAttachId2=json.data;
+                                            return Proxy.postes({
+                                                url:Config.server+'/svr/request',
+                                                headers: {
+                                                    'Authorization': "Bearer " + accessToken,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: {
+                                                    request:'updateLifeOrderBankAttachId',
+                                                    info: {
+                                                        bankAttachId1:creditCardAttachId1,
+                                                        bankAttachId2:creditCardAttachId2,
+                                                        planIds:planIds,
+                                                        orderId:orderId
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }).then((json)=>{
+                                        if(json.re==1) {
+                                            alert('上传银行卡成功!');
+                                            this.goBack();
+                                        }
+                                    });
+                                }
+
+                            }, (err) =>{
+                                Alert.alert(
+                                    'error',
+                                    err
+                                );
+                            })
+                        }
+                    })
+                }, (err) =>{
+                    Alert.alert(
+                        'error',
+                        err
+                    );
+                })
+
+            }
+            else{
+                Alert.alert(
+                    '提示',
+                    '请拍入关联人的身份证反面再点击关联',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                    ]
+                )
+            }
+        }
+        else{
+            Alert.alert(
+                '提示',
+                '请拍入关联人的身份证正面再点击关联',
+                [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                ]
+            )
+        }
+    }
+
 
     constructor(props)
     {
@@ -194,6 +379,13 @@ class LifeOrderPay extends Component{
 
 
                     </View>
+
+                    <TouchableOpacity style={{flex:1}}
+                                      onPress={()=>{
+                        this.uploadNew();
+                    }}>
+                       <Text>上传银行卡照片</Text>
+                    </TouchableOpacity>
                 </Image>
 
             </View>

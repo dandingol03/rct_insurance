@@ -15,7 +15,6 @@ import {
     TouchableHighlight
 } from 'react-native';
 
-
 import { connect } from 'react-redux';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -220,7 +219,6 @@ class App extends React.Component {
         }
 
 
-
         var routeMapper = {
             LeftButton(route, navigator, index, navState) {
                 if (index > 0) {
@@ -230,7 +228,7 @@ class App extends React.Component {
                                 navigator.pop();
                             }
                         } }>
-                            <Text>Back</Text>
+                            <Icon name="angle-left" size={40} color="#fff" />
                         </TouchableHighlight>
                     )
                 } else {
@@ -244,7 +242,7 @@ class App extends React.Component {
 
             Title(route, navigator, index, navState) {
                 return (
-                    <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                    <TouchableOpacity style={{flex: 1, justifyContent: 'center' ,backgroundColor:'rgba(17, 17, 17, 0.6);'}}>
                         <Text style={{ color: 'white', margin: 10, fontSize: 16 }}>
                             Data Entry
                         </Text>
@@ -267,7 +265,6 @@ class App extends React.Component {
                 tabStyle={{backgroundColor:'transparent'}}
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
-
 
                 <View style={{flex:1}}>
 
@@ -300,6 +297,7 @@ class App extends React.Component {
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
 
+
                     />
 
                 </View>
@@ -316,7 +314,7 @@ class App extends React.Component {
         if(auth==true)
         {
             return (
-                <TabNavigator tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                <TabNavigator  tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     {this._createNavigatorItem('home','home')}
                     {this._createNavigatorItem('my','user-circle')}
                     {this._createNavigatorItem('dym','car')}
