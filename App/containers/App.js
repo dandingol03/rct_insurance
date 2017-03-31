@@ -29,7 +29,7 @@ import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-nat
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Home from './home/index';
 import My from './my/My';
-import dym from './dym';
+import Chat from './Chat';
 import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
@@ -213,7 +213,7 @@ class App extends React.Component {
                 component=My;
                 break;
             case 'dym':
-                component=dym;
+                component=Chat;
                 break;
             default:
                 break;
