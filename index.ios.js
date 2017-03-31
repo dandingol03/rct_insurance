@@ -26,6 +26,64 @@ var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACS
 
 
 
+import { GiftedChat } from 'react-native-gifted-chat';
+import ChatDemo from './App/containers/chat/App';
+
+class Chatter extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {messages: []};
+        this.onSend = this.onSend.bind(this);
+    }
+    componentWillMount() {
+        this.setState({
+            messages: [
+                {
+                    _id: 1,
+                    text: 'Hello developer',
+                    createdAt: new Date(Date.UTC(2016, 7, 30, 17, 20, 0)),
+                    user: {
+                        _id: 2,
+                        name: 'React Native',
+                        avatar: 'https://facebook.github.io/react/img/logo_og.png',
+                    },
+                }
+            ],
+        });
+    }
+    onSend(messages = []) {
+
+        //TODO:send a a image
+
+
+        //text send
+        var date=messages[0].createdAt;
+        var text=messages[0].text;
+
+        messages[0].user.name='danding';
+        messages[0].user._id=1;
+        messages[0].image='https://facebook.github.io/react/img/logo_og.png';
+
+        this.setState((previousState) => {
+            return {
+                messages: GiftedChat.append(previousState.messages, messages),
+            };
+        });
+    }
+    render() {
+        return (
+            <GiftedChat
+                messages={this.state.messages}
+                onSend={this.onSend}
+                user={{
+          _id: 1,
+        }}
+            />
+        );
+    }
+}
+
+
 export class rn extends Component {
     render() {
         return (
@@ -148,4 +206,4 @@ const styles = StyleSheet.create({
     }
 });
 
-AppRegistry.registerComponent('rct_insurance', () => App);
+AppRegistry.registerComponent('rct_insurance', () => ChatDemo);
