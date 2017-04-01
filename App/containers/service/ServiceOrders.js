@@ -55,7 +55,7 @@ class ServiceOrders extends Component{
 
     fetchData()
     {
-        this.props.dispatch(fetchServiceOrders()).then(function (json) {
+        this.props.dispatch(fetchServiceOrders()).then( (json) =>{
             if(json.re==1)
             {
                 console.log('...');

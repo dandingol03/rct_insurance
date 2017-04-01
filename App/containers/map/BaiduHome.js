@@ -99,9 +99,9 @@ class BaiduHome extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:50,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:10}]}>
+                    <View style={[styles.row,{marginTop:0}]}>
 
                         <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                           onPress={()=>{
