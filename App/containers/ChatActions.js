@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import AudioChat from '../components/modal/AudioChat';
 import VideoChat from '../components/modal/VideoChat';
 
-
 class ChatActions extends Component{
 
     constructor(props) {
@@ -28,25 +27,6 @@ class ChatActions extends Component{
             videoChatVisible: false,
             audioPatn:null,
             videoPath:null,
-
-            audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
-            currentTime: 0.0,
-            recording: false,
-            stoppedRecording: false,
-            finished: false,
-            hasPermission: undefined,
-            videoPath:'',
-            cameraModalVisible:false,
-            maintainPlanModal:false,
-            camera: {
-                aspect: Camera.constants.Aspect.fill,
-                captureTarget: Camera.constants.CaptureTarget.disk,
-                type: Camera.constants.Type.back,
-                orientation: Camera.constants.Orientation.auto,
-                flashMode: Camera.constants.FlashMode.auto,
-            },
-            portrait:null,
-            thumbnail:null,
 
         };
         this.onActionsPress = this.onActionsPress.bind(this);
@@ -69,7 +49,7 @@ class ChatActions extends Component{
     }
 
     onActionsPress() {
-        const options = ['发送音频', '发送视频', 'Cancel'];
+        const options = ['发送音频', '发送视频','Cancel'];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions({
                 options,

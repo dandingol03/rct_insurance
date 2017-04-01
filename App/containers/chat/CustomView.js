@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 
 export default class CustomView extends React.Component {
+
     render() {
-        if (this.props.currentMessage.location) {
+        if (this.props.currentMessage.location)
+        {
             return (
                 <TouchableOpacity style={[styles.container, this.props.containerStyle]} onPress={() => {
                       const url = Platform.select({
@@ -44,7 +46,8 @@ export default class CustomView extends React.Component {
                     />
                 </TouchableOpacity>
             );
-        }else if (this.props.currentMessage.dym)
+        }
+        else if (this.props.currentMessage.dym)
         {
             return (
                 <View style={{borderTopLeftRadius:6,borderTopRightRadius:6,padding:4}}>
