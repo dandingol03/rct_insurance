@@ -206,4 +206,4 @@ const styles = StyleSheet.create({
     }
 });
 
-AppRegistry.registerComponent('rct_insurance', () => ChatDemo);
+AppRegistry.registerComponent('rct_insurance', () => App);
