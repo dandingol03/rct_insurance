@@ -28,7 +28,7 @@ import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-nat
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Home from './home/index';
 import My from './my/My';
-import dym from './dym';
+import Chat from './Chat';
 import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
@@ -211,8 +211,8 @@ class App extends React.Component {
             case 'my':
                 component=My;
                 break;
-            case 'dym':
-                component=dym;
+            case 'chat':
+                component=Chat;
                 break;
             default:
                 break;
@@ -317,7 +317,7 @@ class App extends React.Component {
                 <TabNavigator  tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     {this._createNavigatorItem('home','home')}
                     {this._createNavigatorItem('my','user-circle')}
-                    {this._createNavigatorItem('dym','car')}
+                    {this._createNavigatorItem('chat','car')}
                 </TabNavigator>
             );
         }else{

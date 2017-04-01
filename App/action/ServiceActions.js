@@ -1245,6 +1245,74 @@ export let generateVideoThumbnail=(payload)=>{
 
             }
 
+        });
+    }
+}
+
+
+//上传音频用
+export let uploadAudio=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            var {path}=payload;
+
+            if (path) {
+                // Create the form data object
+                var data = new FormData();
+                data.append('file', {uri: path, name: 'chatter.wav', type: 'multipart/form-data'});
+
+
+                Proxy.post({
+                    url:Config.server+'/svr/request?request=uploadAudioChat',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type':'multipart/form-data',
+                    },
+                    body: data,
+                },(json)=> {
+
+                    resolve(json)
+                }, (err) =>{
+                   reject(err)
+                });
+            }
+        });
+    }
+}
+
+export let uploadVideo=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            var {path}=payload;
+            if (path) {
+                // Create the form data object
+                var data = new FormData();
+                data.append('file', {uri: path, name: 'chatter.wav', type: 'multipart/form-data'});
+
+
+                Proxy.post({
+                    url:Config.server+'/svr/request?request=uploadVideoChat',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type':'multipart/form-data',
+                    },
+                    body: data,
+                },(json)=> {
+
+                    resolve(json)
+                }, (err) =>{
+                    reject(err)
+                });
+            }
+
+
 
         });
     }

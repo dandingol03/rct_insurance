@@ -56,7 +56,6 @@ class Maintain extends Component{
         }
     }
 
-
     navigate2VideoPlayer(videoPath)
     {
         const { navigator } = this.props;
@@ -240,7 +239,6 @@ class Maintain extends Component{
         }
     }
 
-
     stopVideoCapture = () => {
         if (this.camera) {
             this.camera.stopCapture()
@@ -255,7 +253,6 @@ class Maintain extends Component{
             this.setState({thumbnail:thumbnail});
         });
     }
-
 
     //音频录制
     prepareRecordingPath(audioPath){
@@ -353,7 +350,6 @@ class Maintain extends Component{
         else{
             this._record();
         }
-
     }
 
     async _play() {

@@ -46,7 +46,7 @@ var ob={
             case 'ack':
                 if(json.result=='ok')
                 {
-                    if(self.tmpMsg!==undefined&&self.tmpMsg!==null)
+                    if(this.tmpMsg!==undefined&&this.tmpMsg!==null)
                     {
                         //TODO:make a dispatch
                         Store.dispatch(recvWSMessage(Object.assign({type:'fromMe'},this.tmpMsg)));
