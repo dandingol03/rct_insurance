@@ -32,7 +32,9 @@ import Proxy from '../../proxy/Proxy';
 import BaiduHome from '../map/BaiduHome';
 
 import Camera from 'react-native-camera';
+import Sound from 'react-native-sound';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
+
 
 import {
     updateMaintainBusiness
@@ -51,20 +53,6 @@ class Maintain extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
-        }
-    }
-
-    navigate2AudioExample(path)
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'audioExample',
-                component: AudioExample,
-                params: {
-                    path:path
-                }
-            })
         }
     }
 
@@ -239,7 +227,7 @@ class Maintain extends Component{
 
                     this.props.dispatch(generateVideoThumbnail(path)).then((json)=>{
                         var thumbnail=json.data;
-                        console.log('thumbnail'+thumbnail);
+                        console.log('this.state.thumbnail==========='+thumbnail);
                         this.setState({thumbnail:thumbnail});
                     });
 
@@ -250,7 +238,6 @@ class Maintain extends Component{
             });
         }
     }
-
 
     stopVideoCapture = () => {
         if (this.camera) {
@@ -267,7 +254,6 @@ class Maintain extends Component{
         });
     }
 
-
     //音频录制
     prepareRecordingPath(audioPath){
         AudioRecorder.prepareRecordingAtPath(audioPath, {
@@ -280,8 +266,24 @@ class Maintain extends Component{
     }
 
     componentDidMount() {
+        this._checkPermission().then((hasPermission) => {
+            this.setState({ hasPermission });
 
+            if (!hasPermission) return;
 
+            this.prepareRecordingPath(this.state.audioPath);
+
+            AudioRecorder.onProgress = (data) => {
+                this.setState({currentTime: Math.floor(data.currentTime)});
+            };
+
+            AudioRecorder.onFinished = (data) => {
+                // Android callback comes in the form of a promise instead.
+                if (Platform.OS === 'ios') {
+                    this._finishRecording(data.status === "OK", data.audioFileURL);
+                }
+            };
+        });
     }
 
     _checkPermission() {
@@ -348,7 +350,39 @@ class Maintain extends Component{
         else{
             this._record();
         }
+    }
 
+    async _play() {
+
+        if (this.state.recording) {
+            await this._stop();
+        }
+
+        // These timeouts are a hacky workaround for some issues with react-native-sound.
+        // See https://github.com/zmxv/react-native-sound/issues/89.
+        setTimeout(() => {
+            console.log(this.state.audioPath);
+            try{
+                var sound = new Sound(this.state.audioPath, '', (error) => {
+                    if (error) {
+                        console.log('failed to load the sound', error);
+                    }
+                });
+
+                setTimeout(() => {
+                    sound.play((success) => {
+                        if (success) {
+                            console.log('successfully finished playing');
+                        } else {
+                            console.log('playback failed due to audio decoding errors');
+                        }
+                    });
+                }, 100);
+            }catch(e)
+            {
+                alert(e)
+            }
+        }, 100);
     }
 
     async _record() {
@@ -377,7 +411,6 @@ class Maintain extends Component{
 
     _finishRecording(didSucceed, filePath) {
         this.setState({ finished: didSucceed });
-        this.navigate2AudioExample(filePath);
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
 
@@ -470,7 +503,6 @@ class Maintain extends Component{
     render(){
 
         var dailyChecked = [];
-        let {thumbnails} = this.state;
 
         var miles = this.state.miles;
 
@@ -790,7 +822,7 @@ class Maintain extends Component{
                                             </View>
                                             <View style={{flex:1,paddingRight:4}}>
                                                 <TouchableOpacity onPress={()=>{
-                                                     this.navigate2Audio();
+                                                     this._record();
                                                   }}>
                                                     <View>
                                                         <Image resizeMode="cover" source={require('../../img/maike-@2x.png')}></Image>
@@ -799,7 +831,7 @@ class Maintain extends Component{
 
                                                 <TouchableOpacity  onPress={
                                                 ()=>{
-                                                    this._stop();
+                                                    this._play();
                                                 }
                                             }>
                                                     <View>
@@ -850,7 +882,7 @@ class Maintain extends Component{
                                                     </View>
                                                 </View>:
                                                 <View>
-                                                    <Image resizeMode="stretch" source={this.state.thumbnail}
+                                                    <Image resizeMode="stretch" source={{uri:this.state.thumbnail}}
                                                            style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                                 borderRadius:8,height:110,}}>
                                                     <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>

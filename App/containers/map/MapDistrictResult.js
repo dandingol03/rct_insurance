@@ -197,7 +197,7 @@ class MapDistrictResult extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
                     <View style={[styles.row,{marginTop:0}]}>
 
@@ -206,11 +206,11 @@ class MapDistrictResult extends Component{
                                           this.goBack();
                                       }}
                         >
-                            <Icon name="angle-left" size={40} color="#222"></Icon>
+                            <Icon name="angle-left" size={40} color="#fff"></Icon>
                         </TouchableOpacity>
 
                         <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:10}}>
-                            <Text style={{color:'#222',fontWeight:'bold'}}>
+                            <Text style={{color:'#fff',fontWeight:'bold'}}>
                                 {
                                     state.service=='administrator'?
                                         '审车':state.service=='paper_validate'?
@@ -223,7 +223,7 @@ class MapDistrictResult extends Component{
 
                         <View style={{width:80,alignItems:'center',marginRight:10,
                             padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-                            <Icon name="refresh" size={20} color="#222"></Icon>
+                            <Icon name="refresh" size={20} color="#fff"></Icon>
                         </View>
 
                     </View>

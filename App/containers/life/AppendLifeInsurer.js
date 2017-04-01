@@ -90,7 +90,7 @@ class AppendLifeInsurer extends Component{
 
     uploadNew(){
         var insurer = {perTypeCode:'I'};
-        insurer.name = this.state.perName;
+        insurer.perName = this.state.perName;
         var personId=null;
         var person = null;
         var perIdCard1_img = this.state.perIdCard1_img.uri;
@@ -115,7 +115,7 @@ class AppendLifeInsurer extends Component{
                     if(json.re==1) {
                         personId = json.data.personId;
                         alert('personId=' + personId);
-                       // this.state.insurer.personId = personId;
+                        this.state.insurer.personId = personId;
                         var suffix = '';
                         var imageType = 'perIdCard';
                         if (perIdCard1_img.indexOf('.jpg') != -1)
@@ -129,20 +129,20 @@ class AppendLifeInsurer extends Component{
                         var perIdAttachId2=null;
 
                         var data = new FormData();
-                        data.append('file', {uri: perIdCard1_img, name: 'perIdCard1_img', type: 'multipart/form-data'});
+                        data.append('file', {uri: perIdCard1_img, name: 'perIdAttachId1', type: 'multipart/form-data'});
 
-                        alert('data.append');
+                        alert('data.append====='+data);
 
-                        Proxy.postes({
+                        Proxy.post({
                             url: Config.server + '/svr/request?request=uploadPhoto' +
                             '&imageType=' + imageType + '&suffix=' + suffix +
-                            '&filename=' + 'perIdCard1_img' + '&personId=' + personId,
+                            '&filename=' + 'perIdAttachId1' + '&personId=' + personId,
                             headers: {
                                 'Authorization': "Bearer " + accessToken,
                                 'Content-Type': 'multipart/form-data',
                             },
                             body: data,
-                        }).then((json)=>{
+                        },(json)=> {
                             alert('upload perIdCard1 success');
                             for(var field in json) {
                                 alert('field=' + field + '\r\n' + json[field]);
@@ -169,9 +169,9 @@ class AppendLifeInsurer extends Component{
                                         personId:personId
                                     }
                                 }
-                            });
-                        }).then((json)=>{
-                                if(json.re==1) {
+                            }).then((json)=>{
+                                if(json.re==1)
+                                {
                                     perIdAttachId1=json.data;
                                     alert('perIdAttachId1=' + perIdAttachId1);
                                     var su=null;
@@ -183,16 +183,17 @@ class AppendLifeInsurer extends Component{
                                     var data = new FormData();
                                     data.append('file', {uri:perIdCard2_img, name: 'perIdCard2_img', type: 'multipart/form-data'});
 
-                                    return Proxy.postes({
+                                    Proxy.post({
                                         url: Config.server + '/svr/request?request=uploadPhoto' +
                                         '&imageType=' + imageType + '&suffix=' + suffix +
-                                        '&filename=' + 'perIdCard2_img' + '&personId=' + personId,
+                                        '&filename=' + 'perIdAttachId2' + '&personId=' + personId,
                                         headers: {
                                             'Authorization': "Bearer " + accessToken,
                                             'Content-Type': 'multipart/form-data',
                                         },
                                         body: data,
-                                    }).then((json)=>{
+                                    },(json)=> {
+                                        if(json.re==1) {
                                             alert('upload perIdCard2 success');
                                             for(var field in json) {
                                                 alert('field=' + field + '\r\n' + json[field]);
@@ -207,67 +208,80 @@ class AppendLifeInsurer extends Component{
                                                     request:'createPhotoAttachment',
                                                     info: {
                                                         imageType:'perIdCard',
-                                                        filename:'perIdAttachId1',
+                                                        filename:'perIdAttachId2',
                                                         suffix:su,
                                                         docType:'I1' ,
                                                         personId:personId
                                                     }
                                                 }
+                                            }).then((json)=>{
+
+                                                if(json.re==1){
+                                                    perIdAttachId2=json.data;
+                                                    return Proxy.postes({
+                                                        url:Config.server+'/svr/request',
+                                                        headers: {
+                                                            'Authorization': "Bearer " + accessToken,
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: {
+                                                            request:'createInsuranceInfoPersonInfo',
+                                                            info: {
+                                                                perIdAttachId1:perIdAttachId1,
+                                                                perIdAttachId2:perIdAttachId2,
+                                                                personId:personId
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }).then((json)=>{
+                                                alert('insuranceInfoPersonInfo create successfully');
+
+                                                if(json.re==1) {
+                                                    return Proxy.postes({
+                                                        url:Config.server+'/svr/request',
+                                                        headers: {
+                                                            'Authorization': "Bearer " + accessToken,
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: {
+                                                            request:'getInfoPersonInfoByPersonId',
+                                                            info: {
+                                                                personId:personId
+                                                            }
+                                                        }
+                                                    });
+
+                                                }
+                                            }).then((json)=>{
+                                                if(json.re==1) {
+                                                    person=json.data;
+                                                    this.selectInsurer(person);
+                                                }
                                             });
-                                        }) .then((json)=>{
+                                        }
 
-                                            if(json.re==1){
-                                                perIdAttachId2=json.data;
-                                                return Proxy.postes({
-                                                    url:Config.server+'/svr/request',
-                                                    headers: {
-                                                        'Authorization': "Bearer " + accessToken,
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: {
-                                                        request:'createInsuranceInfoPersonInfo',
-                                                        info: {
-                                                            perIdAttachId1:perIdAttachId1,
-                                                            perIdAttachId2:perIdAttachId2,
-                                                            personId:personId
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }).then((json)=>{
-                                            alert('insuranceInfoPersonInfo create successfully');
-
-                                            if(json.re==1) {
-                                                return Proxy.postes({
-                                                    url:Config.server+'/svr/request',
-                                                    headers: {
-                                                        'Authorization': "Bearer " + accessToken,
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: {
-                                                        request:'getInfoPersonInfoByPersonId',
-                                                        info: {
-                                                            personId:personId
-                                                        }
-                                                    }
-                                                });
-
-                                            }
-                                        }).then((json)=>{
-                                           if(json.re==1) {
-                                                person=json.data;
-                                                this.selectInsurer(person);
-                                            }
-                                        });
+                                    }, (err) =>{
+                                        Alert.alert(
+                                            'error',
+                                            err
+                                        );
+                                    })
                                 }
                             })
+                        }, (err) =>{
+                            Alert.alert(
+                                'error',
+                                err
+                            );
+                        })
 
                     }else{}
 
                 }).then(function(res) {
 
                 }).catch((e)=>{
-                   console.log('e='+e);
+                    console.log('e='+e);
                 })
 
             }
@@ -291,6 +305,7 @@ class AppendLifeInsurer extends Component{
             )
         }
     }
+
 
     getPlaceHolder()
     {

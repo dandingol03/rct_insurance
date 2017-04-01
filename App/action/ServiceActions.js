@@ -1143,21 +1143,17 @@ export let fetchServicePersonByDetectUnitId=(payload)=>{
 
 //生成视频的thumbnail
 export let generateVideoThumbnail=(payload)=>{
-    console.log('进入dispatch');
+
     return (dispatch,getState)=> {
         return new Promise((resolve, reject) => {
             var state=getState();
             var accessToken=state.user.accessToken;
             var videoPath=payload;
 
-            console.log('=======payload='+payload);
-
             if(videoPath)
             {
                 var data = new FormData();
                 data.append('file', {uri: videoPath, name: 'serviceVideo.mp4', type: 'multipart/form-data'});
-
-                console.log(' data.append===');
 
                 Proxy.post({
                     url: Config.server + '/svr/request?request=generatedThumbnail',
@@ -1170,17 +1166,15 @@ export let generateVideoThumbnail=(payload)=>{
                     for(var field in json) {
                         console.log('field=' + field + '\r\n' + json[field]);
                     }
-                     if(json.re==1)
-                     {
-                         console.log(' 生成成功===');
-                         var thumbnail=json.path;
-                         console.log('thumbnail='+json.data);
+                    if(json.re==1)
+                    {
+                        var thumbnail=json.data;
 
-                         //TODO:make this to thumbnail download
+                        //TODO:make this to thumbnail download
+                        var url =  Config.server+ '/svr/request';
+                        var dirs = RNFetchBlob.fs.dirs
 
-                    var dirs = RNFetchBlob.fs.dirs
-
-                    RNFetchBlob
+                        RNFetchBlob
                         .config({
                             fileCache : true,
                             appendExt : 'png',
@@ -1191,7 +1185,8 @@ export let generateVideoThumbnail=(payload)=>{
                                 "Content-Type":"application/json"
                             },
                             JSON.stringify({
-                                request:'downloadGeneratedThumbnail'
+                                request:'downloadGeneratedThumbnail',
+                                thumbnail:thumbnail,
                             })
                         ).then((res)=>{
 
@@ -1206,8 +1201,6 @@ export let generateVideoThumbnail=(payload)=>{
                         err
                     );
                 });
-
-
 
                 // Proxy.postes({
                 //     url: Config.server + '/svr/request?request=generatedThumbnail',

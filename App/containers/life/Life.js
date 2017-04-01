@@ -40,24 +40,6 @@ class Life extends Component{
         }
     }
 
-    onPressHandle() {
-        let options = {
-        };
-        MyPop.showPopupWindow(options,(err,action,button) =>{
-            if(err){
-                ToastAndroid.show(err,ToastAndroid.SHORT);
-            }else{
-                if(action === 'buttonClicked'){
-                    if(button === 'positive'){
-                        ToastAndroid.show('点击确定',ToastAndroid.SHORT);
-                    }else if(button === 'negative'){
-                        ToastAndroid.show('点击取消',ToastAndroid.SHORT);
-                    }
-                }
-            }
-        });
-    }
-
     _handlePress1(index) {
 
         if(index!==0){
