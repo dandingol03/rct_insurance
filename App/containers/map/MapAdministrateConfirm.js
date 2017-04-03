@@ -17,7 +17,7 @@ import  {
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
-
+import DateFilter from '../../filter/DateFilter';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
@@ -144,7 +144,6 @@ class MapAdministrateConfirm extends Component{
         var {detectUnit,detectUnites,carManage,carInfo,verify}=this.state;
         carManage.carId=carInfo.carId;
         //审车----选择检测公司
-        carManage.serviceType=21;
         if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
         {
             carManage.servicePlaceId=detectUnit.placeId;
@@ -153,7 +152,7 @@ class MapAdministrateConfirm extends Component{
             }
             carManage.orderState=2;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
 
                 if(json.re==1)
                 {
@@ -261,7 +260,7 @@ class MapAdministrateConfirm extends Component{
             if(json.re==1)
                 scoreBalance=json.data;
 
-            return this.props.dispatch(generateCarServiceOrderFee());
+            return this.props.dispatch(generateCarServiceOrderFee({carManage:carManage}));
 
         }).then((json)=>{
 
@@ -286,7 +285,7 @@ class MapAdministrateConfirm extends Component{
                     }
 
                     this.generateServiceOrder();
-
+                    this.state.doingBusiness=false;
                 }else{
                     this.state.doingBusiness=false;
 
@@ -316,7 +315,7 @@ class MapAdministrateConfirm extends Component{
         if(this.state.doingBusiness==false)
         {
             this.state.doingBusiness=true;
-            if(this.state.estimateTime)
+            if(this.state.carManage.estimateTime)
             {
                 if(this.state.carInfo&&this.state.carInfo.carId)
                 {
@@ -329,6 +328,7 @@ class MapAdministrateConfirm extends Component{
                                 '错误',
                                 '您所选的预约时间不在工作人员时段,请重新选择'
                             );
+                            this.state.doingBusiness=false;
                             return ;
                         }else{
                             if(carManage.destination!==undefined&&carManage.destination!==null&&
@@ -416,6 +416,7 @@ class MapAdministrateConfirm extends Component{
                                            this.state.doingBusiness=false;
                                        }
                                    }).catch((err)=>{
+                                       this.state.doingBusiness=false;
                                        Alert.alert(
                                            '错误',
                                            err
@@ -432,12 +433,14 @@ class MapAdministrateConfirm extends Component{
                     }
 
                 }else{
+                    this.state.doingBusiness=false;
                     Alert.alert(
                         '错误',
                         '请先选择车辆'
                     );
                 }
             }else{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     '请选择预约时间'
@@ -449,19 +452,21 @@ class MapAdministrateConfirm extends Component{
         }
     }
 
-    verifyDate(_date)
+    verifyDate(date)
     {
 
         this.state.selectTime=true;
 
         var {carManage}=this.state;
 
-        var date=new Date(_date);
         var curDay=new Date();
         var hour=date.getHours();
         var day=date.getDay();
         var serviceHour=null;
         var serviceDay=null;
+
+
+
 
         if((date-curDay)>0&&curDay.getDate()!=date.getDate())
         {
@@ -578,7 +583,9 @@ class MapAdministrateConfirm extends Component{
             contentInfo:contentInfo,
             detectUnit:detectUnit,
             detectUnites:detectUnites,
-            carManage:{},
+            carManage:{
+                serviceType:'21'
+            },
             actionSheetCallbacks:[],
             doingBusiness:false,
             carInfo:carInfo,
@@ -663,7 +670,7 @@ class MapAdministrateConfirm extends Component{
                                 {
                                     state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
                                         <Text style={{fontSize:13}}>
-                                            {state.carManage.estimateTime}
+                                            {DateFilter.filter(state.carManage.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             服务时间
@@ -693,7 +700,13 @@ class MapAdministrateConfirm extends Component{
                                         if(state.selectTime==false)
                                         {
                                             //TODO:校检date的合法性
-                                            this.verifyDate(date);
+                                            var reg=/([\d]{4})-([\d]{2})-([\d]{2})\s([\d]{2})\:([\d]{2})/;
+                                            var re=reg.exec(date);
+                                            if(re)
+                                            {
+                                                var tmpDate=new Date(re[1],parseInt(re[2])-1,re[3],re[4],re[5])
+                                                this.verifyDate(tmpDate);
+                                            }
                                         }else{
                                         }
 
@@ -760,7 +773,7 @@ class MapAdministrateConfirm extends Component{
                             </View>:null
                     }
 
-                    {/*选择车*/}
+                    {/*选择车辆*/}
                     <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
                         <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:3,paddingHorizontal:4}}>
@@ -793,11 +806,20 @@ class MapAdministrateConfirm extends Component{
                                                     json.data.map((car)=>{
                                                        cars.push(car.carNum);
                                                     });
+                                                     this.setState({cars:cars});
+                                                    this.state.actionSheetCallbacks.push(function(index) {
+
+                                                      if(index>=0)
+                                                      {
+                                                        var car=json.data[index];
+                                                        this.setState({carInfo:car})
+                                                      }
+                                                    }.bind(this));
+
+                                                    setTimeout(()=>{
+                                                        this.ActionSheet.show();
+                                                    },400);
                                                 }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
 
                                           });
                                       }}>
