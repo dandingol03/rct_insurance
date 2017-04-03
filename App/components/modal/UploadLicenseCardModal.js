@@ -30,14 +30,13 @@ class UploadLicenseCardModal extends Component{
 
     closeCamera(path)
     {
-        this.state.assetsBundle[this.state.assetId]=path;
-        this.setState({cameraModalVisible:false,assetsBundle:this.state.assetsBundle});
+        this.setState({cameraModalVisible:false,assetsBundle:Object.assign(this.state.assetsBundle,{[this.state.assetId]:path})});
     }
 
     close(){
         if(this.props.onClose!==undefined&&this.props.onClose!==null)
         {
-            this.props.onClose();
+            this.props.onClose(this.state.assetsBundle);
         }
     }
 
@@ -83,11 +82,11 @@ class UploadLicenseCardModal extends Component{
 
                         {/*行驶证1面*/}
                         <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',
-                        flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
+                            flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
                             <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
                                 {
-                                    this.state.assetsBundle['licenseCard1.jpg']!==undefined&&this.state.assetsBundle['licenseCard1.jpg']!==null?
-                                        <Image source={require(this.state.assetsBundle['licenseCard1.jpg'])}
+                                    this.state.assetsBundle['licenseCard1_img']!==undefined&&this.state.assetsBundle['licenseCard1_img']!==null?
+                                        <Image source={require(this.state.assetsBundle['licenseCard1_img'])}
                                                style={{width:width-90,height:200,borderRadius:16}}/>:
                                         <Image source={require('../../img/licenseCard1.jpg')}
                                                style={{width:width-90,height:200,borderRadius:16}}/>
@@ -115,42 +114,68 @@ class UploadLicenseCardModal extends Component{
 
 
                         {/*行驶证2面*/}
-                        <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',marginTop:20,
-                        flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                                <Image source={require('../../img/licenseCard2.jpg')}
-                                       style={{width:width-90,height:200,borderRadius:8,justifyContent:'center',alignItems:'center'}}>
+                        <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',
+                            flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
+                            <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
+                                {
+                                    this.state.assetsBundle['licenseCard2_img']!==undefined&&this.state.assetsBundle['licenseCard2_img']!==null?
+                                        <Image source={require(this.state.assetsBundle['licenseCard2_img'])}
+                                               style={{width:width-90,height:200,borderRadius:16}}/>:
+                                        <Image source={require('../../img/licenseCard2.jpg')}
+                                               style={{width:width-90,height:200,borderRadius:16}}/>
+                                }
+
+                                <Text style={{fontSize:18,color:'#33c6cd',marginTop:20}}>上传行驶证2面</Text>
+
+                                <View style={{position:'absolute',left:width/3,top:60}}>
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
-                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}>
+                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
+                                                      onPress={()=>{
+                                                      this.useCamera('licenseCard2_img');
+                                                  }}>
                                         <Icon name="id-card-o" size={40} color="#fff"></Icon>
                                         <View style={{position:'absolute',bottom:10,right:6}}>
                                             <Icon name="camera" size={20} color="#fff"></Icon>
                                         </View>
                                     </TouchableOpacity>
-                                </Image>
-                                <Text style={{fontSize:18,color:'#33c6cd',marginTop:20}}>上传行驶证2面</Text>
+                                </View>
+
                             </View>
                         </View>
 
 
 
                         {/*行驶证3面*/}
-                        <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',marginTop:20,
-                        flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                                <Image source={require('../../img/licenseCard3.jpg')}
-                                       style={{width:width-90,height:200,borderRadius:8,justifyContent:'center',alignItems:'center'}}>
+                        <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',
+                            flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
+                            <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
+                                {
+                                    this.state.assetsBundle['licenseCard3_img']!==undefined&&this.state.assetsBundle['licenseCard3_img']!==null?
+                                        <Image source={require(this.state.assetsBundle['licenseCard3_img'])}
+                                               style={{width:width-90,height:200,borderRadius:16}}/>:
+                                        <Image source={require('../../img/licenseCard3.jpg')}
+                                               style={{width:width-90,height:200,borderRadius:16}}/>
+                                }
+
+                                <Text style={{fontSize:18,color:'#33c6cd',marginTop:20}}>上传行驶证3面</Text>
+
+                                <View style={{position:'absolute',left:width/3,top:60}}>
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
-                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}>
+                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
+                                                      onPress={()=>{
+                                                      this.useCamera('licenseCard3_img');
+                                                  }}>
                                         <Icon name="id-card-o" size={40} color="#fff"></Icon>
                                         <View style={{position:'absolute',bottom:10,right:6}}>
                                             <Icon name="camera" size={20} color="#fff"></Icon>
                                         </View>
                                     </TouchableOpacity>
-                                </Image>
-                                <Text style={{fontSize:18,color:'#33c6cd',marginTop:20}}>上传行驶证3面</Text>
+                                </View>
+
                             </View>
                         </View>
+
+
                     </View>
                 </ScrollView>
 
@@ -163,7 +188,7 @@ class UploadLicenseCardModal extends Component{
 
                     <CameraUtil
                         onClose={(path)=>{
-                            alert(path);
+                            //alert(path);
                             this.closeCamera(path);
                         }}
                     />

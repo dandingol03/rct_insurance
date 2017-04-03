@@ -2,10 +2,17 @@
 import {
     SET_CAR_ORDERS_REFRESH
 } from '../constants/OrderConstants';
+import {
+    SET_CAR_MANAGE_REFRESH
+} from '../constants/CarManageConstants';
+
 
 const initialState = {
     orders:null,
-    refresh:true
+    refresh:true,
+    carManage:{
+        onFresh:true
+    }
 };
 
 let car = (state = initialState, action) => {
@@ -17,6 +24,12 @@ let car = (state = initialState, action) => {
             return Object.assign({}, state, {
                 refresh:true
             })
+            break;
+        case SET_CAR_MANAGE_REFRESH:
+            return Object.assign({}, state, {
+                carManage:Object.assign(state.carManage,{refresh:true})
+            })
+            break;
         default:
             return state;
     }

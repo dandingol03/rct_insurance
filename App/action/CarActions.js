@@ -1,9 +1,19 @@
 import Config from '../../config';
 var Proxy = require('../proxy/Proxy');
 import {
-    SET_CAR_ORDERS_REFRESH
+    SET_CAR_ORDERS_REFRESH,
 } from '../constants/OrderConstants';
 
+import {
+    SET_CAR_MANAGE_REFRESH
+} from '../constants/CarManageConstants';
+
+export let enableCarManageRefresh=()=>{
+    return {
+        type:SET_CAR_MANAGE_REFRESH,
+        data:true
+    }
+}
 
 export let enableCarOrderRefresh=()=>{
     return {
@@ -12,8 +22,211 @@ export let enableCarOrderRefresh=()=>{
     }
 }
 
+export let getCarInfoByCarNum=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {carInfo}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarInfoByCarNum',
+                    info:{
+                        carNum:carInfo.carNum,
+                        ownerName:carInfo.ownerName
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+//创建车辆
+export let createCarInfo=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {carInfo}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarInfoByCarNum',
+                    info:{
+                        carNum:carInfo.carNum,
+                        ownerName:carInfo.ownerName
+                    }
+                }
+            }).then((json)=>{
+                if(json.re==1) {
+                    //TODO:核实已匹配车牌号
+                    resolve({re:2,data:'你提交的车牌号重复,请重新填入后提交'})
+                }else if(json.re==-1){
+
+
+                    Proxy.postes({
+                        url: Config.server + '/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request: 'uploadCarAndOwnerInfo',
+                            info:carInfo
+                        }
+                    }).then((json)=>{
+
+                        if(json.re==1){
+
+                            resolve(json)
+                        }
+
+                    })
+                }
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+export let updateCarInfo=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {carId,licenseAttachId1,licenseAttachId2,licenseAttachId3}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'updateCarInfo',
+                    info:{
+                        carId:carId,
+                        licenseAttachId1:licenseAttachId1,
+                        licenseAttachId2:licenseAttachId2,
+                        licenseAttachId3:licenseAttachId3
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+export let uploadPhoto=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {path,filename,imageType,carId,docType}=payload;
+
+            var data = new FormData();
+            data.append('file', {uri: path, name: filename, type: 'multipart/form-data'});
+
+            var suffix=null;
+            var reg=/.*?\.(.*)/;
+            var re=reg.exec(path);
+            if(re!=null&&re[1])
+            {
+                suffix=re[1];
+            }
+
+            //限定为jpg后缀
+            Proxy.post({
+                url:Config.server+'/svr/request?request=uploadPhoto&suffix='+suffix+'&imageType='+
+                    imageType+'&filename='+filename+'&carId='+carId,
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type':'multipart/form-data',
+                },
+                body: data,
+            },(json)=> {
+
+                Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'createPhotoAttachment',
+                        info:{
+                            imageType:imageType,
+                            filename:filename,
+                            suffix:suffix,
+                            docType:docType,
+                            carId:carId
+                        }
+                    }
+                }).then((json)=>{
+                    resolve(json)
+                }).catch((e)=>{
+                  reject(e)
+                })
+
+            }, (err) =>{
+              reject(err)
+            });
+
+        });
+    }
+}
+
+export let uploadCarAndOwnerInfo=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {carInfo}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'uploadCarAndOwnerInfo',
+                    info:carInfo
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e);
+            })
+        });
+    }
+}
+
+
 //保存车辆信息
-export let postCarInfo=function (payload) {
+export let postCarInfo= (payload)=> {
     return (dispatch,getState)=>{
         return new Promise((resolve, reject) => {
             const state = getState();

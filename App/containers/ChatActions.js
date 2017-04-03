@@ -15,8 +15,6 @@ import { connect } from 'react-redux';
 
 import AudioChat from '../components/modal/AudioChat';
 import VideoChat from '../components/modal/VideoChat';
-import {AudioRecorder, AudioUtils} from 'react-native-audio';
-import Camera from 'react-native-camera';
 
 class ChatActions extends Component{
 

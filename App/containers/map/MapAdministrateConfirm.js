@@ -810,16 +810,13 @@ class MapAdministrateConfirm extends Component{
                     </View>
 
                     {/*取送车*/}
-
                     <View style={[styles.row,{width:width,padding:7,paddingHorizontal:12,alignItems:'center'}]}>
 
                         <View style={{paddingRight:12,alignItems:'center',width:80}}>
                             <Text style={{color:'#bf530c'}}>取送车</Text>
                         </View>
 
-
                         <View style={{width:120,}}>
-
                             <Switch
                                 width={42}
                                 height={25}
@@ -829,20 +826,8 @@ class MapAdministrateConfirm extends Component{
                                 onSyncPress={value =>{
                                    this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
                                 }}/>
-
                         </View>
 
-                        {/*<Switch activeButtonColor="#fff"   inactiveButtonPressedColor="#666" activeBackgroundColor="#bf530c"*/}
-                        {/*onChangeState={(toggle)=>{*/}
-
-                        {/*console.log(toggle);*/}
-                        {/*this.setState({carManage:Object.assign(this.state.carManage,{isAgent:toggle})})*/}
-                        {/*}}*/}
-
-                        {/*onPress={(status)=>{*/}
-                        {/*alert(status);*/}
-                        {/*}}*/}
-                        {/*/>*/}
                     </View>
 
 

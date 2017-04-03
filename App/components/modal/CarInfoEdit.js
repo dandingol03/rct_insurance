@@ -147,21 +147,28 @@ class CarInfoEdit extends Component{
                     <TouchableOpacity style={{width:60,marginRight:5,padding:6,flexDirection:'row',justifyContent:'center',
                         backgroundColor:'#737373',borderRadius:6}}
                                       onPress={()=>{
-                                    this.props.dispatch(postCarInfo({carInfo:carInfo})).then((json)=>{
-                                        if(json.re==1)
-                                        {
 
-                                              Alert.alert('信息','车辆信息保存成功',[{text:'OK',onPress:()=>{
-                                                if(this.props.onPopBack!==undefined&&this.props.onPopBack!==null)
-                                                       this.props.onPopBack();
-                                            }}])
-                                        }
-                                    }).catch((e)=>{
-                                          Alert.alert(
-                                            '错误',
-                                            e
-                                        );
-                                    })
+                                          if(this.props.postCarInfo)
+                                          {
+                                              this.props.postCarInfo(carInfo)
+                                          }else{
+                                                 this.props.dispatch(postCarInfo({carInfo:carInfo})).then((json)=>{
+                                                    if(json.re==1)
+                                                    {
+
+                                                          Alert.alert('信息','车辆信息保存成功',[{text:'OK',onPress:()=>{
+                                                            if(this.props.onPopBack!==undefined&&this.props.onPopBack!==null)
+                                                                   this.props.onPopBack();
+                                                        }}])
+                                                    }
+                                                }).catch((e)=>{
+                                                      Alert.alert(
+                                                        '错误',
+                                                        e
+                                                    );
+                                                })
+                                          }
+
                             }}>
                         <Text style={{color:'#fff',fontSize:13}}>保存</Text>
                     </TouchableOpacity>
@@ -290,23 +297,37 @@ class CarInfoEdit extends Component{
                                 <Text style={{fontSize:14,color:'#343434'}}>注册日期:</Text>
                             </View>
 
-                            <View style={{flex:2,flexDirection:'row',marginLeft:2}}>
+
+                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                                {
+                                    carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
+                                        <Text>{carInfo.firstRegisterDate}</Text>:null
+                                }
+                            </View>
+
+                            <View style={{width:120,justifyContent:'center',alignItems:'center',padding:0,
+                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}>
+
                                 <DatePicker
-                                    style={{width:220,justifyContent:'flex-start'}}
-                                    date={carInfo.firstRegisterDate}
-                                    mode="datetime"
+                                    style={{width:120,marginLeft:0}}
+                                    customStyles={{
+                                        placeholderText:{color:'#fff',fontSize:12},
+                                        dateInput:{height:24},
+                                        dateTouchBody:{height:22}
+                                    }}
+                                    mode="date"
                                     placeholder="选择您的注册日期"
                                     format="YYYY-MM-DD"
-                                    minDate="2016-05-01"
-                                    maxDate="2016-12-30"
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"
-                                    iconSource={require('../../img/google_calendar.png')}
+                                    iconSource={null}
                                     onDateChange={(date) => {
-                                        this.setState({carInfo:  Object.assign(carInfo,{firstRegisterDate:date})});
+                                         this.setState({carInfo:Object.assign(carInfo,{firstRegisterDate:date})});
                                     }}
                                 />
+
                             </View>
+
                         </View>
 
                         {/*发证日期*/}
@@ -316,23 +337,37 @@ class CarInfoEdit extends Component{
                                 <Text style={{fontSize:14,color:'#343434'}}>发证日期:</Text>
                             </View>
 
-                            <View style={{flex:2,flexDirection:'row',marginLeft:2}}>
+
+                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                                {
+                                    carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
+                                        <Text>{carInfo.issueDate}</Text>:null
+                                }
+                            </View>
+
+                            <View style={{width:120,justifyContent:'center',alignItems:'center',padding:2,
+                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}>
+
                                 <DatePicker
-                                    style={{width:220}}
-                                    date={carInfo.issueDate}
-                                    mode="datetime"
+                                    style={{width:120,marginLeft:0}}
+                                    customStyles={{
+                                        placeholderText:{color:'#fff',fontSize:12},
+                                        dateInput:{height:24},
+                                        dateTouchBody:{height:22}
+                                    }}
+                                    mode="date"
                                     placeholder="选择您的发证日期"
                                     format="YYYY-MM-DD"
-                                    minDate="2016-05-01"
-                                    maxDate="2016-12-30"
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"
-                                    iconSource={require('../../img/google_calendar.png')}
+                                    iconSource={null}
                                     onDateChange={(date) => {
-                                        this.setState({carInfo:  Object.assign(carInfo,{issueDate:date})});
+                                         this.setState({carInfo:Object.assign(carInfo,{issueDate:date})});
                                     }}
                                 />
+
                             </View>
+
                         </View>
 
 
