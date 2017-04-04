@@ -57,14 +57,18 @@ class UpdateCarInfo extends Component{
     }
 
     checkPhotoUploadOrNot()
-    {
+    {   var {licenseCard1_img,licenseCard2_img,licenseCard3_img}=this.state;
         return new Promise((resolve, reject) => {
             var {assetsBundle}=this.state;
-            if((assetsBundle.licenseCard1_img!==undefined&&assetsBundle.licenseCard1_img!==null)
-                ||(assetsBundle.licenseCard2_img!==undefined&&assetsBundle.licenseCard2_img!==null)
-                ||(assetsBundle.licenseCard3_img!==undefined&&assetsBundle.licenseCard3_img!==null))
-            {
+            // if((assetsBundle.licenseCard1_img!==undefined&&assetsBundle.licenseCard1_img!==null)
+            //     ||(assetsBundle.licenseCard2_img!==undefined&&assetsBundle.licenseCard2_img!==null)
+            //     ||(assetsBundle.licenseCard3_img!==undefined&&assetsBundle.licenseCard3_img!==null))
+            // {
 
+            if((licenseCard1_img==undefined&&licenseCard1_img==null)
+                ||(licenseCard2_img==undefined&&licenseCard2_img==null)
+                ||(licenseCard3_img==undefined&&licenseCard3_img==null))
+            {
 
                 Alert.alert('信息','您有未上传的行驶证照片,是否选择上传行驶证',[
                     {
@@ -80,7 +84,7 @@ class UpdateCarInfo extends Component{
                 ])
 
             }else{
-                resolve({re:1,data:false});
+                resolve({re:1,data:true});
             }
 
         });
@@ -117,11 +121,11 @@ class UpdateCarInfo extends Component{
             &&carInfo.licenseCard2_img!==undefined&&carInfo.licenseCard2_img!==null)
         {
 
-            var carInfo = null;
-
-            var licenseAttachId1 = null;
-            var licenseAttachId2 = null;
-            var licenseAttachId3 = null;
+            //var carInfo = null;
+            //
+            // var licenseAttachId1 = null;
+            // var licenseAttachId2 = null;
+            // var licenseAttachId3 = null;
             var carId=null;
             var server=null;
             var imageType = 'licenseCard';
@@ -132,7 +136,7 @@ class UpdateCarInfo extends Component{
                     carInfo = json.data;
                     carId = carInfo.carId;
 
-                    var {licenseCard1_img,licenseCard2_img,licenseCard3_img}=assetsBundle;
+                    var {licenseCard1_img,licenseCard2_img,licenseCard3_img}=this.state;
 
                     this.props.dispatch(uploadPhoto({path:licenseCard1_img,filename:'licenseAttachId1',
                             imageType:'licenseCard',docType:'I3',carId:carId})).then((json)=>{
@@ -186,6 +190,7 @@ class UpdateCarInfo extends Component{
         var {commitIndex}=this.state;
         var {personInfo}=this.props;
         //覆盖掉当前的车辆信息
+
         this.state.carInfo=carInfo;
         if(carInfo.carNum!==undefined&&carInfo.carNum!==null&&carInfo.carNum!=='')
         {
@@ -196,7 +201,7 @@ class UpdateCarInfo extends Component{
                     '请填入6位的车牌号'
                 );
             }else{
-                var {carNum,city}=carInfo.carNum;
+                var {carNum,city}=carInfo;
 
                 var carNumPrefix=carNum.substring(0,2);
                 var prefix=this.getCarNumPrefixByCity(city);
@@ -237,7 +242,9 @@ class UpdateCarInfo extends Component{
                         //填入方式提交
                         if(commitIndex==0)
                         {
+
                             this.checkPhotoUploadOrNot().then((json)=>{
+
                               if(json.re==1)
                               {
                                   if(json.data==true)
@@ -462,6 +469,14 @@ class UpdateCarInfo extends Component{
         });
     }
 
+    setLicenseCard(licenseCard1_img,licenseCard2_img,licenseCard3_img){
+        var carInfo = this.state.carInfo;
+        carInfo.licenseCard1_img = licenseCard1_img.uri;
+        carInfo.licenseCard2_img = licenseCard2_img.uri;
+        carInfo.licenseCard3_img = licenseCard3_img.uri;
+
+        this.setState({licenseCard1_img:licenseCard1_img.uri,licenseCard2_img:licenseCard3_img.uri,licenseCard3_img:licenseCard3_img.uri,carInfo:carInfo});
+    }
 
     constructor(props)
     {
@@ -476,12 +491,19 @@ class UpdateCarInfo extends Component{
                 factoryNum:null,
                 engineNum:null,
                 frameNum:null,
-                carTransferred:false
+                carTransferred:false,
+                licenseCard1_img:null,
+                licenseCard2_img:null,
+                licenseCard3_img:null,
             },
             uploadModalVisible:false,
             modalVisible:false,
             editModalVisible:false,
-            commitIndex:0
+            commitIndex:0,
+            assetsBundle:{},
+            licenseCard1_img:null,
+            licenseCard2_img:null,
+            licenseCard3_img:null,
         };
     }
 
@@ -515,7 +537,7 @@ class UpdateCarInfo extends Component{
                         padding:6,paddingLeft:6,paddingRight:6,borderRadius:6,alignItems:'center'}}
                                       onPress={
                                           ()=>{
-                                              var {carInfo}=this.state;
+                                              var carInfo=this.state.carInfo;
                                               this.postCarInfo(carInfo);
                                           }}>
                         <Text style={{color:'#fff',fontSize:12}}>保存车辆信息</Text>
@@ -693,13 +715,15 @@ class UpdateCarInfo extends Component{
                         <UploadLicenseCardModal
                             navigator={this.props.navigator}
                             onClose={(assetsBundle)=>{
-
                                 if(assetsBundle)
                                     this.setState({uploadModalVisible:!this.state.uploadModalVisible,assetsBundle:assetsBundle})
                                 else
                                     this.setState({uploadModalVisible:!this.state.uploadModalVisible});
                             }}
 
+                            setLicenseCard={(licenseCard1_img,licenseCard2_img,licenseCard3_img)=>{
+                                this.setLicenseCard(licenseCard1_img,licenseCard2_img,licenseCard3_img);
+                            }}
                         />
                     </Modal>
 
@@ -734,15 +758,13 @@ class UpdateCarInfo extends Component{
                         </View>
                         <View tabLabel='上传行驶证' style={{padding:12,flex:1}}>
 
-
-
-
                             <View style={{height:30,alignItems:'center',justifyContent:'center',marginTop:50}}>
                                 <TouchableOpacity style={{width:width/2,backgroundColor:'#00c9ff',borderRadius:6,padding:8,paddingHorizontal:12
                                         ,alignItems:'center',justifyContent:'center'}}
                                                   onPress={
                                           ()=>{
-                                             this.uploadLicenseCard(!this.state.uploadModalVisible);
+                                             {/*this.uploadLicenseCard(!this.state.uploadModalVisible);*/}
+                                             this.setState({uploadModalVisible:!this.state.uploadModalVisible});
                                           }}>
                                     <Text style={{color:'#fff',fontSize:14}}>上传行驶证</Text>
                                 </TouchableOpacity>
