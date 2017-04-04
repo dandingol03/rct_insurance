@@ -28,7 +28,7 @@ export let getCarInfoByCarNum=(payload)=>{
 
             var state = getState();
             var accessToken = state.user.accessToken;
-            var {carInfo}=payload;
+            var carInfo=payload;
 
             Proxy.postes({
                 url: Config.server + '/svr/request',
@@ -203,7 +203,7 @@ export let uploadCarAndOwnerInfo=(payload)=>{
         return new Promise((resolve, reject) => {
             var state = getState();
             var accessToken = state.user.accessToken;
-            var {carInfo}=payload;
+            var carInfo=payload;
 
             Proxy.postes({
                 url: Config.server + '/svr/request',

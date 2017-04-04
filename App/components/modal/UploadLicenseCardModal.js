@@ -21,7 +21,55 @@ import { connect } from 'react-redux';
 import CameraUtil from '../modal/CameraUtil';
 var {height, width} = Dimensions.get('window');
 
+var ImagePicker = require('react-native-image-picker');
+
 class UploadLicenseCardModal extends Component{
+
+    showImagePicker(assetId){
+        this.setState({assetId:assetId});
+        var options = {
+            title: 'Select Avatar',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+        ImagePicker.showImagePicker(options, (response) => {
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+                this.setState({assetsBundle:Object.assign(this.state.assetsBundle,{[this.state.assetId]:source})});
+                switch(assetId)
+                {
+                    case 'licenseCard1_img':
+                        this.setState({licenseCard1_img: source});
+                        console.log('licenseCard1_img.uri = ', response.uri);
+                        break;
+                    case 'licenseCard2_img':
+                        this.setState({licenseCard2_img: source});
+                        console.log('licenseCard2_img.uri = ', response.uri);
+                        break;
+                    case 'licenseCard3_img':
+                        this.setState({licenseCard3_img: source});
+                        console.log('licenseCard3_img.uri = ', response.uri);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+
 
     useCamera(assetId)
     {
@@ -34,6 +82,7 @@ class UploadLicenseCardModal extends Component{
     }
 
     close(){
+        this.props.setLicenseCard(this.state.licenseCard1_img,this.state.licenseCard2_img,this.state.licenseCard3_img);
         if(this.props.onClose!==undefined&&this.props.onClose!==null)
         {
             this.props.onClose(this.state.assetsBundle);
@@ -48,7 +97,10 @@ class UploadLicenseCardModal extends Component{
             city:null,
             hasPhoto:false,
             cameraModalVisible:false,
-            assetsBundle:{}
+            assetsBundle:{},
+            licenseCard1_img:null,
+            licenseCard2_img:null,
+            licenseCard3_img:null,
         }
     }
 
@@ -80,13 +132,14 @@ class UploadLicenseCardModal extends Component{
 
                     <View style={{padding:10}}>
 
+
                         {/*行驶证1面*/}
                         <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',
                             flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
                             <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
                                 {
                                     this.state.assetsBundle['licenseCard1_img']!==undefined&&this.state.assetsBundle['licenseCard1_img']!==null?
-                                        <Image source={require(this.state.assetsBundle['licenseCard1_img'])}
+                                        <Image source={this.state.assetsBundle['licenseCard1_img']}
                                                style={{width:width-90,height:200,borderRadius:16}}/>:
                                         <Image source={require('../../img/licenseCard1.jpg')}
                                                style={{width:width-90,height:200,borderRadius:16}}/>
@@ -98,7 +151,7 @@ class UploadLicenseCardModal extends Component{
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
                                         justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
                                                       onPress={()=>{
-                                                      this.useCamera('licenseCard1.jpg');
+                                                      this.showImagePicker('licenseCard1_img');
                                                   }}>
                                         <Icon name="id-card-o" size={40} color="#fff"></Icon>
                                         <View style={{position:'absolute',bottom:10,right:6}}>
@@ -112,14 +165,13 @@ class UploadLicenseCardModal extends Component{
 
 
 
-
                         {/*行驶证2面*/}
                         <View style={[{padding:20,paddingBottom:10,justifyContent: 'center',alignItems: 'center',
                             flexDirection:'row',borderRadius:8,borderWidth:1,borderColor:'#aaa'}]}>
                             <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
                                 {
                                     this.state.assetsBundle['licenseCard2_img']!==undefined&&this.state.assetsBundle['licenseCard2_img']!==null?
-                                        <Image source={require(this.state.assetsBundle['licenseCard2_img'])}
+                                        <Image source={this.state.assetsBundle['licenseCard2_img']}
                                                style={{width:width-90,height:200,borderRadius:16}}/>:
                                         <Image source={require('../../img/licenseCard2.jpg')}
                                                style={{width:width-90,height:200,borderRadius:16}}/>
@@ -131,7 +183,7 @@ class UploadLicenseCardModal extends Component{
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
                                         justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
                                                       onPress={()=>{
-                                                      this.useCamera('licenseCard2_img');
+                                                      this.showImagePicker('licenseCard2_img');
                                                   }}>
                                         <Icon name="id-card-o" size={40} color="#fff"></Icon>
                                         <View style={{position:'absolute',bottom:10,right:6}}>
@@ -151,7 +203,7 @@ class UploadLicenseCardModal extends Component{
                             <View style={{flex:1,justifyContent:'center',alignItems:'center',position:'relative'}}>
                                 {
                                     this.state.assetsBundle['licenseCard3_img']!==undefined&&this.state.assetsBundle['licenseCard3_img']!==null?
-                                        <Image source={require(this.state.assetsBundle['licenseCard3_img'])}
+                                        <Image source={this.state.assetsBundle['licenseCard3_img']}
                                                style={{width:width-90,height:200,borderRadius:16}}/>:
                                         <Image source={require('../../img/licenseCard3.jpg')}
                                                style={{width:width-90,height:200,borderRadius:16}}/>
@@ -163,7 +215,7 @@ class UploadLicenseCardModal extends Component{
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
                                         justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
                                                       onPress={()=>{
-                                                      this.useCamera('licenseCard3_img');
+                                                      this.showImagePicker('licenseCard3_img');
                                                   }}>
                                         <Icon name="id-card-o" size={40} color="#fff"></Icon>
                                         <View style={{position:'absolute',bottom:10,right:6}}>
