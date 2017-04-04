@@ -20,7 +20,7 @@ import  {
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
-
+import DateFilter from '../../filter/DateFilter';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
@@ -109,6 +109,13 @@ class MapPaperValidateConfirm extends Component{
             {
                 var {carManage}=this.state;
                 this.setState({carManage:Object.assign(carManage,{servicePerson:json.data})});
+            }else{
+
+                Alert.alert('错误',
+                    '该车管所没有对应的服务人员',
+                    [{text:'确认',onPress:()=>{
+                        this.goBack()
+                    }}])
             }
         });
     }
@@ -158,7 +165,7 @@ class MapPaperValidateConfirm extends Component{
             }
             carManage.orderState=2;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
 
                 if(json.re==1)
                 {
@@ -169,7 +176,7 @@ class MapPaperValidateConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
-
+                                this.state.doingBusiness=false;
                                 //TODO:make dispatch
                                 this.props.dispatch(selectTab({tabIndex:1}));
                                 this.props.dispatch(enableServiceOrdersRefresh());
@@ -179,78 +186,26 @@ class MapPaperValidateConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
-
-
-
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
                         })
                         .catch((e)=>{
-
+                            Alert.alert('错误',e)
                         });
                 }
 
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
                 );
             })
 
-        }else{
-            //批量选中维修厂
-            var order = null;
-            var servicePersonIds = [];
-            var personIds = [];
-            var {verify}=this.state.carManage;
-
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
-                if(json.re==1)
-                {
-                    order=json.data;
-                    servicePersonIds=verify.servicePersonIds;
-                    personIds=verify.personIds;
-                }
-
-                this.props.dispatch(updateCandidateState(order,servicePersonIds)).then((json)=>{
-                    if(json.re==1)
-                    {
-                        var serviceName = '车驾管-审车';
-                        this.props.dispatch(sendCustomMessage({order:order,servicePersonIds:servicePersonIds,
-                            serviceName:serviceName,isBatch:true})).then((json)=>{
-
-                            if(json.re==1)
-                            {
-
-                                this.state.doingBusiness=false;
-                                this.props.dispatch(selectTab({tabIndex:0}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
-
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
-
-                                    this.navigate2ServiceOrders();
-                                }}])
-
-                            }
-
-                        }).catch((e)=>{
-
-                        });
-
-                    }
-                })
-
-            }).catch((e)=>{
-                Alert.alert(
-                    '错误',
-                    e
-                );
-            });
-
-
         }
-
 
     }
 
@@ -266,7 +221,7 @@ class MapPaperValidateConfirm extends Component{
             if(json.re==1)
                 scoreBalance=json.data;
 
-            return this.props.dispatch(generateCarServiceOrderFee());
+            return this.props.dispatch(generateCarServiceOrderFee({carManage:carManage}));
 
         }).then((json)=>{
 
@@ -294,7 +249,6 @@ class MapPaperValidateConfirm extends Component{
 
                 }else{
                     this.state.doingBusiness=false;
-
                     Alert.alert(
                         '错误',
                         '服务订单的费用超过您现在的积分'
@@ -321,20 +275,12 @@ class MapPaperValidateConfirm extends Component{
         if(this.state.doingBusiness==false)
         {
             this.state.doingBusiness=true;
-            if(this.state.estimateTime)
+            if(this.state.carManage.estimateTime)
             {
 
                     var {place,places,carManage}=this.state;
-                    if(place!==undefined&&place!==null)//已选检测公司
+                    if(place!==undefined&&place!==null)//已选车管所
                     {
-                        var access = this.verifyServiceSegment(carManage.servicePerson);
-                        if (access == false) {
-                            Alert.alert(
-                                '错误',
-                                '您所选的预约时间不在工作人员时段,请重新选择'
-                            );
-                            return ;
-                        }else{
                             if(carManage.destination!==undefined&&carManage.destination!==null&&
                                 (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
                             {
@@ -352,6 +298,7 @@ class MapPaperValidateConfirm extends Component{
                                         this.state.doingBusiness=false;
                                     }
                                 }).catch((err)=>{
+                                    this.state.doingBusiness=false;
                                     Alert.alert(
                                         '错误',
                                         err
@@ -362,7 +309,7 @@ class MapPaperValidateConfirm extends Component{
                             }
 
 
-                        }
+
 
                     }else{
                         //范围选择
@@ -437,6 +384,7 @@ class MapPaperValidateConfirm extends Component{
 
 
             }else{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     '请选择预约时间'
@@ -448,14 +396,12 @@ class MapPaperValidateConfirm extends Component{
         }
     }
 
-    verifyDate(_date)
+    verifyDate(date)
     {
 
         this.state.selectTime=true;
-
         var {carManage}=this.state;
 
-        var date=new Date(_date);
         var curDay=new Date();
         var hour=date.getHours();
         var day=date.getDay();
@@ -578,7 +524,9 @@ class MapPaperValidateConfirm extends Component{
             contentInfo:contentInfo,
             place:place,
             places:places,
-            carManage:{},
+            carManage:{
+                serviceType:'22'
+            },
             actionSheetCallbacks:[],
             doingBusiness:false,
             carInfo:carInfo,
@@ -663,7 +611,7 @@ class MapPaperValidateConfirm extends Component{
                                 {
                                     state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
                                         <Text style={{fontSize:13}}>
-                                            {state.carManage.estimateTime}
+                                            {DateFilter.filter(state.carManage.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             服务时间
@@ -684,16 +632,22 @@ class MapPaperValidateConfirm extends Component{
                                     date={this.state.issueDate}
                                     mode="datetime"
                                     placeholder="点击选择日期"
-                                    format="YYYY-MM-DD hh:mm"
+                                    format="YYYY-MM-DD HH:mm"
                                     minDate={new Date()}
-                                    confirmBtnText="Confirm"
+                                    confirmBtnText="确认"
                                     cancelBtnText="Cancel"
                                     iconSource={null}
                                     onDateChange={(date) => {
                                         if(state.selectTime==false)
                                         {
                                             //TODO:校检date的合法性
-                                            this.verifyDate(date);
+                                            var reg=/([\d]{4})-([\d]{2})-([\d]{2})\s([\d]{2})\:([\d]{2})/;
+                                            var re=reg.exec(date);
+                                            if(re)
+                                            {
+                                                var tmpDate=new Date(re[1],parseInt(re[2])-1,re[3],re[4],re[5])
+                                                this.verifyDate(tmpDate);
+                                            }
                                         }else{
                                         }
 

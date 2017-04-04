@@ -20,7 +20,7 @@ import  {
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
-
+import DateFilter from '../../filter/DateFilter';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
@@ -147,7 +147,7 @@ class MapAirportConfirm extends Component{
             }
             carManage.orderState=2;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
 
                 if(json.re==1)
                 {
@@ -158,26 +158,26 @@ class MapAirportConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
-
+                                this.state.doingBusiness=false;
                                 //TODO:make dispatch
                                 this.props.dispatch(selectTab({tabIndex:1}));
                                 this.props.dispatch(enableServiceOrdersRefresh());
                                 this.props.dispatch(enableServiceOrdersClear());
 
                                 Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
-
                                     this.navigate2ServiceOrders();
                                 }}])
 
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
                         })
-                        .catch((e)=>{
-
-                        });
                 }
 
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -190,7 +190,7 @@ class MapAirportConfirm extends Component{
             var servicePersonIds = [];
             var personIds = [];
             var {verify}=this.state.carManage;
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
                 if(json.re==1)
                 {
                     order=json.data;
@@ -217,9 +217,13 @@ class MapAirportConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
 
                         }).catch((e)=>{
+                            this.state.doingBusiness=false;
                             alert(e);
                         });
 
@@ -227,6 +231,7 @@ class MapAirportConfirm extends Component{
                 })
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -251,7 +256,7 @@ class MapAirportConfirm extends Component{
             if(json.re==1)
                 scoreBalance=json.data;
 
-            return this.props.dispatch(generateCarServiceOrderFee());
+            return this.props.dispatch(generateCarServiceOrderFee({carManage:carManage}));
 
         }).then((json)=>{
 
@@ -306,7 +311,7 @@ class MapAirportConfirm extends Component{
         if(this.state.doingBusiness==false)
         {
             this.state.doingBusiness=true;
-            if(this.state.estimateTime)
+            if(this.state.carManage.estimateTime)
             {
 
                     var {unit,units,carManage}=this.state;
@@ -314,6 +319,7 @@ class MapAirportConfirm extends Component{
                     {
                         var access = this.verifyServiceSegment(carManage.servicePerson);
                         if (access == false) {
+                            this.state.doingBusiness=false;
                             Alert.alert(
                                 '错误',
                                 '您所选的预约时间不在工作人员时段,请重新选择'
@@ -337,6 +343,7 @@ class MapAirportConfirm extends Component{
                                         this.state.doingBusiness=false;
                                     }
                                 }).catch((err)=>{
+                                    this.state.doingBusiness=false;
                                     Alert.alert(
                                         '错误',
                                         err
@@ -442,10 +449,11 @@ class MapAirportConfirm extends Component{
                 this.setState({carManage:Object.assign(this.state.carManage,{servicePerson:json.data})});
             }else{
 
-                Alert.alert(
-                    '错误',
-                    '该维修厂没有指定的服务人员'
-                );
+                Alert.alert('错误',
+                    '该维修厂没有指定的服务人员',
+                    [{text:'确认',onPress:()=>{
+                        this.goBack()
+                    }}])
             }
 
         }).catch((e)=>{
@@ -457,14 +465,12 @@ class MapAirportConfirm extends Component{
     }
 
 
-    verifyDate(_date)
+    verifyDate(date)
     {
 
         this.state.selectTime=true;
-
         var {carManage}=this.state;
 
-        var date=new Date(_date);
         var curDay=new Date();
         var hour=date.getHours();
         var day=date.getDay();
@@ -580,6 +586,7 @@ class MapAirportConfirm extends Component{
                 carInfo={};
         }
         var carManage={};
+        carManage.serviceType='23';
         if(props.mode=='pickUp')
         {
             carManage.subServiceTypes=1;
@@ -596,7 +603,8 @@ class MapAirportConfirm extends Component{
             carManage:carManage,
             actionSheetCallbacks:[],
             doingBusiness:false,
-            carInfo:carInfo
+            carInfo:carInfo,
+            selectTime:false
         }
 
     }
@@ -677,7 +685,7 @@ class MapAirportConfirm extends Component{
                                 {
                                     state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
                                         <Text style={{fontSize:13}}>
-                                            {state.carManage.estimateTime}
+                                            {DateFilter.filter(state.carManage.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             服务时间
@@ -698,15 +706,25 @@ class MapAirportConfirm extends Component{
                                     date={this.state.issueDate}
                                     mode="datetime"
                                     placeholder="点击选择日期"
-                                    format="YYYY-MM-DD"
-                                    minDate="2016-05-01"
-                                    maxDate="2016-12-30"
+                                    format="YYYY-MM-DD HH:mm"
+                                    minDate={new Date()}
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"
                                     iconSource={null}
                                     onDateChange={(date) => {
-                                        //TODO:校检date的合法性
-                                        this.verifyDate(date);
+
+                                        if(state.selectTime==false)
+                                        {
+                                            //TODO:校检date的合法性
+                                            var reg=/([\d]{4})-([\d]{2})-([\d]{2})\s([\d]{2})\:([\d]{2})/;
+                                            var re=reg.exec(date);
+                                            if(re)
+                                            {
+                                                 var tmpDate=new Date(re[1],parseInt(re[2])-1,re[3],re[4],re[5])
+                                                this.verifyDate(tmpDate);
+                                            }
+                                        }else{
+                                        }
 
                                     }}
                                 />
@@ -827,19 +845,27 @@ class MapAirportConfirm extends Component{
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                               onPress={()=>{
                                                    props.dispatch(fetchDestinationByPersonId()).then((json)=>{
-                                                var addresses=[];
-                                                if(json.data)
-                                                {
-                                                    json.data.map((add)=>{
-                                                       addresses.push(add.title);
-                                                    });
-                                                }
-                                                this.setState({addresses:addresses});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
+                                                        var addresses=[];
+                                                        if(json.data)
+                                                        {
+                                                            json.data.map((add)=>{
+                                                               addresses.push(add.title);
+                                                            });
+                                                            this.setState({addresses:addresses});
+                                                            this.state.actionSheetCallbacks.push(function(index) {
 
-                                          });
+                                                              if(index>=0)
+                                                              {
+                                                                var address=json.data[index];
+                                                                this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
+                                                              }
+                                                            }.bind(this));
+                                                            setTimeout(()=>{
+                                                                this.ActionSheet.show();
+                                                            },400);
+                                                        }
+
+                                                  });
                                               }}
                             >
 

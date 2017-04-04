@@ -96,6 +96,7 @@ export let updateCandidateState=(payload)=>{
 }
 
 
+//生成车险服务订单
 export let generateCarServiceOrder=(payload)=>{
 
     return (dispatch,getState)=>{
@@ -105,6 +106,10 @@ export let generateCarServiceOrder=(payload)=>{
             const state = getState();
             var accessToken = state.user.accessToken;
             var {carManage}=payload;
+            if(carManage.isAgent!=true)
+                carManage.isAgent=0;
+            else
+                carManage.isAgent=1;
 
             Proxy.postes({
                 url: Config.server + '/svr/request',
@@ -1127,10 +1132,7 @@ export let fetchServicePersonByDetectUnitId=(payload)=>{
                 }
             }).then((json)=>{
 
-                if(json.re==1)
-                {
-                    resolve(json);
-                }
+                resolve(json);
             }).catch((err)=>{
                reject(err);
             });

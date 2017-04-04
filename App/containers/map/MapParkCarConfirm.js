@@ -20,7 +20,7 @@ import  {
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
-
+import DateFilter from '../../filter/DateFilter';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
@@ -134,19 +134,19 @@ class MapParkCarConfirm extends Component{
     generateServiceOrder()
     {
 
-        var {detectUnit,detectUnites,carManage,carInfo,verify}=this.state;
+        var {unit,units,carManage,carInfo}=this.state;
         carManage.carId=carInfo.carId;
         //接送站----选择检测公司
         carManage.serviceType=24;
-        if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
+        if(unit!==undefined&&unit!==null)//已选检测公司
         {
-            carManage.servicePlaceId=detectUnit.placeId;
+            carManage.servicePlaceId=unit.placeId;
             if( carManage.servicePerson.servicePersonId!==undefined&& carManage.servicePerson.servicePersonId!==null){
                 carManage.servicePersonId=carManage.servicePerson.servicePersonId;
             }
             carManage.orderState=2;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
 
                 if(json.re==1)
                 {
@@ -157,7 +157,7 @@ class MapParkCarConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
-
+                                this.state.doingBusiness=false;
                                 //TODO:make dispatch
                                 this.props.dispatch(selectTab({tabIndex:1}));
                                 this.props.dispatch(enableServiceOrdersRefresh());
@@ -167,18 +167,16 @@ class MapParkCarConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
-
-
-
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
                         })
-                        .catch((e)=>{
-
-                        });
                 }
 
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -191,7 +189,7 @@ class MapParkCarConfirm extends Component{
             var servicePersonIds = [];
             var personIds = [];
             var {verify}=this.state.carManage;
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
                 if(json.re==1)
                 {
                     order=json.data;
@@ -218,17 +216,18 @@ class MapParkCarConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
-
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
 
-                        }).catch((e)=>{
-
-                        });
+                        })
 
                     }
                 })
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -241,7 +240,7 @@ class MapParkCarConfirm extends Component{
 
     }
 
-    //审车订单提交
+    //接送站订单提交
     applyCarServiceOrder()
     {
         var fee = null;
@@ -253,7 +252,7 @@ class MapParkCarConfirm extends Component{
             if(json.re==1)
                 scoreBalance=json.data;
 
-            return this.props.dispatch(generateCarServiceOrderFee());
+            return this.props.dispatch(generateCarServiceOrderFee({carManage:carManage}));
 
         }).then((json)=>{
 
@@ -292,6 +291,7 @@ class MapParkCarConfirm extends Component{
             }
 
         }).catch((e)=>{
+            this.state.doingBusiness=false;
             Alert.alert(
                 '错误',
                 e
@@ -308,85 +308,25 @@ class MapParkCarConfirm extends Component{
         if(this.state.doingBusiness==false)
         {
             this.state.doingBusiness=true;
-            if(this.state.estimateTime)
+            var {unit,units,carManage,mode}=this.state;
+            if(carManage.destination&&carManage.destination.address)
             {
+                if(carManage.estimateTime)
+                {
 
-                    var {unit,units,carManage}=this.state;
-                    if(unit!==undefined&&unit!==null)//已选维修公司
+                    if(carManage.servicePlace)
                     {
-                        var access = this.verifyServiceSegment(carManage.servicePerson);
-                        if (access == false) {
-                            Alert.alert(
-                                '错误',
-                                '您所选的预约时间不在工作人员时段,请重新选择'
-                            );
-                            return ;
-                        }else{
-                            if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                            {
-
-                                //TODO:create a new destination
-                                createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                    if(json.re==1) {
-                                        var customerPlace=json.data;
-                                        this.state.carManage.destination=customerPlace;
-
-                                        this.applyCarServiceOrder();
-                                    }else if(json.re==2) {
-                                        this.state.doingBusiness=false;
-                                    }else{
-                                        this.state.doingBusiness=false;
-                                    }
-                                }).catch((err)=>{
-                                    Alert.alert(
-                                        '错误',
-                                        err
-                                    );
-                                });
+                        if(unit!==undefined&&unit!==null)//已选维修公司
+                        {
+                            var access = this.verifyServiceSegment(carManage.servicePerson);
+                            if (access == false) {
+                                this.state.doingBusiness=false;
+                                Alert.alert(
+                                    '错误',
+                                    '您所选的预约时间不在工作人员时段,请重新选择'
+                                );
+                                return ;
                             }else{
-                                this.applyCarServiceOrder();
-                            }
-                        }
-
-                    }else{
-                        var servicePersonIds = [];
-                        var personIds = [];
-
-                        this.props.dispatch(getServicePersonsByUnits({units:units})).then((json)=>{
-
-                            if(json.re==1)
-                            {
-                                //寻找符合时间段的服务人员
-                                json.data.map(function(servicePerson,i) {
-                                    var flag=this.verifyServiceSegment(servicePerson);
-                                    if(flag==false)
-                                    {}else{
-                                        servicePersonIds.push(servicePerson.servicePersonId);
-                                        personIds.push(servicePerson.personId);
-                                    }
-                                });
-
-                                if(servicePersonIds.length==0)
-                                {
-
-                                    Alert.alert(
-                                        '错误',
-                                        '你所选的预约时间没有合适的服务人员,请重新选择'
-                                    );
-                                    return {re:-1};
-
-                                }else {
-                                    this.state.carManage.verify={
-                                        servicePersonIds:servicePersonIds,
-                                        personIds:personIds
-                                    };
-                                    return {re:1};
-                                }
-                            }
-                        }).then((json)=>{
-                            if(json.re==1)
-                            {
                                 if(carManage.destination!==undefined&&carManage.destination!==null&&
                                     (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
                                 {
@@ -404,6 +344,7 @@ class MapParkCarConfirm extends Component{
                                             this.state.doingBusiness=false;
                                         }
                                     }).catch((err)=>{
+                                        this.state.doingBusiness=false;
                                         Alert.alert(
                                             '错误',
                                             err
@@ -414,17 +355,111 @@ class MapParkCarConfirm extends Component{
                                 }
                             }
 
-                        }).catch((e)=>{
-                            alert(e);
-                        })
+                        }else{
+                            var servicePersonIds = [];
+                            var personIds = [];
 
+                            this.props.dispatch(getServicePersonsByUnits({units:units})).then((json)=>{
+
+                                if(json.re==1)
+                                {
+                                    //寻找符合时间段的服务人员
+                                    json.data.map(function(servicePerson,i) {
+                                        var flag=this.verifyServiceSegment(servicePerson);
+                                        if(flag==false)
+                                        {}else{
+                                            servicePersonIds.push(servicePerson.servicePersonId);
+                                            personIds.push(servicePerson.personId);
+                                        }
+                                    });
+
+                                    if(servicePersonIds.length==0)
+                                    {
+                                        this.state.doingBusiness=false;
+                                        Alert.alert(
+                                            '错误',
+                                            '你所选的预约时间没有合适的服务人员,请重新选择'
+                                        );
+                                        return {re:-1};
+
+                                    }else {
+                                        this.state.doingBusiness=false;
+                                        this.state.carManage.verify={
+                                            servicePersonIds:servicePersonIds,
+                                            personIds:personIds
+                                        };
+                                        return {re:1};
+                                    }
+                                }
+                            }).then((json)=>{
+                                if(json.re==1)
+                                {
+                                    if(carManage.destination!==undefined&&carManage.destination!==null&&
+                                        (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
+                                    {
+
+                                        //TODO:create a new destination
+                                        createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                                            if(json.re==1) {
+                                                var customerPlace=json.data;
+                                                this.state.carManage.destination=customerPlace;
+
+                                                this.applyCarServiceOrder();
+                                            }else if(json.re==2) {
+                                                this.state.doingBusiness=false;
+                                            }else{
+                                                this.state.doingBusiness=false;
+                                            }
+                                        }).catch((err)=>{
+                                            this.state.doingBusiness=false;
+                                            Alert.alert(
+                                                '错误',
+                                                err
+                                            );
+                                        });
+                                    }else{
+                                        this.applyCarServiceOrder();
+                                    }
+                                }
+
+                            }).catch((e)=>{
+                                this.state.doingBusiness=false;
+                                alert(e);
+                            })
+
+                        }
+                    }else{
+                        this.state.doingBusiness=false;
+                        Alert.alert(
+                            '错误',
+                            '请先选择服务地点'
+                        );
                     }
 
 
+                }else{
+                    this.state.doingBusiness=false;
+                    Alert.alert(
+                        '错误',
+                        '请选择预约时间'
+                    );
+                }
             }else{
+
+                var template=null;
+                switch(mode)
+                {
+                    case 'pickUp':
+                        template='请先选择接站目的地'
+                        break;
+                    case 'seeOff':
+                        template='请先选择送站出发地'
+                        break;
+                }
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
-                    '请选择预约时间'
+                    template
                 );
             }
 
@@ -442,10 +477,12 @@ class MapParkCarConfirm extends Component{
                 this.setState({carManage:Object.assign(this.state.carManage,{servicePerson:json.data})});
             }else{
 
-                Alert.alert(
-                    '错误',
-                    '该维修厂没有指定的服务人员'
-                );
+                Alert.alert('错误',
+                    '该维修厂没有指定的服务人员',
+                    [{text:'确认',onPress:()=>{
+                        this.goBack()
+                    }}])
+
             }
 
         }).catch((e)=>{
@@ -456,14 +493,12 @@ class MapParkCarConfirm extends Component{
         })
     }
 
-    verifyDate(_date)
+    verifyDate(date)
     {
 
         this.state.selectTime=true;
-
         var {carManage}=this.state;
 
-        var date=new Date(_date);
         var curDay=new Date();
         var hour=date.getHours();
         var day=date.getDay();
@@ -571,7 +606,9 @@ class MapParkCarConfirm extends Component{
         var units=null;
         var carInfo=null;
         var mode=null;
-        var carManage={};
+        var carManage={
+            serviceType:'24'
+        };
         if (contentInfo !== undefined && contentInfo !== null) {
 
             if(contentInfo.unit!==undefined&&contentInfo.unit!==null)
@@ -603,7 +640,8 @@ class MapParkCarConfirm extends Component{
             carManage:carManage,
             actionSheetCallbacks:[],
             doingBusiness:false,
-            carInfo:carInfo
+            carInfo:carInfo,
+            selectTime:false
         }
 
     }
@@ -684,7 +722,7 @@ class MapParkCarConfirm extends Component{
                                 {
                                     state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
                                         <Text style={{fontSize:13}}>
-                                            {state.carManage.estimateTime}
+                                            {DateFilter.filter(state.carManage.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             服务时间
@@ -705,15 +743,25 @@ class MapParkCarConfirm extends Component{
                                     date={this.state.issueDate}
                                     mode="datetime"
                                     placeholder="点击选择日期"
-                                    format="YYYY-MM-DD"
-                                    minDate="2016-05-01"
-                                    maxDate="2016-12-30"
-                                    confirmBtnText="Confirm"
+                                    format="YYYY-MM-DD HH:mm"
+                                    minDate={new Date()}
+                                    confirmBtnText="确认"
                                     cancelBtnText="Cancel"
                                     iconSource={null}
                                     onDateChange={(date) => {
-                                        //TODO:校检date的合法性
-                                        this.verifyDate(date);
+
+                                        if(state.selectTime==false)
+                                        {
+                                            //TODO:校检date的合法性
+                                            var reg=/([\d]{4})-([\d]{2})-([\d]{2})\s([\d]{2})\:([\d]{2})/;
+                                            var re=reg.exec(date);
+                                            if(re)
+                                            {
+                                                 var tmpDate=new Date(re[1],parseInt(re[2])-1,re[3],re[4],re[5])
+                                                this.verifyDate(tmpDate);
+                                            }
+                                        }else{
+                                        }
                                     }}
                                 />
 
@@ -790,9 +838,9 @@ class MapParkCarConfirm extends Component{
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                 {
-                                    state.servicePlace&&state.servicePlace.name?
+                                    state.carManage.servicePlace&&state.carManage.servicePlace.name?
                                         <Text style={{fontSize:13}}>
-                                            {state.servicePlace.name}
+                                            {state.carManage.servicePlace.name}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             接站出发地
@@ -804,19 +852,27 @@ class MapParkCarConfirm extends Component{
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                               onPress={()=>{
                                                    props.dispatch(fetchRailwayStationInArea()).then((json)=>{
-                                                var servicePlaces=[];
-                                                if(json.data&&json.data.length>0)
-                                                {
-                                                    json.data.map((servicePlace)=>{
-                                                       servicePlaces.push(servicePlace.name);
-                                                    });
-                                                }
-                                                this.setState({servicePlaces:servicePlaces});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
+                                                        var servicePlaces=[];
+                                                        if(json.data&&json.data.length>0)
+                                                        {
+                                                            json.data.map((servicePlace)=>{
+                                                               servicePlaces.push(servicePlace.name);
+                                                            });
+                                                            this.setState({servicePlaces:servicePlaces});
+                                                            this.state.actionSheetCallbacks.push(function(index) {
 
-                                          });
+                                                              if(index>=0)
+                                                              {
+                                                                var servicePlace=json.data[index];
+                                                                this.setState({carManage:Object.assign(this.state.carManage,{servicePlace:servicePlace})})
+                                                              }
+                                                            }.bind(this));
+                                                            setTimeout(()=>{
+                                                                this.ActionSheet.show();
+                                                            },400);
+                                                        }
+
+                                                  });
                                               }}
                             >
 
@@ -855,19 +911,27 @@ class MapParkCarConfirm extends Component{
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                               onPress={()=>{
                                                    props.dispatch(fetchDestinationByPersonId()).then((json)=>{
-                                                var destinations=[];
-                                                if(json.data&&json.data.length>0)
-                                                {
-                                                    json.data.map((destination)=>{
-                                                       destinations.push(destination.title);
-                                                    });
-                                                }
-                                                this.setState({destinations:destinations});
-                                                setTimeout(()=>{
-                                                    this.DestinationSheet.show();
-                                                },400);
+                                                        var destinations=[];
+                                                        if(json.data&&json.data.length>0)
+                                                        {
+                                                            json.data.map((destination)=>{
+                                                               destinations.push(destination.title);
+                                                            });
+                                                            this.setState({destinations:destinations});
+                                                            this.state.actionSheetCallbacks.push(function(index) {
 
-                                          });
+                                                              if(index>=0)
+                                                              {
+                                                                var address=json.data[index];
+                                                                this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
+                                                              }
+                                                            }.bind(this));
+                                                            setTimeout(()=>{
+                                                                this.DestinationSheet.show();
+                                                            },400);
+                                                        }
+
+                                                  });
                                               }}
                             >
 
