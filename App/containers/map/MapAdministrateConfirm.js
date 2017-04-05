@@ -14,6 +14,8 @@ import  {
     Alert,
     ListView,
     TouchableOpacity,
+    ActivityIndicator,
+    Modal
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
@@ -175,33 +177,34 @@ class MapAdministrateConfirm extends Component{
                             if(json.re==1)
                             {
 
-                                this.state.doingBusiness=false;
-                                //TODO:make dispatch
-                                this.props.dispatch(selectTab({tabIndex:1}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
+                                this.setState({doingBusiness:false})
 
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                setTimeout(()=>{
+                                    this.props.dispatch(selectTab({tabIndex:1}));
+                                    this.props.dispatch(enableServiceOrdersRefresh());
+                                    this.props.dispatch(enableServiceOrdersClear());
 
-                                    this.navigate2ServiceOrders();
-                                }}])
+                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+
+                                        this.navigate2ServiceOrders();
+                                    }}])
+                                },900)
                             }else{
-                                this.state.doingBusiness=false;
-                                Alert.alert('错误',json.data)
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
+                                    Alert.alert('错误',json.data)
+                                },900)
                             }
                         })
-                        .catch((e)=>{
 
-                        });
                 }
 
 
             }).catch((e)=>{
-                this.state.doingBusiness=false;
-                Alert.alert(
-                    '错误',
-                    e
-                );
+                this.setState({doingBusiness:false})
+                setTimeout(()=>{
+                    Alert.alert('错误',e)
+                },900)
             })
 
         }else{
@@ -219,7 +222,7 @@ class MapAdministrateConfirm extends Component{
                     personIds=verify.personIds;
                 }
 
-                this.props.dispatch(updateCandidateState(order,servicePersonIds)).then((json)=>{
+                this.props.dispatch(updateCandidateState({order:order,servicePersonIds:servicePersonIds})).then((json)=>{
                     if(json.re==1)
                     {
                         var serviceName = '车驾管-审车';
@@ -229,16 +232,18 @@ class MapAdministrateConfirm extends Component{
                             if(json.re==1)
                             {
 
-                                this.state.doingBusiness=false;
-                                this.props.dispatch(selectTab({tabIndex:0}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
+                                this.setState({doingBusiness:false})
 
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                setTimeout(()=>{
+                                    this.props.dispatch(selectTab({tabIndex:0}));
+                                    this.props.dispatch(enableServiceOrdersRefresh());
+                                    this.props.dispatch(enableServiceOrdersClear());
 
-                                    this.navigate2ServiceOrders();
-                                }}])
+                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
 
+                                        this.navigate2ServiceOrders();
+                                    }}])
+                                },900)
                             }
 
                         }).catch((e)=>{
@@ -249,11 +254,13 @@ class MapAdministrateConfirm extends Component{
                 })
 
             }).catch((e)=>{
-                this.state.doingBusiness=false;
-                Alert.alert(
-                    '错误',
-                    e
-                );
+                this.setState({doingBusiness:false})
+                setTimeout(()=>{
+                    Alert.alert(
+                        '错误',
+                        e
+                    );
+                },900)
             });
 
 
@@ -289,34 +296,41 @@ class MapAdministrateConfirm extends Component{
                         if(carManage.destination==undefined||carManage.destination==null||
                             carManage.destination.address==undefined||carManage.destination.address==null)
                         {
-                            this.state.doingBusiness=false;
-                            Alert.alert(
-                                '错误',
-                                '请先选择取车地点'
-                            );
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    '请先选择取车地点'
+                                );
+                            },900)
+
                             return;
                         }
                     }
 
                     this.generateServiceOrder();
-                    this.state.doingBusiness=false;
+                    this.setState({doingBusiness:false})
                 }else{
-                    this.state.doingBusiness=false;
-
-                    Alert.alert(
-                        '错误',
-                        '服务订单的费用超过您现在的积分'
-                    );
+                    this.setState({doingBusiness:false})
+                    setTimeout(()=>{
+                        Alert.alert(
+                            '错误',
+                            '服务订单的费用超过您现在的积分'
+                        );
+                    },900)
                 }
 
 
             }
 
         }).catch((e)=>{
-            Alert.alert(
-                '错误',
-                e
-            );
+            this.setState({doingBusiness:false})
+            setTimeout(()=>{
+                Alert.alert(
+                    '错误',
+                    e
+                );
+            },900)
         });
 
     }
@@ -326,144 +340,155 @@ class MapAdministrateConfirm extends Component{
     preCheck()
     {
         //业务不处于进行中
-        if(this.state.doingBusiness==false)
+        this.setState({doingBusiness: true});
+
+        if(this.state.carManage.estimateTime)
         {
-            this.state.doingBusiness=true;
-            if(this.state.carManage.estimateTime)
+            if(this.state.carInfo&&this.state.carInfo.carId)
             {
-                if(this.state.carInfo&&this.state.carInfo.carId)
+                var {detectUnit,detectUnites,carManage}=this.state;
+                if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
                 {
-                    var {detectUnit,detectUnites,carManage}=this.state;
-                    if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
-                    {
-                        var access = this.verifyServiceSegment(carManage.servicePerson);
-                        if (access == false) {
+                    var access = this.verifyServiceSegment(carManage.servicePerson);
+                    if (access == false) {
+                        this.setState({doingBusiness:false})
+                        setTimeout(()=>{
                             Alert.alert(
                                 '错误',
                                 '您所选的预约时间不在工作人员时段,请重新选择'
                             );
-                            this.state.doingBusiness=false;
-                            return ;
-                        }else{
-                            if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                            {
+                        },900)
+                        return ;
+                    }else{
+                        if(carManage.destination!==undefined&&carManage.destination!==null&&
+                            (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
+                        {
 
-                                //TODO:create a new destination
-                                createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                    if(json.re==1) {
-                                        var customerPlace=json.data;
-                                        this.state.carManage.destination=customerPlace;
+                            //TODO:create a new destination
+                            createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                                if(json.re==1) {
+                                    var customerPlace=json.data;
+                                    this.state.carManage.destination=customerPlace;
 
-                                        this.applyCarServiceOrder();
-                                    }else if(json.re==2) {
-                                        this.state.doingBusiness=false;
-                                    }else{
-                                        this.state.doingBusiness=false;
-                                    }
-                                }).catch((err)=>{
+                                    this.applyCarServiceOrder();
+                                }else if(json.re==2) {
+                                    this.setState({doingBusiness:false})
+                                }else{
+                                    this.setState({doingBusiness:false})
+                                }
+                            }).catch((err)=>{
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
                                     Alert.alert(
                                         '错误',
                                         err
                                     );
-                                });
-                            }else{
-                                this.applyCarServiceOrder();
-                            }
-
-
+                                },900)
+                            });
+                        }else{
+                            this.applyCarServiceOrder();
                         }
 
-                    }else{
-                        //范围选择
-                        var servicePersonIds = [];
-                        var personIds = [];
-                       this.props.dispatch(getServicePersonsByDetectUnites({detectUnites:detectUnites}))
-                           .then((json)=>{
-                               if(json.re==1)
-                               {
-                                   //寻找符合时间段的服务人员
-                                   json.data.map(function(servicePerson,i) {
-                                       var flag=this.verifyServiceSegment(servicePerson);
-                                       if(flag==false)
-                                       {}else{
-                                           servicePersonIds.push(servicePerson.servicePersonId);
-                                           personIds.push(servicePerson.personId);
-                                       }
-                                   });
-
-
-                                   if(servicePersonIds.length==0)
-                                   {
-
-                                       Alert.alert(
-                                           '错误',
-                                           '你所选的预约时间没有合适的服务人员,请重新选择'
-                                       );
-                                       return {re:-1};
-
-                                   }else {
-                                       this.state.carManage.verify={
-                                           servicePersonIds:servicePersonIds,
-                                           personIds:personIds
-                                       };
-                                       return {re:1};
-                                   }
-                               }
-                       }).then((json)=>{
-                           if(json.re==1)
-                           {
-                               if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                   (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                               {
-
-                                   //TODO:create a new destination
-                                   createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                       if(json.re==1) {
-                                           var customerPlace=json.data;
-                                           this.state.carManage.destination=customerPlace;
-
-                                           this.applyCarServiceOrder();
-                                       }else if(json.re==2) {
-                                           this.state.doingBusiness=false;
-                                       }else{
-                                           this.state.doingBusiness=false;
-                                       }
-                                   }).catch((err)=>{
-                                       this.state.doingBusiness=false;
-                                       Alert.alert(
-                                           '错误',
-                                           err
-                                       );
-                                   });
-                               }else{
-                                   this.applyCarServiceOrder();
-                               }
-                           }
-                       }).catch((e)=>{
-                           alert(e);
-                       })
 
                     }
 
                 }else{
-                    this.state.doingBusiness=false;
+                    //范围选择
+                    var servicePersonIds = [];
+                    var personIds = [];
+                   this.props.dispatch(getServicePersonsByDetectUnites({detectUnites:detectUnites}))
+                       .then((json)=>{
+                           if(json.re==1)
+                           {
+                               //寻找符合时间段的服务人员
+                               json.data.map((servicePerson,i)=>{
+                                   var flag=this.verifyServiceSegment(servicePerson);
+                                   if(flag==false)
+                                   {}else{
+                                       servicePersonIds.push(servicePerson.servicePersonId);
+                                       personIds.push(servicePerson.personId);
+                                   }
+                               });
+
+                               if(servicePersonIds.length==0)
+                               {
+                                   this.setState({doingBusiness:false})
+                                   setTimeout(()=>{
+                                       Alert.alert(
+                                           '错误',
+                                           '你所选的预约时间没有合适的服务人员,请重新选择'
+                                       );
+                                   },900)
+                                   return {re:-1};
+
+                               }else {
+                                   this.state.carManage.verify={
+                                       servicePersonIds:servicePersonIds,
+                                       personIds:personIds
+                                   };
+                                   return {re:1};
+                               }
+                           }
+                   }).then((json)=>{
+                       if(json.re==1)
+                       {
+                           if(carManage.destination!==undefined&&carManage.destination!==null&&
+                               (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
+                           {
+
+                               //TODO:create a new destination
+                               createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                                   if(json.re==1) {
+                                       var customerPlace=json.data;
+                                       this.state.carManage.destination=customerPlace;
+
+                                       this.applyCarServiceOrder();
+                                   }else if(json.re==2) {
+                                       this.setState({doingBusiness:false})
+                                   }else{
+                                       this.setState({doingBusiness:false})
+                                   }
+                               }).catch((err)=>{
+                                   this.setState({doingBusiness:false})
+                                   setTimeout(()=>{
+                                       Alert.alert(
+                                           '错误',
+                                           err
+                                       );
+                                   },900)
+
+                               });
+                           }else{
+                               this.applyCarServiceOrder();
+                           }
+                       }
+                   }).catch((e)=>{
+                       alert(e);
+                   })
+
+                }
+
+            }else{
+                this.setState({doingBusiness:false})
+                setTimeout(()=>{
                     Alert.alert(
                         '错误',
                         '请先选择车辆'
                     );
-                }
-            }else{
-                this.state.doingBusiness=false;
+                },900)
+            }
+        }else{
+            this.setState({doingBusiness:false})
+            setTimeout(()=>{
                 Alert.alert(
                     '错误',
                     '请选择预约时间'
                 );
-            }
-
-        }else{
+            },900)
 
         }
+
+
     }
 
     verifyDate(date)
@@ -925,7 +950,8 @@ class MapAdministrateConfirm extends Component{
                         <TouchableOpacity style={{width:width*2/3,padding:9,paddingHorizontal:12,backgroundColor:'#11c1f3',
                                 alignItems:'center',borderRadius:6}}
                                           onPress={()=>{
-                                          this.preCheck();
+                                              if(this.state.doingBusiness==false)
+                                                  this.preCheck();
                                       }}
                         >
                             <Text style={{color:'#fff'}}>提交审车订单</Text>
@@ -934,6 +960,31 @@ class MapAdministrateConfirm extends Component{
                     </View>
 
 
+                    {/*loading模态框*/}
+                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingBusiness}>
+
+                        <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                          onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                            <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                                <ActivityIndicator
+                                    animating={true}
+                                    style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                    size="large"
+                                    color="#00BFFF"
+                                />
+                                <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                    <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                        生成审车订单...
+                                    </Text>
+
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
 
                     <ActionSheet
                         ref={(o) => this.ActionSheet = o}
@@ -942,6 +993,9 @@ class MapAdministrateConfirm extends Component{
                         cancelButtonIndex={CANCEL_INDEX}
                         onPress={this._handlePress.bind(this)}
                     />
+
+
+
 
                 </View>
 
@@ -1010,7 +1064,15 @@ var styles = StyleSheet.create({
     appleSwitch: {
         marginTop: 0,
         marginBottom: 0,
-    }
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 
 
 });
