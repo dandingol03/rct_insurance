@@ -309,7 +309,7 @@ class MapAdministrateConfirm extends Component{
                     }
 
                     this.generateServiceOrder();
-                    this.setState({doingBusiness:false})
+
                 }else{
                     this.setState({doingBusiness:false})
                     setTimeout(()=>{
