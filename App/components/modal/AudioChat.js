@@ -26,6 +26,7 @@ var Config = require('../../../config');
 import Sound from 'react-native-sound';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
 
+
 class AudioChat extends Component{
 
     close(){
@@ -36,6 +37,15 @@ class AudioChat extends Component{
         //TODO:关闭时同步数据
     }
 
+    sendAudio(){
+        if(this.state.audio!==undefined&&this.state.audio!==null){
+            this.props.setAudio(this.state.audio);
+            this.close();
+        }
+        else{
+            alert('您还未录音，请先录音再发送');
+        }
+    }
 
     //音频录制
     prepareRecordingPath(audioPath){
@@ -126,15 +136,6 @@ class AudioChat extends Component{
         }
     }
 
-    recordAudio(){
-        if(this.state.recording==true){
-            this._stop();
-        }
-        else{
-            this._record();
-        }
-    }
-
     async _play() {
 
         if (this.state.recording) {
@@ -193,8 +194,8 @@ class AudioChat extends Component{
     }
 
     _finishRecording(didSucceed, filePath) {
-        this.setState({ finished: didSucceed });
-        this.props.setAudioPath(filePath);
+        var audio = {path:filePath,duration:this.state.currentTime};
+        this.setState({finished:didSucceed,audio:audio});
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
 
@@ -203,6 +204,7 @@ class AudioChat extends Component{
         super(props);
         this.state={
             accessToken:this.props.accessToken,
+            audio:null,
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
             currentTime: 0.0,
             recording: false,
@@ -211,7 +213,6 @@ class AudioChat extends Component{
             hasPermission: undefined,
         }
     }
-
 
     render(){
 
@@ -243,7 +244,7 @@ class AudioChat extends Component{
                 <View style={{flex:10,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                         height:135,marginTop:10}}>
                     {/*音频描述*/}
-                    <View style={{flex:1}}>
+                    <View style={{flex:1,margin:10}}>
                         <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#f96666',borderRadius:8}}>
                             <View style={{flex:2}}>
                                 <View style={{flex:3,padding:2,margin:4,flexDirection:'row',justifyContent:'center',alignItems:'flex-end'}}>
@@ -282,12 +283,13 @@ class AudioChat extends Component{
                             </View>
                         </View>
 
-                        <View style={{alignItems:'center',marginTop:5}}>
-                            <Text style={{color:'#222'}}>音频描述</Text>
-                        </View>
-
                     </View>
                 </View>
+
+                <TouchableOpacity style={{flex:2,justifyContent: 'center',alignItems: 'center',borderRadius:6,backgroundColor:'#3385ff',margin:30}}
+                                  onPress={()=>{this.sendAudio();}}>
+                    <Text style={{flex:1,color:'#fff',padding:10}}>发送</Text>
+                </TouchableOpacity>
 
                 <View style={{flex:10}}></View>
             </View>

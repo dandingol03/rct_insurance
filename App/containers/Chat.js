@@ -26,6 +26,8 @@ var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import ChatActions from './ChatActions';
+import ChatView from './ChatView';
+
 import CustomView from './chat/CustomView';
 
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
@@ -35,6 +37,8 @@ import {
     uploadAudio,
     uploadVideo
 } from '../action/ServiceActions';
+
+import AudioExample from '../../AudioExample'
 
 class Chat extends Component{
 
@@ -58,22 +62,27 @@ class Chat extends Component{
         }
     }
 
+
+    navigate2AudioExample(audioPath){
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'AudioExample',
+                component: AudioExample,
+                params: {
+                    path:audioPath
+                }
+            })
+        }
+    }
+
+
     //上传音频
     uploadAudio(payload){
 
         var {path}=payload;
-        this.props.dispatch(uploadAudio(path)).then((json)=>{
-            if(json.re==1)
-            {
-                var attachId=json.data;
-                this.sendWav(attachId);
-            }
-        }).catch((e)=>{
-            Alert.alert(
-                'error',
-                e
-            );
-        })
+        var audio = payload;
+        this.props.dispatch(uploadAudio(audio))
     }
 
     sendWav=(attachId) =>{
@@ -144,6 +153,7 @@ class Chat extends Component{
 
     constructor(props) {
         super(props);
+        const { navigator } = this.props;
         this.state = {
             messages: [],
             loadEarlier: true,
@@ -198,7 +208,7 @@ class Chat extends Component{
 
     onSend(messages = []) {
 
-        messages[0].dym=true
+        messages[0].dym=true;
         this.setState((previousState) => {
             return {
                 messages: GiftedChat.append(previousState.messages, messages),
@@ -266,6 +276,7 @@ class Chat extends Component{
             return (
                 <ChatActions
                     {...props}
+                    navigator={this.props.navigator}
                 />
             );
         }
@@ -307,6 +318,14 @@ class Chat extends Component{
         );
     }
 
+    renderChatView(props) {
+        return (
+            <ChatView
+                {...props}
+            />
+        );
+    }
+
     renderFooter(props) {
         if (this.state.typingText!==null) {
             return (
@@ -335,7 +354,8 @@ class Chat extends Component{
 
                   renderActions={this.renderCustomActions}
                   renderBubble={this.renderBubble}
-                  renderCustomView={this.renderCustomView}
+                  //renderCustomView={this.renderChatView}
+                  renderCustomView={this.renderChatView}
                   renderFooter={this.renderFooter}
               />
 

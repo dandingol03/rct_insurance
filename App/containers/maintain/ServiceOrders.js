@@ -395,6 +395,8 @@ class ServiceOrders extends Component{
                         {finishedList}
                     </View>
 
+                    <View style={{height:50}}></View>
+
                 </ScrollableTabView>
 
 

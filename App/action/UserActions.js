@@ -14,14 +14,12 @@ import {
     UPDATE_CERTIFICATE
 } from '../constants/UserConstants';
 
-
 export let updatePersonInfo=(payload)=>{
     return {
         type:UPDATE_PERSON_INFO,
         payload:payload
     }
 }
-
 
 export let updateScore=(payload)=>{
     return {
@@ -114,7 +112,6 @@ export let generateSecurityCode=(payload)=>{
         });
 
 }
-
 
 //用户注册
 export let registerUser=(payload)=>{

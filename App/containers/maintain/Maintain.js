@@ -45,7 +45,7 @@ import {
 } from '../../action/ServiceActions';
 
 import MaintainPlan from '../../components/modal/MaintainPlan';
-
+import AudioExample from '../../../AudioExample'
 
 class Maintain extends Component{
 
@@ -79,6 +79,20 @@ class Maintain extends Component{
                 component: Audio,
                 params: {
 
+                }
+            })
+        }
+    }
+
+    navigate2AudioExample(path)
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'AudioExample',
+                component: AudioExample,
+                params: {
+                    path:path,
                 }
             })
         }
