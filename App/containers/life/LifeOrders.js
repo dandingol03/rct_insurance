@@ -179,12 +179,17 @@ class LifeOrders extends Component{
     }
 
     fetchData(){
-        const { accessToken } = this.props;
-        const {dispatch} = this.props;
-        dispatch(fetchLifeOrders(accessToken,function () {
-            this.setState({doingFetch:false});
-        }.bind(this)));
-        this.state.doingFetch=true;
+
+
+        setTimeout(()=>{
+
+            this.setState({doingFetch:true})
+            this.props.dispatch(fetchLifeOrders()).then(()=> {
+
+                this.setState({doingFetch:false})
+            });
+        },200)
+
     }
 
     constructor(props)
@@ -195,7 +200,6 @@ class LifeOrders extends Component{
             selectedTab:0,
             accessToken: accessToken,
             doingFetch:false,
-
         };
     }
 
@@ -311,6 +315,33 @@ class LifeOrders extends Component{
                 </ScrollableTabView>
 
                 </Image>
+
+
+                {/*loading模态框*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取寿险订单...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
             </View>);
     }
 }

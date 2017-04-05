@@ -74,9 +74,17 @@ var  Login =React.createClass({
                     600,
                 );
                 dispatch(setTimerAction(this.timer));
-                dispatch(loginAction(user.username,user.password,function () {
+
+
+                //make a test
+
+                dispatch(loginAction(user.username,user.password)).then(()=>{
+
                     this.setState({showProgress: false,user:{}});
-                }.bind(this)));
+                }).catch((e)=>{
+                    alert(e);
+                })
+
             }
         }else{}
 
@@ -256,28 +264,33 @@ var  Login =React.createClass({
                             </View>
                         </View>
 
-                        <Modal
-                            animationType={"fade"}
-                            transparent={true}
-                            visible={this.state.showProgress}
-                            onRequestClose={() => {alert("Modal has been closed.")}}
-                        >
-                            <View style={[styles.modalContainer,styles.modalBackgroundStyle]}>
-                                <ActivityIndicator
-                                    animating={true}
-                                    style={[styles.loader, {height: 80}]}
-                                    size="large"
-                                    color="#fff"
-                                />
-                                <View style={{flexDirection:'row',justifyContent:'center'}}>
-                                    <Text style={{color:'#fff',fontSize:18,alignItems:'center'}}>
-                                        登录中
-                                    </Text>
-                                    <Text style={{color:'#fff',fontSize:24,alignItems:'center'}}>
-                                        {this.state.loginDot}
-                                    </Text>
+
+
+                        {/*loading模态框*/}
+                        <Modal animationType={"fade"} transparent={true} visible={this.state.showProgress}>
+
+                            <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                              onPress={()=>{
+                                            //TODO:cancel this behaviour
+
+                                          }}>
+
+                                <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                                    <ActivityIndicator
+                                        animating={true}
+                                        style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                        size="large"
+                                        color="#00BFFF"
+                                    />
+                                    <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                        <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                            登录中...
+                                        </Text>
+
+                                    </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         </Modal>
 
                     </View>

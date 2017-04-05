@@ -16,7 +16,8 @@ import  {
     View,
     Alert,
     ListView,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
@@ -35,7 +36,7 @@ import{
     disableServiceOrdersRefresh,
     enableServiceOrdersClear,
     updateCandidateState,
-    fetchDestinationByPersonId
+    fetchDestinationByPersonId,
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -52,7 +53,7 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import Switch from 'react-native-switch-pro'
-
+import AppendCustomPlace from '../../components/modal/AppendCustomPlace';
 import ServiceOrders from '../service/ServiceOrders';
 
 
@@ -72,7 +73,6 @@ class MapAirportConfirm extends Component{
             navigator.pop();
         }
     }
-
 
     navigate2ServiceOrders()
     {
@@ -604,7 +604,8 @@ class MapAirportConfirm extends Component{
             actionSheetCallbacks:[],
             doingBusiness:false,
             carInfo:carInfo,
-            selectTime:false
+            selectTime:false,
+            modalVisible:false
         }
 
     }
@@ -852,12 +853,16 @@ class MapAirportConfirm extends Component{
                                                                addresses.push(add.title);
                                                             });
                                                             this.setState({addresses:addresses});
-                                                            this.state.actionSheetCallbacks.push(function(index) {
+                                                            this.state.actionSheetCallbacks.push(function(index){
 
-                                                              if(index>=0)
+                                                              if(index==0)
                                                               {
-                                                                var address=json.data[index];
+                                                                this.setState({modalVisible:true})
+                                                              }else if(index>0)
+                                                              {
+                                                                    var address=json.data[index-1];
                                                                 this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
+                                                              }else{
                                                               }
                                                             }.bind(this));
                                                             setTimeout(()=>{
@@ -897,11 +902,37 @@ class MapAirportConfirm extends Component{
                     <ActionSheet
                         ref={(o) => this.ActionSheet = o}
                         title={state.mode=='pickUp'?'请选择接机地点':'请选择送机地点'}
-                        options={['取消'].concat(this.state.addresses)}
+                        options={['取消','其他'].concat(this.state.addresses)}
                         cancelButtonIndex={CANCEL_INDEX}
                         onPress={this._handlePress.bind(this)}
                     />
 
+                    <Modal
+                        animationType={"slide"}
+                        transparent={false}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {alert("Modal has been closed.")}}
+                    >
+
+
+                        <View style={{marginTop: 22}}>
+                            <AppendCustomPlace
+                                onClose={(address)=>{
+                                    if(address)
+                                    {
+                                         this.setState({modalVisible:!this.state.modalVisible,
+                                                carManage:Object.assign(this.state.carManage,{destination:address})});
+
+                                    }else{
+                                         this.setState({modalVisible:!this.state.modalVisible});
+
+                                    }
+                                }}
+                                dispatch={this.props.dispatch}
+                            />
+                        </View>
+
+                    </Modal>
                 </View>
 
 

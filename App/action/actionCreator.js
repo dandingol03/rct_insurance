@@ -16,98 +16,98 @@ export let loginAction=function(username,password,cb){
 
     return dispatch=> {
 
-        dispatch(onOauth());
+        return new Promise((resolve, reject) => {
 
-        var accessToken=null;
-
-        Proxy.postes({
-            url: Config.server + '/login',
-            headers: {
-                'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: "grant_type=password&password=" + password + "&username=" + username
-        }).then((json)=> {
-             accessToken = json.access_token;
-
-            //TODO:make a dispatch
-            dispatch(updateCertificate({username: username, password: password}));
-            //TODO:store
-
-
-            PreferenceStore.put('username',username);
-            PreferenceStore.put('password',password);
-
-
-            return Proxy.postes({
-                url: Config.server + '/svr/request',
+            dispatch(onOauth());
+            var accessToken=null;
+            Proxy.postes({
+                url: Config.server + '/login',
                 headers: {
-                    'Authorization': "Bearer " + accessToken,
-                    'Content-Type': 'application/json'
+                    'Authorization': "Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW",
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: {
-                    request: 'getPersonInfoByPersonId'
+                body: "grant_type=password&password=" + password + "&username=" + username
+            }).then((json)=> {
+                accessToken = json.access_token;
+
+                //TODO:make a dispatch
+                dispatch(updateCertificate({username: username, password: password}));
+                //TODO:store
+
+
+                PreferenceStore.put('username',username);
+                PreferenceStore.put('password',password);
+
+
+                return Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'getPersonInfoByPersonId'
+                    }
+                });
+            }).then((json) => {
+
+                if (json.re == 1) {
+                    dispatch(updatePersonInfo({data: json.data}));
                 }
-            });
-        }).then((json) => {
 
-            if (json.re == 1) {
-                dispatch(updatePersonInfo({data: json.data}));
-            }
+                return Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'fetchScoreBalance'
+                    }
+                });
+            }).then((json)=> {
 
-            return Proxy.postes({
-                url: Config.server + '/svr/request',
-                headers: {
-                    'Authorization': "Bearer " + accessToken,
-                    'Content-Type': 'application/json'
-                },
-                body: {
-                    request: 'fetchScoreBalance'
+                if (json.re == 1) {
+                    dispatch(updateScore({data: json.data}));
                 }
+
+                //update registrationId
+                return updateRegistrationId({accessToken: accessToken});
+            }).then((json)=>{
+
+                //activate tts token
+                return dispatch(activeTTSToken({accessToken:accessToken}));
+            }).then((json)=> {
+
+
+                return Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'getPersonalContactInfo'
+                    }
+                });
+            }).then((json)=>{
+
+
+                //ws端 登录
+                WS.login(username,password,accessToken);
+
+                dispatch(clearTimerAction());
+                dispatch(getAccessToken(accessToken));
+                if (cb)
+                    cb();
+
+
+            }).catch((err)=> {
+                dispatch(getAccessToken(null));
+                dispatch(clearTimerAction());
+                if (cb)
+                    cb();
             });
-        }).then((json)=> {
-
-            if (json.re == 1) {
-                dispatch(updateScore({data: json.data}));
-            }
-
-            //update registrationId
-            return updateRegistrationId({accessToken: accessToken});
-        }).then((json)=>{
-
-            //activate tts token
-            return dispatch(activeTTSToken({accessToken:accessToken}));
-        }).then((json)=> {
-
-
-            return Proxy.postes({
-                url: Config.server + '/svr/request',
-                headers: {
-                    'Authorization': "Bearer " + accessToken,
-                    'Content-Type': 'application/json'
-                },
-                body: {
-                    request: 'getPersonalContactInfo'
-                }
-            });
-        }).then((json)=>{
-
-
-            //ws端 登录
-            WS.login(username,password,accessToken);
-
-
-            dispatch(getAccessToken(accessToken));
-            dispatch(clearTimerAction());
-            if (cb)
-                cb();
-
-
-        }).catch((err)=> {
-            dispatch(getAccessToken(null));
-            dispatch(clearTimerAction());
-            if (cb)
-                cb();
         });
     }
 
