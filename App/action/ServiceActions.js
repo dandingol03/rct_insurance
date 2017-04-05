@@ -96,6 +96,7 @@ export let updateCandidateState=(payload)=>{
 }
 
 
+//生成车险服务订单
 export let generateCarServiceOrder=(payload)=>{
 
     return (dispatch,getState)=>{
@@ -105,6 +106,10 @@ export let generateCarServiceOrder=(payload)=>{
             const state = getState();
             var accessToken = state.user.accessToken;
             var {carManage}=payload;
+            if(carManage.isAgent!=true)
+                carManage.isAgent=0;
+            else
+                carManage.isAgent=1;
 
             Proxy.postes({
                 url: Config.server + '/svr/request',
@@ -449,7 +454,60 @@ let getDataDistribution=(payload)=>{
 
 }
 
+//poi详情搜索
+export let poiSearchByUid=(uid)=>{
 
+        return new Promise((resolve, reject) => {
+            Geolocation.poiSearchByUid(uid).then((json)=>{
+               resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+
+}
+
+
+//周边poi搜索
+export  let localSearch=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var center=state.service.center;
+            var {keyword}=payload;
+            var _center=_.cloneDeep(center);
+            _center.latitude=''+_center.latitude;
+            _center.longitude=''+_center.longitude;
+            Geolocation.localSearchByKeyword(keyword,{lat:_center.latitude,lng:_center.longitude}).then((json)=>{
+                if(json.re==1)
+                {
+                    var statistics={
+                        target:json.data.length,
+                        count:0,
+                        results:[]
+                    };
+                    for(var i=0;i<json.data.length;i++)
+                    {
+                        let poi=json.data[i];
+                        Geolocation.geocode(poi.city,poi.address).then((json)=>{
+                            poi.latitude=parseFloat(json.latitude);
+                            poi.longitude=parseFloat(json.longitude);
+                            statistics.results.push(poi);
+                            statistics.count++;
+                            if(statistics.count==statistics.target)
+                                resolve({re:1,data:statistics.results});
+                        })
+                    }
+                }else{
+                    resolve(json);
+                }
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
 
 
 //搜索维修厂数据
@@ -1127,10 +1185,7 @@ export let fetchServicePersonByDetectUnitId=(payload)=>{
                 }
             }).then((json)=>{
 
-                if(json.re==1)
-                {
-                    resolve(json);
-                }
+                resolve(json);
             }).catch((err)=>{
                reject(err);
             });

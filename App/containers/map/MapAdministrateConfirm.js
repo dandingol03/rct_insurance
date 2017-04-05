@@ -102,9 +102,20 @@ class MapAdministrateConfirm extends Component{
     {
         var {detectUnit}=this.state;
         this.props.dispatch(fetchServicePersonByDetectUnitId({detectUnit:detectUnit})).then((json)=>{
-            var {carManage}=this.state;
-            carManage.servicePerson=json.data;
-            this.setState({carManage:carManage});
+            if(json.re==1)
+            {
+                var {carManage}=this.state;
+                carManage.servicePerson=json.data;
+                this.setState({carManage:carManage});
+            }else{
+
+                Alert.alert('错误',
+                    '该检查公司没有对应的服务人员',
+                    [{text:'确认',onPress:()=>{
+                        this.goBack()
+                    }}])
+
+            }
         });
     }
 
@@ -141,7 +152,7 @@ class MapAdministrateConfirm extends Component{
     generateServiceOrder()
     {
 
-        var {detectUnit,detectUnites,carManage,carInfo,verify}=this.state;
+        var {detectUnit,detectUnites,carManage,carInfo}=this.state;
         carManage.carId=carInfo.carId;
         //审车----选择检测公司
         if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
@@ -164,6 +175,7 @@ class MapAdministrateConfirm extends Component{
                             if(json.re==1)
                             {
 
+                                this.state.doingBusiness=false;
                                 //TODO:make dispatch
                                 this.props.dispatch(selectTab({tabIndex:1}));
                                 this.props.dispatch(enableServiceOrdersRefresh());
@@ -173,9 +185,9 @@ class MapAdministrateConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
-
-
-
+                            }else{
+                                this.state.doingBusiness=false;
+                                Alert.alert('错误',json.data)
                             }
                         })
                         .catch((e)=>{
@@ -185,6 +197,7 @@ class MapAdministrateConfirm extends Component{
 
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -198,7 +211,7 @@ class MapAdministrateConfirm extends Component{
             var personIds = [];
             var {verify}=this.state.carManage;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({carManage:carManage})).then((json)=>{
                 if(json.re==1)
                 {
                     order=json.data;
@@ -236,6 +249,7 @@ class MapAdministrateConfirm extends Component{
                 })
 
             }).catch((e)=>{
+                this.state.doingBusiness=false;
                 Alert.alert(
                     '错误',
                     e
@@ -466,8 +480,6 @@ class MapAdministrateConfirm extends Component{
         var serviceDay=null;
 
 
-
-
         if((date-curDay)>0&&curDay.getDate()!=date.getDate())
         {
             if(carManage.servicePerson!==undefined&& carManage.servicePerson!==null){
@@ -669,7 +681,7 @@ class MapAdministrateConfirm extends Component{
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                 {
                                     state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
-                                        <Text style={{fontSize:13}}>
+                                        <Text style={{fontSize:12}}>
                                             {DateFilter.filter(state.carManage.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
@@ -691,9 +703,9 @@ class MapAdministrateConfirm extends Component{
                                     date={this.state.issueDate}
                                     mode="datetime"
                                     placeholder="点击选择日期"
-                                    format="YYYY-MM-DD hh:mm"
+                                    format="YYYY-MM-DD HH:mm"
                                     minDate={new Date()}
-                                    confirmBtnText="Confirm"
+                                    confirmBtnText="确认"
                                     cancelBtnText="Cancel"
                                     iconSource={null}
                                     onDateChange={(date) => {
@@ -806,7 +818,7 @@ class MapAdministrateConfirm extends Component{
                                                     json.data.map((car)=>{
                                                        cars.push(car.carNum);
                                                     });
-                                                     this.setState({cars:cars});
+                                                    this.setState({cars:cars});
                                                     this.state.actionSheetCallbacks.push(function(index) {
 
                                                       if(index>=0)

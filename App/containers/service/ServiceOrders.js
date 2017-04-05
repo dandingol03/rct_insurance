@@ -10,7 +10,9 @@ import  {
     View,
     Alert,
     ListView,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal,
+    ActivityIndicator
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -55,13 +57,17 @@ class ServiceOrders extends Component{
 
     fetchData()
     {
-        this.props.dispatch(fetchServiceOrders()).then( (json) =>{
-            if(json.re==1)
-            {
-                console.log('...');
-                this.setState({selectedTab:0});
-            }
-        });
+        setTimeout(()=>{
+            this.setState({doingFetch:true})
+            this.props.dispatch(fetchServiceOrders()).then((json) =>{
+                if(json.re==1)
+                {
+                    this.setState({selectedTab:0,doingFetch:false});
+                }else{
+                    this.setState({doingFetch:false})
+                }
+            });
+        },400)
 
     }
 
@@ -245,7 +251,8 @@ class ServiceOrders extends Component{
         this.state={
             personInfo:props.personInfo,
             selectedTab:0,
-            feePayInfo : null
+            feePayInfo : null,
+            doingFetch:false
         }
 
     }
@@ -332,7 +339,8 @@ class ServiceOrders extends Component{
 
 
         }else{
-            this.fetchData();
+            if(this.state.doingFetch==false)
+                this.fetchData();
         }
 
 
@@ -341,104 +349,133 @@ class ServiceOrders extends Component{
             <View style={styles.container}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-                {/*need to finish*/}
-                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                    {/*need to finish*/}
+                    <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:0}]}>
+                        <View style={[styles.row,{marginTop:0}]}>
 
-                        <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
+                            <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
+                                              onPress={()=>{
+                                              this.goBack();
+                                          }}
+                            >
+                                <Icon name="angle-left" size={40} color="#fff"></Icon>
+                            </TouchableOpacity>
+
+                            <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
+                                <Text style={{color:'#fff',fontSize:17}}>服务订单</Text>
+                            </View>
+
+                            <TouchableOpacity style={{width:80,alignItems:'center',padding:10,justifyContent:'center',
+                                borderRadius:8,marginBottom:1}}
+                                              onPress={()=>{
+                                                  if(this.state.doingFetch==false)
+                                                    this.fetchData();
+                                          }}>
+                                <Icon name="refresh" size={20} color="#fff" style={{marginLeft:8}}></Icon>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+
+                    {/*scroll tab pages*/}
+                    <ScrollableTabView
+                        style={{marginTop: 10, }}
+                        initialPage={1}
+                        renderTabBar={() =>  <FacebookTabBar />}>
+                        <View tabLabel="已下单">
+
+                            {/*list header*/}
+                            <View style={{height:25,width:width,paddingLeft:4,paddingRight:4,marginTop:10}}>
+                                <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
+                                        borderTopLeftRadius:4,borderTopRightRadius:4}}>
+
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
+                                    </View>
+
+                                    <View style={{flex:3,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
+                                    </View>
+
+                                    <View style={{width:50}}></View>
+
+                                </View>
+                            </View>
+
+                            {appliedList}
+                        </View>
+                        <View tabLabel="服务中">
+
+                            {/*list header*/}
+                            <View style={{height:25,width:width,paddingLeft:4,paddingRight:4,marginTop:10}}>
+                                <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
+                                        borderTopLeftRadius:4,borderTopRightRadius:4}}>
+
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
+                                    </View>
+
+                                    <View style={{flex:3,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
+                                    </View>
+
+                                    <View style={{width:50}}></View>
+
+                                </View>
+                            </View>
+
+                            {handlingList}
+                        </View>
+
+
+                        <View tabLabel="已完成">
+                            <View style={{height:25,width:width,paddingLeft:12,paddingRight:12,marginTop:10}}>
+                                <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
+                                        borderTopLeftRadius:4,borderTopRightRadius:4}}>
+
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
+                                    </View>
+
+                                    <View style={{flex:2,alignItems:'center',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
+                                    </View>
+
+                                </View>
+                            </View>
+
+                            {finishedList}
+                        </View>
+                    </ScrollableTabView>
+
+                    {/*loading模态框*/}
+                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                        <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
                                           onPress={()=>{
-                                          this.goBack();
-                                      }}
-                        >
-                            <Icon name="angle-left" size={40} color="#fff"></Icon>
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                            <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                                <ActivityIndicator
+                                    animating={true}
+                                    style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                    size="large"
+                                    color="#00BFFF"
+                                />
+                                <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                    <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                        拉取服务订单...
+                                    </Text>
+
+                                </View>
+                            </View>
                         </TouchableOpacity>
-
-                        <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#fff',fontSize:17}}>服务订单</Text>
-                        </View>
-
-                        <View style={{width:80,alignItems:'center',padding:10,justifyContent:'center',
-                            borderRadius:8,marginBottom:1}}>
-                            <Icon name="refresh" size={20} color="#fff" style={{marginLeft:8}}></Icon>
-                        </View>
-
-                    </View>
-                </View>
-
-                {/*scroll tab pages*/}
-                <ScrollableTabView
-                    style={{marginTop: 10, }}
-                    initialPage={1}
-                    renderTabBar={() =>  <FacebookTabBar />}
-                >
-                    <View tabLabel="已下单">
-
-                        {/*list header*/}
-                        <View style={{height:25,width:width,paddingLeft:4,paddingRight:4,marginTop:10}}>
-                            <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
-                                    borderTopLeftRadius:4,borderTopRightRadius:4}}>
-
-                                <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
-                                </View>
-
-                                <View style={{flex:3,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
-                                </View>
-
-                                <View style={{width:50}}></View>
-
-                            </View>
-                        </View>
-
-                        {appliedList}
-                    </View>
-                    <View tabLabel="服务中">
-
-                        {/*list header*/}
-                        <View style={{height:25,width:width,paddingLeft:4,paddingRight:4,marginTop:10}}>
-                            <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
-                                    borderTopLeftRadius:4,borderTopRightRadius:4}}>
-
-                                <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
-                                </View>
-
-                                <View style={{flex:3,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
-                                </View>
-
-                                <View style={{width:50}}></View>
-
-                            </View>
-                        </View>
-
-                        {handlingList}
-                    </View>
-
-
-                    <View tabLabel="已完成">
-                        <View style={{height:25,width:width,paddingLeft:12,paddingRight:12,marginTop:10}}>
-                            <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'rgba(210,210,210,0.4)',padding:6,
-                                    borderTopLeftRadius:4,borderTopRightRadius:4}}>
-
-                                <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>预约时间</Text>
-                                </View>
-
-                                <View style={{flex:2,alignItems:'center',justifyContent:'center'}}>
-                                    <Text style={{color:'rgba(9, 76, 158, 0.8)',fontSize:12,fontWeight:'bold'}}>服务内容</Text>
-                                </View>
-
-                            </View>
-                        </View>
-
-                        {finishedList}
-                    </View>
-
-                </ScrollableTabView>
+                    </Modal>
                 </Image>
+
 
             </View>
         )
@@ -482,7 +519,15 @@ var styles = StyleSheet.create({
     },
     rotate:{
         transform:[{rotate:'12deg'}]
-    }
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 
 
 });
