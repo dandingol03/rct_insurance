@@ -59,15 +59,104 @@ class CarCompany extends Component{
             if(company.checked==true)
                 companys.push(company);
         });
-        if(companys.length>0)
-        {
-            this.navigate2AppendCarInsuranceder(companys);
-        }else{
-            Alert.alert(
-                '错误',
-                '请先勾选公司再点击确认'
-            );
+
+
+        var subCompanys = [];
+
+        var carNumPrefix =this.state.carInfo.carNum.substring(0,2);
+        var carCity2 = null;
+        switch (carNumPrefix) {
+            case '鲁A':
+                carCity2='济南';
+                break;
+            case '鲁B':
+                carCity2='青岛';
+                break;
+            case '鲁C':
+                carCity2='淄博';
+                break;
+            case '鲁D':
+                carCity2='枣庄';
+                break;
+            case '鲁E':
+                carCity2='东营';
+                break;
+            case '鲁F':
+                carCity2='烟台';
+                break;
+            case '鲁G':
+                carCity2='潍坊';
+                break;
+            case '鲁H':
+                carCity2='济宁';
+                break;
+            case '鲁J':
+                carCity2='泰安';
+                break;
+            case '鲁K':
+                carCity2='威海';
+                break;
+            case '鲁L':
+                carNum='日照';
+                break;
+            case '鲁M':
+                carCity2='滨州';
+                break;
+            case '鲁N':
+                carCity2='德州';
+                break;
+            case '鲁P':
+                carCity2='聊城';
+                break;
+            case '鲁Q':
+                carCity2='临沂';
+                break;
+            case '鲁R':
+                carCity2='菏泽';
+                break;
+            case '鲁S':
+                carCity2='莱芜';
+                break;
+            default:
+                break;
         }
+
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.state.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'getSubInsuranceCompany',
+                info: {
+                    companys:companys,
+                    carCity: this.state.carInfo.carCity,
+                    carNum:this.state.carInfo.carNum,
+                    carCity2:carCity2
+                }
+            }
+        },(json)=> {
+            if(json.re==1){
+                subCompanys = json.data;
+
+                if(subCompanys.length>0)
+                {
+                    this.navigate2AppendCarInsuranceder(subCompanys);
+                }else{
+                    Alert.alert(
+                        '错误',
+                        '请先勾选公司再点击确认'
+                    );
+                }
+
+            }
+
+
+
+        }, (err) =>{
+        });
+
     }
 
     renderRow(rowData,sectionId,rowId){
@@ -162,11 +251,7 @@ class CarCompany extends Component{
 
     render(){
 
-
-
-
         var listView=null;
-
 
         if(this.state.companys!==undefined&&this.state.companys!==null)
         {

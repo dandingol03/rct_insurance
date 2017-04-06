@@ -114,7 +114,7 @@ class CarInfoEdit extends Component{
         const {accessToken}=this.props;
         this.state={
             carInfo:props.carInfo,
-            accessToken:accessToken
+            accessToken:accessToken,
         }
     }
 
@@ -127,7 +127,6 @@ class CarInfoEdit extends Component{
 
         return (
             <View style={{flex:1}}>
-
 
                 <View style={[{backgroundColor:'#fff',padding: 4,paddingHorizontal:10,height:40,marginTop:20,justifyContent: 'center',
                         alignItems: 'center',flexDirection:'row'},styles.card]}>
@@ -147,7 +146,6 @@ class CarInfoEdit extends Component{
                     <TouchableOpacity style={{width:60,marginRight:5,padding:6,flexDirection:'row',justifyContent:'center',
                         backgroundColor:'#737373',borderRadius:6}}
                                       onPress={()=>{
-
                                           if(this.props.postCarInfo)
                                           {
                                               this.props.postCarInfo(carInfo)
@@ -177,9 +175,7 @@ class CarInfoEdit extends Component{
 
                 <View style={{flex:1,backgroundColor:'#eee'}}>
 
-
                     <View style={{padding:0}}>
-
 
                         {/*厂牌型号*/}
                         <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff'}]}>
@@ -223,9 +219,13 @@ class CarInfoEdit extends Component{
                                     onChangeText={
                                     (engineNum)=>{
                                         var reg=/[\w|\d]{6}/;
-                                        if(reg.exec(engineNum)!=null)
+                                        if(engineNum=='')
                                         {
-                                            this.setState({carInfo:  Object.assign(carInfo,{engineNum:engineNum})});
+                                             this.setState({carInfo:  Object.assign(carInfo,{engineNum:engineNum,engineNum_error:false})});
+                                        }
+                                        else if(reg.exec(engineNum)!=null)
+                                        {
+                                            this.setState({carInfo:  Object.assign(carInfo,{engineNum:engineNum,engineNum_error:false})});
                                         }else{
                                             //输入格式错误
                                             this.setState({carInfo:  Object.assign(carInfo,{engineNum:engineNum,engineNum_error:true})});
@@ -266,7 +266,7 @@ class CarInfoEdit extends Component{
                                         var reg=/^\w{17}$/;
                                         if(reg.exec(frameNum)!=null)
                                         {
-                                            this.setState({carInfo:  Object.assign(carInfo,{frameNum:frameNum})});
+                                            this.setState({carInfo:  Object.assign(carInfo,{frameNum:frameNum,frameNum_error:false})});
                                         }else{
                                             //输入格式错误
                                             this.setState({carInfo:  Object.assign(carInfo,{frameNum:frameNum,frameNum_error:true})});
@@ -311,12 +311,12 @@ class CarInfoEdit extends Component{
                                 <DatePicker
                                     style={{width:120,marginLeft:0}}
                                     customStyles={{
-                                        placeholderText:{color:'#fff',fontSize:12},
+                                        placeholderText:{color:'#fff',fontSize:12,marginLeft:20},
                                         dateInput:{height:24},
                                         dateTouchBody:{height:22}
                                     }}
                                     mode="date"
-                                    placeholder="选择您的注册日期"
+                                    placeholder="注册日期"
                                     format="YYYY-MM-DD"
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"
@@ -351,12 +351,12 @@ class CarInfoEdit extends Component{
                                 <DatePicker
                                     style={{width:120,marginLeft:0}}
                                     customStyles={{
-                                        placeholderText:{color:'#fff',fontSize:12},
+                                        placeholderText:{color:'#fff',fontSize:12,marginLeft:20},
                                         dateInput:{height:24},
                                         dateTouchBody:{height:22}
                                     }}
                                     mode="date"
-                                    placeholder="选择您的发证日期"
+                                    placeholder="发证日期"
                                     format="YYYY-MM-DD"
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"

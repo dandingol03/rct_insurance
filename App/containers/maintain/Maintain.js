@@ -70,33 +70,6 @@ class Maintain extends Component{
         }
     }
 
-    navigate2Audio()
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'audio',
-                component: Audio,
-                params: {
-
-                }
-            })
-        }
-    }
-
-    navigate2AudioExample(path)
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'AudioExample',
-                component: AudioExample,
-                params: {
-                    path:path,
-                }
-            })
-        }
-    }
 
     navigate2BaiduHome()
     {
@@ -354,15 +327,6 @@ class Maintain extends Component{
 
         } catch (error) {
             console.error(error);
-        }
-    }
-
-    recordAudio(){
-        if(this.state.recording==true){
-            this._stop();
-        }
-        else{
-            this._record();
         }
     }
 
@@ -941,7 +905,6 @@ class Maintain extends Component{
                                                     <Text style={{color:'#222'}}>视频播放</Text>
                                                 </View>
                                         }
-
 
                                     </View>
 

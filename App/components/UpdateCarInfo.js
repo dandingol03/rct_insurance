@@ -203,16 +203,16 @@ class UpdateCarInfo extends Component{
             }else{
                 var {carNum,city}=carInfo;
 
-                var carNumPrefix=carNum.substring(0,2);
-                var prefix=this.getCarNumPrefixByCity(city);
-                if(prefix!=carNumPrefix)
-                {
-                    Alert.alert(
-                        '错误',
-                        '您输入的车牌号前缀不符合您选择的城市'
-                    );
-
-                }else{
+                // var carNumPrefix=carNum.substring(0,2);
+                // var prefix=this.getCarNumPrefixByCity(city);
+                // if(prefix!=carNumPrefix)
+                // {
+                //     Alert.alert(
+                //         '错误',
+                //         '您输入的车牌号前缀不符合您选择的城市'
+                //     );
+                //
+                // }else{
                     if(carInfo.ownerName!==undefined&&carInfo.ownerName!==null&&carInfo.ownername!=='')
                     {
                         if(carInfo.ownerName.toString().length<2)
@@ -352,7 +352,7 @@ class UpdateCarInfo extends Component{
 
 
                     }
-                }
+              //  }
             }
 
 
@@ -435,12 +435,13 @@ class UpdateCarInfo extends Component{
         return carNum;
     }
 
-
-
     cityConfirm(city){
         //TODO:filter the city prefix
         var prefix=this.getCarNumPrefixByCity(city);
-        this.setState({modalVisible: false,city:city,carNum:prefix});
+        var carInfo = this.state.carInfo;
+        carInfo.city = city;
+        carInfo.carCity = city;
+        this.setState({modalVisible: false,carInfo:carInfo});
     }
 
     fetchData(){
@@ -478,6 +479,10 @@ class UpdateCarInfo extends Component{
         this.setState({licenseCard1_img:licenseCard1_img.uri,licenseCard2_img:licenseCard3_img.uri,licenseCard3_img:licenseCard3_img.uri,carInfo:carInfo});
     }
 
+    setCarInfo(carInfo){
+        this.setState({carInfo:carInfo});
+    }
+
     constructor(props)
     {
         super(props);
@@ -486,8 +491,10 @@ class UpdateCarInfo extends Component{
             accessToken: accessToken,
             carInfo:{
                 city:this.props.city!==undefined&&this.props.city!==null?this.props.city:null,
+                carCity:this.props.city!==undefined&&this.props.city!==null?this.props.city:null,
                 carNum:this.props.carNum!==undefined&&this.props.carNum!==null?this.props.carNum:null,
                 issueDate:null,
+                firstRegisterDate:null,
                 factoryNum:null,
                 engineNum:null,
                 frameNum:null,
@@ -509,7 +516,6 @@ class UpdateCarInfo extends Component{
 
 
     render(){
-
 
         var state=this.state;
         var props=this.props;
@@ -587,6 +593,7 @@ class UpdateCarInfo extends Component{
                                 placeholder='请输入您的车牌号'
                                 placeholderTextColor="#aaa"
                                 underlineColorAndroid="transparent"
+                                autoCapitalize="characters"
                             />
                         </View>
                     </View>
@@ -687,7 +694,7 @@ class UpdateCarInfo extends Component{
                         </TouchableOpacity>
                     </View>
 
-
+                    {/*选择城市模态框*/}
                     <Modal
                         animationType={"slide"}
                         transparent={false}
@@ -705,6 +712,7 @@ class UpdateCarInfo extends Component{
                         />
                     </Modal>
 
+                    {/*上传行驶证模态框*/}
                     <Modal
                         animationType={"slide"}
                         transparent={false}
@@ -791,8 +799,9 @@ class UpdateCarInfo extends Component{
 
                         postCarInfo={(carInfo)=>{
                             this.setState({editModalVisible:!this.state.editModalVisible});
-                            this.postCarInfo(carInfo)
+                            this.setState({carInfo:carInfo});
                         }}
+
 
                         carInfo={carInfo}
                         onClose={()=>{

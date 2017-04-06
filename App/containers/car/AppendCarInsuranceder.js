@@ -4,6 +4,7 @@
 import React,{Component} from 'react';
 
 import  {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -55,7 +56,6 @@ class AppendCarInsuranceder extends Component{
             })
         }
     }
-
 
 
     _handlePress(index)
@@ -197,6 +197,7 @@ class AppendCarInsuranceder extends Component{
     }
 
     fetchData(personId){
+        this.setState({doingFetch:true});
         Proxy.post({
             url:Config.server+'/svr/request',
             headers: {
@@ -243,9 +244,8 @@ class AppendCarInsuranceder extends Component{
                             person.abundant=true;
                     })
 
-
                     var relativePersons=json.data;
-                    this.setState({insuranceder: insuranceder, relativePersons: relativePersons});
+                    this.setState({insuranceder: insuranceder, relativePersons: relativePersons,doingFetch:false});
                 }
             }
 
@@ -265,13 +265,15 @@ class AppendCarInsuranceder extends Component{
             selectedTab:0,
             accessToken: accessToken,
             relations:['所有人','管理人','使用人'],
-            actionSheetCallbacks:[]
+            actionSheetCallbacks:[],
+            doingFetch:false,
+            doingUploading:false,
+
         };
     }
 
     getPlaceHolder()
     {
-
         switch(this.state.selectedTab)
         {
             case 0:
@@ -288,7 +290,6 @@ class AppendCarInsuranceder extends Component{
                     </TouchableOpacity>);
                 break;
         }
-
 
     }
 
@@ -311,9 +312,9 @@ class AppendCarInsuranceder extends Component{
                     />
                 </ScrollView>;
         }else{
-            this.fetchData();
+            if(this.state.doingFetch==false)
+               this.fetchData();
         }
-
 
 
         var lineStyle={height:45,flexDirection:'row',padding:4,borderBottomWidth:1,
@@ -474,6 +475,32 @@ class AppendCarInsuranceder extends Component{
                 </ScrollableTabView>
                 </Image>
 
+                {/*loading模态框:拉取关联人*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取关联人...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
             </View>);
     }
 }
@@ -484,6 +511,17 @@ var styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
+    loader: {
+        marginTop: 10
     },
     card: {
         borderBottomWidth: 0,

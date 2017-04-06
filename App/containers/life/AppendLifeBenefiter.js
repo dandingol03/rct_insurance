@@ -4,6 +4,7 @@
 import React,{Component} from 'react';
 
 import  {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -28,6 +29,7 @@ import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 var ImagePicker = require('react-native-image-picker');
+import ActionSheet from 'react-native-actionsheet';
 
 
 class AppendLifeBenefiter extends Component{
@@ -37,6 +39,21 @@ class AppendLifeBenefiter extends Component{
         if(navigator) {
             navigator.pop();
         }
+    }
+
+    _handlePress1(index) {
+
+        if(index!==0){
+            var relationShip = this.state.relationShipButtons[index];
+            var benefiter = {perTypeCode:'I',perName:null,relationShip:null};
+            benefiter.relationShip = relationShip;
+            this.setState({relationShip:relationShip,benefiter:benefiter});
+        }
+
+    }
+
+    show(actionSheet) {
+        this[actionSheet].show();
     }
 
     showImagePicker(perIdCard_img){
@@ -92,8 +109,10 @@ class AppendLifeBenefiter extends Component{
     }
 
     uploadNew(){
+        this.setState({doingUploading:true});
         var benefiter = {perTypeCode:'I'};
         benefiter.perName = this.state.perName;
+        benefiter.relationShip = this.state.relationShip;
         var personId=null;
         var person = null;
         var perIdCard1_img = this.state.perIdCard1_img.uri;
@@ -118,7 +137,7 @@ class AppendLifeBenefiter extends Component{
                     if(json.re==1) {
                         personId = json.data.personId;
                         alert('personId=' + personId);
-                        this.state.benefiter.personId = personId;
+                        benefiter.personId = personId;
                         var suffix = '';
                         var imageType = 'perIdCard';
                         if (perIdCard1_img.indexOf('.jpg') != -1)
@@ -259,7 +278,8 @@ class AppendLifeBenefiter extends Component{
                                             }).then((json)=>{
                                                 if(json.re==1) {
                                                     person=json.data;
-                                                    this.selectInsurer(person);
+                                                    this.selectBenefiter(person);
+                                                    this.setState({doingUploading:false,benefiter:benefiter});
                                                 }
                                             });
                                         }
@@ -309,7 +329,6 @@ class AppendLifeBenefiter extends Component{
         }
     }
 
-
     getPlaceHolder()
     {
         switch(this.state.selectedTab)
@@ -324,7 +343,8 @@ class AppendLifeBenefiter extends Component{
                     <TouchableOpacity style={{width:70,flexDirection:'row',alignItems:'center',borderRadius:6,
                                             backgroundColor:'#ef473a',padding:2,justifyContent:'center'}}
                                       onPress={()=>{
-                            this.uploadNew();
+                            if(this.state.doingUploading==false)
+                                 this.uploadNew();
 
                     }}>
                         <Icon name="hand-pointer-o" size={18} color="#fff"></Icon>
@@ -334,7 +354,6 @@ class AppendLifeBenefiter extends Component{
         }
 
     }
-
 
     renderRow(rowData,sectionId,rowId){
 
@@ -391,8 +410,8 @@ class AppendLifeBenefiter extends Component{
         return row;
     }
 
-
     fetchData(personId){
+        this.setState({doingFetch:true});
         Proxy.post({
             url:Config.server+'/svr/request',
             headers: {
@@ -428,14 +447,13 @@ class AppendLifeBenefiter extends Component{
                     relativePersonss.map(function(person,i) {
                         relativePersons.push(person);
                     });
-                    this.setState({benefiter: benefiter, relativePersons: relativePersons});
+                    this.setState({benefiter: benefiter, relativePersons: relativePersons,doingFetch:false});
                 }
             }
 
         }, (err) =>{
         });
     }
-
 
     constructor(props)
     {
@@ -447,10 +465,14 @@ class AppendLifeBenefiter extends Component{
             selectedTab:0,
             accessToken: accessToken,
             isLegalBenefiter:false,
-            benefiter:{perTypeCode:'I',perName:null},
+            benefiter:{perTypeCode:'I',perName:null,relationShip:null},
+            relationShip:null,
             perName:'',
             perIdCard1_img:null,
             perIdCard2_img:null,
+            doingFetch:false,
+            doingUploading:false,
+            relationShipButtons:['取消','父母','子女','配偶','本人'],
         };
     }
 
@@ -458,6 +480,9 @@ class AppendLifeBenefiter extends Component{
     render(){
 
         var listView=null;
+        const CANCEL_INDEX = 0;
+        const DESTRUCTIVE_INDEX = 1;
+        var relationShipButtons=['取消','父母','子女','配偶','本人'];
 
         if(this.state.relativePersons!==undefined&&this.state.relativePersons!==null)
         {
@@ -473,7 +498,8 @@ class AppendLifeBenefiter extends Component{
                     />
                 </ScrollView>;
         }else{
-            this.fetchData();
+            if(this.state.doingFetch==false)
+                this.fetchData();
         }
 
 
@@ -514,7 +540,7 @@ class AppendLifeBenefiter extends Component{
 
                     <View tabLabel='新建受益人' style={{flex:1}}>
 
-                        {/*输入投保人姓名*/}
+                        {/*输入受益人姓名*/}
                         <View style={{flexDirection:'row', height: 50,borderBottomWidth:1,borderBottomColor:'#aaa',margin:10}}>
                             <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',marginLeft:15}}>
                                 <Text style={{fontSize:15,flex:3,textAlign:'left',color:'#343434'}}>姓名:</Text>
@@ -532,6 +558,40 @@ class AppendLifeBenefiter extends Component{
                                     placeholderTextColor="#aaa"
                                     underlineColorAndroid="transparent"
                                 />
+                            </View>
+                        </View>
+
+                        {/*与受益人关系*/}
+                        <View style={{flexDirection:'row', height: 50,borderBottomWidth:1,borderBottomColor:'#aaa',margin:10}}>
+
+                            <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',marginLeft:15}}>
+                                <Text style={{fontSize:15,flex:3,textAlign:'left',color:'#343434'}}>姓名:</Text>
+                            </View>
+                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
+                                {
+                                    this.state.relationShip==undefined||this.state.relationShip==null?
+                                        <Text style={{fontSize:15,color:"#aaa"}}>选择与保险人关系</Text>:
+                                        <Text style={{fontSize:15}}>{this.state.relationShip}</Text>
+
+                                }
+                            </View>
+                            <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                <TouchableOpacity style={{justifyContent:'center'}}
+                                                  onPress={()=>{ this.show('actionSheet1'); }}>
+                                    <Icon name="chevron-circle-down" color="#aaa" size={30}></Icon>
+                                    <ActionSheet
+                                        ref={(o) => {
+                                        this.actionSheet1 = o;
+                                    }}
+                                        title="请选择与受益人关系"
+                                        options={relationShipButtons}
+                                        cancelButtonIndex={CANCEL_INDEX}
+                                        destructiveButtonIndex={DESTRUCTIVE_INDEX}
+                                        onPress={
+                                        (data)=>{ this._handlePress1(data); }
+                                    }
+                                    />
+                                </TouchableOpacity>
                             </View>
                         </View>
 
@@ -626,11 +686,66 @@ class AppendLifeBenefiter extends Component{
 
                     </View>
 
-
-
                 </ScrollableTabView>
 
                 </Image>
+
+                {/*loading模态框:拉取关联人*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取关联人...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+                {/*loading模态框:新建关联人上传照片*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingUploading}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    保存关联人...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+
+
+
+
             </View>);
     }
 }
@@ -648,6 +763,17 @@ var styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2, },
         shadowOpacity: 0.5,
         shadowRadius: 3,
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
+    loader: {
+        marginTop: 10
     },
     logo:{
         width:width,
