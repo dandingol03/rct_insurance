@@ -167,6 +167,7 @@ class MapDailyConfirm extends Component{
                                 if(this.state.maintain.description.audio)
                                 {
                                     //TODO:上传音频
+
                                 }
 
                                 if(this.state.maintain.destination.video)
