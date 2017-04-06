@@ -247,7 +247,6 @@ class CarInsurance extends Component{
                 );
             }else{
 
-
                 var meals=[];
                 res.data.map(function(meal,i) {
                     var products=[];

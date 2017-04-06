@@ -139,6 +139,12 @@ class VideoPlayer extends Component{
                     }}>
                             <Icon size={26} name="chevron-left" color="#fff" ></Icon>
                         </TouchableOpacity>
+
+                        <TouchableOpacity onPress={()=>{
+                        this.props.onClose();
+                    }}>
+                            <Icon size={26} name="volume-up" color="#fff" ></Icon>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 <TouchableOpacity style={styles.fullScreen} onPress={() => {this.setState({paused: !this.state.paused})}}>
@@ -154,7 +160,7 @@ class VideoPlayer extends Component{
                         onBuffer={this.onBuffer}
                         onProgress={this.onProgress}
                         onEnd={() => { Alert.alert('Done!') }}
-                        repeat={true}
+                        repeat={false}
                     />
                 </TouchableOpacity>
 
@@ -202,12 +208,25 @@ class VideoPlayer extends Component{
         return (
             <View style={styles.container}>
                 <View style={{flex:1}}>
-                    <View style={[{padding: 10,justifyContent: 'flex-start',alignItems: 'center',flexDirection:'row',height:60,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
-                        <TouchableOpacity onPress={()=>{
+                    <View style={[{padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:60,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                        <TouchableOpacity style={{flex:1,justifyContent: 'center',alignItems: 'center',}} onPress={()=>{
                         this.goBack();
                     }}>
                             <Icon size={26} name="chevron-left" color="#fff" ></Icon>
                         </TouchableOpacity>
+
+                        {
+                            this.props.onClose!==undefined&&this.props.onClose!==null?
+                            <TouchableOpacity style={{flex:1,justifyContent: 'center',alignItems: 'center',}}
+                                              onPress={()=>{
+                                                    this.props.onClose();
+                             }}>
+                                <Icon size={26} name="times-circle" color="#fff" ></Icon>
+                            </TouchableOpacity>:null
+
+                        }
+
                     </View>
                 </View>
 
@@ -225,7 +244,7 @@ class VideoPlayer extends Component{
                         onBuffer={this.onBuffer}
                         onProgress={this.onProgress}
                         onEnd={() => {  Alert.alert('Done!'); }}
-                        repeat={true}
+                        repeat={false}
                         controls={this.state.controls}
                     />
                 </View>

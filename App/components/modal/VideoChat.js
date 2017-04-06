@@ -31,6 +31,8 @@ import {
     generateVideoThumbnail
 } from '../../action/ServiceActions';
 
+import Video from 'react-native-video';
+
 class VideoChat extends Component{
 
     close(){
@@ -40,7 +42,16 @@ class VideoChat extends Component{
             this.props.onClose();
         }
         //TODO:关闭时同步数据
+    }
 
+    sendVideo(){
+        if(this.state.video!==undefined&&this.state.video!==null){
+            this.props.setVideo(this.state.video);
+            this.close();
+        }
+        else{
+            alert('您还未录制视频，请先录制再发送');
+        }
     }
 
     //视频录制
@@ -125,7 +136,8 @@ class VideoChat extends Component{
                     this.props.dispatch(generateVideoThumbnail(path)).then((json)=>{
                         var thumbnail=json.data;
                         console.log('this.state.thumbnail==========='+thumbnail);
-                        this.setState({thumbnail:thumbnail});
+                        var video = {path:path,thumbnail:thumbnail}
+                        this.setState({thumbnail:thumbnail,video:video});
                     });
 
                 })
@@ -136,19 +148,20 @@ class VideoChat extends Component{
         }
     }
 
-    stopVideoCapture = () => {
+    stopVideoCapture= () => {
         if (this.camera) {
-            this.camera.stopCapture()
+            this.camera.stopCapture();
             this.setState({
                 isRecording: false,cameraModalVisible:false
             });
         }
-
-        this.props.dispatch(generateVideoThumbnail(this.state.videoPath)).then((json)=>{
-            var thumbnail=json.data;
-            console.log('thumbnail'+thumbnail);
-            this.setState({thumbnail:thumbnail});
-        });
+        //
+        // this.props.dispatch(generateVideoThumbnail(this.state.videoPath)).then((json)=>{
+        //     var thumbnail=json.data;
+        //     console.log('thumbnail'+thumbnail);
+        //     var video = {path:this.state.videoPath,thumbnail:thumbnail}
+        //     this.setState({thumbnail:thumbnail,video:video});
+        // });
     }
 
 
@@ -158,7 +171,10 @@ class VideoChat extends Component{
         const {accessToken}=this.props;
         this.state={
             accessToken:accessToken,
-
+             //video:{path:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/A633F9E2-8CEA-4659-BAD0-2D9DA743FF62.mov',
+             //    thumbnail:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/video-thumbnail.png'},
+            video:null,
+            //videoPath:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/A633F9E2-8CEA-4659-BAD0-2D9DA743FF62.mov',
             videoPath:'',
             cameraModalVisible:false,
             camera: {
@@ -169,9 +185,20 @@ class VideoChat extends Component{
                 flashMode: Camera.constants.FlashMode.auto,
             },
             portrait:null,
+           //thumbnail:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/video-thumbnail.png',
             thumbnail:null,
 
-
+            rate: 1,
+            volume: 1,
+            muted: false,
+            resizeMode: 'cover',
+            duration: 0.0,
+            currentTime: 0.0,
+            controls: false,
+            paused: true,
+            skin: 'custom',
+            isBuffering: false,
+            videoPlayVisible:false,
         }
     }
 
@@ -203,9 +230,8 @@ class VideoChat extends Component{
 
                 <View style={{flex:10,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
                                         height:135,marginTop:10}}>
-
                     {/*视频描述*/}
-                    <View style={{flex:1}}>
+                    <View style={{flex:1,margin:10}}>
 
                         {
                             this.state.thumbnail==null?
@@ -226,7 +252,7 @@ class VideoChat extends Component{
 
                                                 <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
                                                                   onPress={()=>{
-                                                                this.navigate2VideoPlayer(this.state.videoPath);
+                                                                this.setState({videoPlayVisible:true});
                                                               }}>
                                                     <View>
                                                         <Icon name="play-circle" color="#fff" size={35}></Icon>
@@ -255,7 +281,8 @@ class VideoChat extends Component{
 
                                                     <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
                                                                       onPress={()=>{
-                                                                this.navigate2VideoPlayer(this.state.videoPath);
+                                                                this.setState({videoPlayVisible:true});
+
                                                               }}>
                                                         <View>
                                                             <Icon name="play-circle" color="#fff" size={35}></Icon>
@@ -267,25 +294,31 @@ class VideoChat extends Component{
                                     </Image>
                                 </View>
 
-
-
-
-                        }
-
-
-                        {
-                            this.state.videoPath==''?
-                                <View style={{alignItems:'center',marginTop:5}}>
-                                    <Text style={{color:'#222'}}>视频录制</Text>
-                                </View>:
-                                <View style={{alignItems:'center',marginTop:5}}>
-                                    <Text style={{color:'#222'}}>视频播放</Text>
-                                </View>
                         }
 
 
                     </View>
                 </View>
+
+
+                <Modal
+                    animationType={'slide'}
+                    transparent={false}
+                    visible={this.state.videoPlayVisible}
+                    onRequestClose={() => {
+                        this.setState({videoPlayVisible:false});
+                    }}
+                >
+                    <VideoPlayer
+                        onClose={()=>{
+                            this.setState({videoPlayVisible:!this.state.videoPlayVisible});
+                        }}
+
+                        videoPath={this.state.videoPath}
+
+                    />
+                </Modal>
+
 
                 {/*camera part*/}
                 <Modal
@@ -364,6 +397,12 @@ class VideoChat extends Component{
 
                 </Modal>
 
+                <TouchableOpacity style={{flex:2,justifyContent: 'center',alignItems: 'center',borderRadius:6,backgroundColor:'#3385ff',margin:30}}
+                                  onPress={()=>{this.sendVideo();}}>
+                    <Text style={{flex:1,color:'#fff',padding:10}}>发送</Text>
+                </TouchableOpacity>
+
+                <View style={{flex:10}}></View>
 
 
             </View>
@@ -447,6 +486,12 @@ var styles = StyleSheet.create({
         height: 70,
         marginTop: 10,
         borderWidth:2,
+    },
+    mapView: {
+        width: 150,
+        height: 100,
+        borderRadius: 13,
+        margin: 3,
     },
 });
 

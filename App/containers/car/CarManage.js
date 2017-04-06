@@ -153,7 +153,6 @@ class CarManage extends Component{
         {
             if(rowData.checked==true)
             {
-
                 prefer=<CheckBox
                     style={{padding: 2,flex:1,justifyContent:'center',flexDirection:'row',alignItems:'center'}}
                     onClick={()=>{
@@ -214,6 +213,7 @@ class CarManage extends Component{
                     <TouchableOpacity style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',
                                 padding:2,paddingLeft:12}}
                                       onPress={()=>{
+                                         if(rowData.idle==true)
                                            this.navigate2CarInsurance(rowData);
                                       }}>
                         <View>
@@ -349,7 +349,7 @@ class CarManage extends Component{
                     </View>
 
 
-                    {/*body*/}
+                    {/*搜索框*/}
                     <View style={{padding:12,height:55}}>
 
                         <View style={[styles.row,{borderBottomWidth:0}]}>
@@ -374,10 +374,10 @@ class CarManage extends Component{
                             </View>
                         </View>
 
-
                     </View>
 
 
+                    {/*车辆列表*/}
                     <View style={{padding:8,paddingLeft:0,paddingRight:0,height:height-274}}>
                         {listView}
                     </View>
@@ -391,7 +391,6 @@ class CarManage extends Component{
                             <Text style={{color:'#fff',fontSize:15}}>创建新车</Text>
                         </View>
                     </TouchableOpacity>
-
 
 
                     <Modal
@@ -416,13 +415,12 @@ class CarManage extends Component{
                                 (carNum,city)=>{this.navigate2NewCarCreate(carNum,city);}
                             }
                             onRefresh={()=>{
-                                this.refresh();
+                                this.fetchData();
                             }}
                             accessToken={this.props.accessToken}
                         />
 
                     </Modal>
-
 
 
                     {/*loading模态框*/}

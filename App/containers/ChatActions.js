@@ -9,32 +9,101 @@ import {
     View,
     Text,
     Platform,
+    Alert,
 } from 'react-native';
 
 import { connect } from 'react-redux';
 
 import AudioChat from '../components/modal/AudioChat';
 import VideoChat from '../components/modal/VideoChat';
+import {
+    uploadAudio,
+    uploadVideo
+} from '../action/ServiceActions';
 
 class ChatActions extends Component{
 
     constructor(props) {
         super(props);
+        const { navigator } = this.props;
         const { accessToken } = this.props;
 
         this.state = {
             audioChatVisible: false,
             videoChatVisible: false,
-            audioPatn:null,
+            audioPath:null,
             videoPath:null,
+            audioDuration:null,
 
         };
         this.onActionsPress = this.onActionsPress.bind(this);
     }
 
-    setAudioPath(audio){
-        this.setState({audioPath: audio});
+    //上传音频
+    uploadAudio(payload){
+
+        var {path}=payload;
+        var audio = payload;
+        this.props.dispatch(uploadAudio(audio)).then((json)=>{
+            console.log('uploadAudio.json,re======'+json.re);
+            if(json.re==1)
+            {
+                // var attachId=json.data;
+                // this.sendWav(attachId);
+                this.props.onSend({
+                    audio: {
+                        path:audio.path,
+                        duration:audio.duration,
+                    },
+                });
+            }
+        }).catch((e)=>{
+            Alert.alert(
+                'error',
+                e
+            );
+        });
     }
+
+
+    //上传视频
+    uploadVideo(payload){
+
+        var {path}=payload;
+        var video = payload;
+
+        this.props.dispatch(uploadVideo(path)).then((json)=>{
+            if(json.re==1)
+            {
+                // var attachId=json.data;
+                // this.sendVideo(attachId);
+                this.props.onSend({
+                    video: {
+                        path:video.path,
+                        thumbnail:video.thumbnail,
+                    },
+                });
+            }
+        }).catch((e)=>{
+            Alert.alert(
+                'error',
+                e
+            );
+        })
+    }
+
+    setAudio(audio){
+        this.setState({audioPath:audio.path,audioDuration:audio.duration});
+        this.uploadAudio(audio);
+
+    }
+
+    setVideo(video){
+        this.setState({videoPath:video.path});
+        this.uploadVideo(video);
+
+    }
+
 
     setVideoPath(video){
         this.setState({videoPath: video});
@@ -49,7 +118,7 @@ class ChatActions extends Component{
     }
 
     onActionsPress() {
-        const options = ['发送音频', '发送视频','Cancel'];
+        const options = ['发送音频','发送视频','发送位置','Cancel'];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions({
                 options,
@@ -62,6 +131,20 @@ class ChatActions extends Component{
                         break;
                     case 1:
                         this.setVideoChatVisible(true);
+                        break;
+                    case 2:
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                this.props.onSend({
+                                    location: {
+                                        latitude: position.coords.latitude,
+                                        longitude: position.coords.longitude,
+                                    },
+                                });
+                            },
+                            (error) => alert(error.message),
+                            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+                        );
                         break;
                     default:
                 }
@@ -105,8 +188,8 @@ class ChatActions extends Component{
                         }}
                         accessToken={this.props.accessToken}
                         dispatch={this.props.dispatch}
-                        setAudioPath={(audio)=>{
-                            this.setAudioPath(audio);
+                        setAudio={(audio)=>{
+                            this.setAudio(audio);
                         }}
 
                     />
@@ -129,6 +212,10 @@ class ChatActions extends Component{
                         setVideoPath={(video)=>{
                             this.setVideoPath(video);
                         }}
+                        setVideo={(video)=>{
+                            this.setVideo(video);
+                        }}
+                        navigator={this.props.navigator}
 
                     />
                 </Modal>

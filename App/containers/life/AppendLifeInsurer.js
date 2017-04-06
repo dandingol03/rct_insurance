@@ -4,6 +4,7 @@
 import React,{Component} from 'react';
 
 import  {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -77,18 +78,16 @@ class AppendLifeInsurer extends Component{
     }
 
     selectInsurer(insurer){
-
         if(insurer!==undefined&&insurer!==null&&
             insurer.personId!==null&&insurer.personId!==undefined)
         {
             this.props.setLifeInsurer(insurer);
             this.goBack();
         }
-
-
     }
 
     uploadNew(){
+        this.setState({doingUploading:true});
         var insurer = {perTypeCode:'I'};
         insurer.perName = this.state.perName;
         var personId=null;
@@ -114,8 +113,8 @@ class AppendLifeInsurer extends Component{
                 }).then((json)=>{
                     if(json.re==1) {
                         personId = json.data.personId;
+                        insurer.personId = personId;
                         alert('personId=' + personId);
-                        this.state.insurer.personId = personId;
                         var suffix = '';
                         var imageType = 'perIdCard';
                         if (perIdCard1_img.indexOf('.jpg') != -1)
@@ -236,7 +235,6 @@ class AppendLifeInsurer extends Component{
                                                 }
                                             }).then((json)=>{
                                                 alert('insuranceInfoPersonInfo create successfully');
-
                                                 if(json.re==1) {
                                                     return Proxy.postes({
                                                         url:Config.server+'/svr/request',
@@ -257,6 +255,7 @@ class AppendLifeInsurer extends Component{
                                                 if(json.re==1) {
                                                     person=json.data;
                                                     this.selectInsurer(person);
+                                                    this.setState({doingUploading:false,insurer:insurer});
                                                 }
                                             });
                                         }
@@ -306,7 +305,6 @@ class AppendLifeInsurer extends Component{
         }
     }
 
-
     getPlaceHolder()
     {
         switch(this.state.selectedTab)
@@ -321,7 +319,8 @@ class AppendLifeInsurer extends Component{
                     <TouchableOpacity style={{width:70,flexDirection:'row',alignItems:'center',borderRadius:6,
                                             backgroundColor:'#ef473a',padding:2,justifyContent:'center'}}
                         onPress={()=>{
-                            this.uploadNew();
+                             if(this.state.doingUploading==false)
+                                 this.uploadNew();
 
                     }}>
                         <Icon name="hand-pointer-o" size={18} color="#fff"></Icon>
@@ -389,6 +388,8 @@ class AppendLifeInsurer extends Component{
     }
 
     fetchData(personId){
+
+        this.setState({doingFetch:true});
         Proxy.post({
             url:Config.server+'/svr/request',
             headers: {
@@ -417,7 +418,7 @@ class AppendLifeInsurer extends Component{
                         }
                     });
                     var  relativePersons=json.data;
-                    this.setState({insurer:insurer,relativePersons:relativePersons});
+                    this.setState({insurer:insurer,relativePersons:relativePersons,doingFetch:false});
                 }
             }
 
@@ -439,6 +440,9 @@ class AppendLifeInsurer extends Component{
             perIdCard1_img:null,
             perIdCard2_img:null,
 
+            doingFetch:false,
+            doingUploading:false,
+
         };
     }
 
@@ -459,7 +463,8 @@ class AppendLifeInsurer extends Component{
                     />
                 </ScrollView>;
         }else{
-            this.fetchData();
+            if(this.state.doingFetch==false)
+               this.fetchData();
         }
 
         return (
@@ -615,6 +620,60 @@ class AppendLifeInsurer extends Component{
                 </ScrollableTabView>
                 </Image>
 
+                {/*loading模态框:拉取关联人*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    保存关联人...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+
+                {/*loading模态框:新建关联人上传照片*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingUploading}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取关联人...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+
             </View>);
     }
 }
@@ -625,6 +684,17 @@ var styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
+    loader: {
+        marginTop: 10
     },
     card: {
         borderBottomWidth: 0,

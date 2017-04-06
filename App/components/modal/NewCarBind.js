@@ -106,7 +106,7 @@ class NewCarBind extends Component{
     cityConfirm(city){
         //TODO:filter the city prefix
         var prefix=this.getCarNumPrefixByCity(city);
-        this.setState({carNumPrefixModal: false,city:city,carNum:prefix});
+        this.setState({carNumPrefixModal: false,city:city});
     }
 
     bindCar()
@@ -123,17 +123,17 @@ class NewCarBind extends Component{
         {
             if(this.state.carNum.length==7||this.state.carNum.length==8)
             {
-                var prefix=this.getCarNumPrefixByCity(this.state.city);
-                if(prefix!=this.state.carNum.substring(0,2))
-                {
-                    Alert.alert(
-                        '错误',
-                        '您输入的车牌号前缀不对，请重新填入车牌号再点击绑定',
-                        [
-                            {text: 'OK', onPress: () => console.log('OK Pressed!')},
-                        ]
-                    );
-                }else{
+                // var prefix=this.getCarNumPrefixByCity(this.state.city);
+                // if(prefix!=this.state.carNum.substring(0,2))
+                // {
+                //     Alert.alert(
+                //         '错误',
+                //         '您输入的车牌号前缀不对，请重新填入车牌号再点击绑定',
+                //         [
+                //             {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                //         ]
+                //     );
+                // }else{
 
                     //TODO:invoke a request
                     if(this.props.bindNewCar!==undefined&&this.props.bindNewCar!==null)
@@ -209,7 +209,7 @@ class NewCarBind extends Component{
                         }.bind(this));
                     }
 
-                }
+                //}
             }else{
                 Alert.alert(
                     '错误',
@@ -259,8 +259,6 @@ class NewCarBind extends Component{
         });
     }
 
-
-
     constructor(props)
     {
         super(props);
@@ -274,7 +272,6 @@ class NewCarBind extends Component{
     }
 
     render(){
-
 
         return (
             <View style={{flex:1}}>
@@ -303,6 +300,37 @@ class NewCarBind extends Component{
 
 
                 <View style={{flex:2,padding:10}}>
+
+                    <View style={[styles.row,{alignItems:'center'}]}>
+
+                        <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
+                            <Icon name="address-card-o" size={24} color="#343434"/>
+                        </View>
+
+                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
+                            <Text style={{fontSize:16,color:'#343434',backgroundColor:'transparent'}}>车牌:</Text>
+                        </View>
+
+                        <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
+                            <TextInput
+                                style={{borderBottomWidth:0,fontSize:13,flex:1,textAlign:'center',color:'#343434'}}
+                                editable = {true}
+                                height={40}
+                                onChangeText={
+                                    (carNum)=>this.setState({carNum:carNum})
+                                }
+                                value={this.state.carNum}
+                                placeholder='请输入将要创建的车牌号'
+                                placeholderTextColor="#aaa"
+                                underlineColorAndroid="transparent"
+                                autoCapitalize="characters"
+
+                            />
+                        </View>
+
+                        <View style={{flex:1}}></View>
+                    </View>
+
                     <View style={styles.row}>
 
                         <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
@@ -328,36 +356,6 @@ class NewCarBind extends Component{
 
                     </View>
 
-                    <View style={[styles.row,{alignItems:'center'}]}>
-
-                        <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
-                            <Icon name="address-card-o" size={24} color="#343434"/>
-                        </View>
-
-                        <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
-                            <Text style={{fontSize:16,color:'#343434'}}>车牌:</Text>
-                        </View>
-
-                        <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
-                            <TextInput
-                                style={{borderBottomWidth:0,fontSize:13,flex:1,textAlign:'center',color:'#343434'}}
-                                editable = {true}
-                                height={40}
-                                onChangeText={
-
-                                    (carNum)=>this.setState({carNum:  carNum.toUpperCase()})
-                                }
-                                value={this.state.carNum}
-                                placeholder='请输入将要创建的车牌号'
-                                placeholderTextColor="#aaa"
-                                underlineColorAndroid="transparent"
-                                autoCapitalize="characters"
-
-                            />
-                        </View>
-
-                        <View style={{flex:1}}></View>
-                    </View>
 
                     <View style={[styles.row,{borderBottomWidth:0,justifyContent:'center'}]}>
                         <View style={{width:width/3}}>

@@ -1405,7 +1405,7 @@ export let uploadVideo=(payload)=>{
             var state=getState();
             var accessToken=state.user.accessToken;
 
-            var {path}=payload;
+            var path=payload;
             if (path) {
                 // Create the form data object
                 var data = new FormData();

@@ -44,7 +44,7 @@ import {
 } from '../../action/ServiceActions';
 
 import MaintainPlan from '../../components/modal/MaintainPlan';
-
+import AudioExample from '../../../AudioExample'
 
 class Maintain extends Component{
 
@@ -69,19 +69,6 @@ class Maintain extends Component{
         }
     }
 
-    navigate2Audio()
-    {
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'audio',
-                component: Audio,
-                params: {
-
-                }
-            })
-        }
-    }
 
     navigate2BaiduHome()
     {
@@ -337,15 +324,6 @@ class Maintain extends Component{
 
         } catch (error) {
             console.error(error);
-        }
-    }
-
-    recordAudio(){
-        if(this.state.recording==true){
-            this._stop();
-        }
-        else{
-            this._record();
         }
     }
 
@@ -905,7 +883,6 @@ class Maintain extends Component{
                                                     <Text style={{color:'#222'}}>视频播放</Text>
                                                 </View>
                                         }
-
 
                                     </View>
 

@@ -99,9 +99,6 @@ class Register extends Component{
         });
     }
 
-
-
-
     setLifeInsurer(insurer){
         var lifeInsurer = insurer;
         this.setState({insurer:lifeInsurer});
@@ -134,7 +131,6 @@ class Register extends Component{
 
         this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
     }
-
 
     register()
     {

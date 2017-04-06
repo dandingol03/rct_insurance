@@ -11,6 +11,7 @@ import {
     View,
     Text
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class CustomView extends React.Component {
 
@@ -46,6 +47,14 @@ export default class CustomView extends React.Component {
                     />
                 </TouchableOpacity>
             );
+        }
+        else if (this.props.currentMessage.audio)
+        {
+            return (
+                <View style={{borderTopLeftRadius:6,borderTopRightRadius:6,padding:4,justifyContent: 'center',alignItems: 'center',flexDirection:'row',}}>
+                    <Icon name="volume-up" size={25} color="#fff" />
+                    <Text style={{marginLeft:10,color:'#fff'}}>{this.props.currentMessage.audio.duration}s</Text>
+                </View>);
         }
         else if (this.props.currentMessage.dym)
         {
