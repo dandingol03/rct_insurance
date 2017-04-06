@@ -17,22 +17,27 @@ import  {
     Alert,
     ListView,
     TouchableOpacity,
+    Modal,
+    ActivityIndicator
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
-
+import DateFilter from '../../filter/DateFilter';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import{
     fetchServicePersonByUnitId,
     createNewCustomerPlace,
     generateCarServiceOrderFee,
+    generateMaintainServiceOrderFee,
     generateCarServiceOrder,
     selectTab,
     enableServiceOrdersRefresh,
     disableServiceOrdersRefresh,
     enableServiceOrdersClear,
-    updateCandidateState
+    updateCandidateState,
+    fetchDestinationByPersonId,
+    getServicePersonsByUnits
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -49,9 +54,8 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import Switch from 'react-native-switch-pro'
-
 import ServiceOrders from '../service/ServiceOrders';
-
+import AppendCustomPlace from '../../components/modal/AppendCustomPlace';
 
 
 const wholeHeight=Dimensions.get('window').height-80;
@@ -76,12 +80,14 @@ class MapDailyConfirm extends Component{
         const {navigator} =this.props;
 
         if(navigator) {
-            navigator.push({
-                name: 'ServiceOrders',
-                component: ServiceOrders,
-                params: {
-                }
-            })
+            navigator.popToTop();
+
+            // navigator.resetTo({
+            //     name: 'ServiceOrders',
+            //     component: ServiceOrders,
+            //     params: {
+            //     }
+            // })
         }
     }
 
@@ -138,23 +144,22 @@ class MapDailyConfirm extends Component{
 
         //维修,判定serviceType
 
-
-        if(detectUnit!==undefined&&detectUnit!==null)//已选检测公司
+        if(unit!==undefined&&unit!==null)//维修厂
         {
-            carManage.servicePlaceId=detectUnit.placeId;
-            if( carManage.servicePerson.servicePersonId!==undefined&& carManage.servicePerson.servicePersonId!==null){
-                carManage.servicePersonId=carManage.servicePerson.servicePersonId;
+            maintain.servicePlaceId=unit.placeId;
+            if( maintain.servicePerson.servicePersonId!==undefined&& maintain.servicePerson.servicePersonId!==null){
+                maintain.servicePersonId=maintain.servicePerson.servicePersonId;
             }
-            carManage.orderState=2;
+            maintain.orderState=2;
 
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({maintain:maintain})).then((json)=>{
 
                 if(json.re==1)
                 {
-                    var serviceName = '车驾管-审车';
+                    var serviceName = '维修';
                     var order=json.data;
 
-                    this.props.dispatch(sendCustomMessage({order:order,serviceName:serviceName,category:'carManage'}))
+                    this.props.dispatch(sendCustomMessage({order:order,serviceName:serviceName,category:'maintain'}))
                         .then((json)=>{
                             if(json.re==1)
                             {
@@ -168,8 +173,6 @@ class MapDailyConfirm extends Component{
 
                                     this.navigate2ServiceOrders();
                                 }}])
-
-
 
                             }
                         })
@@ -191,7 +194,7 @@ class MapDailyConfirm extends Component{
             var order = null;
             var servicePersonIds = [];
             var personIds = [];
-            this.props.dispatch(generateCarServiceOrder(carManage)).then((json)=>{
+            this.props.dispatch(generateCarServiceOrder({maintain:maintain})).then((json)=>{
                 if(json.re==1)
                 {
                     order=json.data;
@@ -199,40 +202,43 @@ class MapDailyConfirm extends Component{
                     personIds=verify.personIds;
                 }
 
-                this.props.dispatch(updateCandidateState(order,servicePersonIds)).then((json)=>{
+                this.props.dispatch(updateCandidateState({order:order,servicePersonIds:servicePersonIds})).then((json)=>{
                     if(json.re==1)
                     {
-                        var serviceName = '车驾管-审车';
+                        var serviceName = '维修';
                         this.props.dispatch(sendCustomMessage({order:order,servicePersonIds:servicePersonIds,
                             serviceName:serviceName,isBatch:true})).then((json)=>{
 
                             if(json.re==1)
                             {
 
-                                this.state.doingBusiness=false;
-                                this.props.dispatch(selectTab({tabIndex:0}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
+                                    this.props.dispatch(selectTab({tabIndex:0}));
+                                    this.props.dispatch(enableServiceOrdersRefresh());
+                                    this.props.dispatch(enableServiceOrdersClear());
 
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
 
-                                    this.navigate2ServiceOrders();
-                                }}])
+                                        this.navigate2ServiceOrders();
+                                    }}])
+                                },900)
 
                             }
 
-                        }).catch((e)=>{
-
-                        });
+                        })
 
                     }
                 })
 
             }).catch((e)=>{
-                Alert.alert(
-                    '错误',
-                    e
-                );
+                this.setState({doingBusiness:false})
+                setTimeout(()=>{
+                    Alert.alert(
+                        '错误',
+                        e
+                    );
+                },900)
             });
 
 
@@ -242,37 +248,38 @@ class MapDailyConfirm extends Component{
     }
 
     //维修订单提交
-    applyCarServiceOrder()
+    applyMaintainServiceOrder()
     {
         var fee = null;
         var scoreBalance = null;
-        var {carManage}=this.state;
+        var {maintain}=this.state;
 
         this.props.dispatch(fetchScoreBalance()).then((json)=>{
 
             if(json.re==1)
                 scoreBalance=json.data;
-
-            return this.props.dispatch(generateCarServiceOrderFee());
+            return this.props.dispatch(generateMaintainServiceOrderFee({maintain:maintain}));
 
         }).then((json)=>{
 
             if(json.re==1){
                 fee=json.data;
-                this.state.carManage.fee=fee;
+                this.state.maintain.fee=fee;
 
                 if(scoreBalance>=fee){
                     var flag=false;
-                    if(carManage.isAgent==true)
+                    if(maintain.isAgent==true)
                     {
-                        if(carManage.destination==undefined||carManage.destination==null||
-                            carManage.destination.address==undefined||carManage.destination.address==null)
+                        if(maintain.destination==undefined||maintain.destination==null||
+                            maintain.destination.address==undefined||maintain.destination.address==null)
                         {
-                            this.state.doingBusiness=false;
-                            Alert.alert(
-                                '错误',
-                                '请先选择取车地点'
-                            );
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    '请先选择取车地点'
+                                );
+                            },900)
                             return;
                         }
                     }
@@ -280,22 +287,26 @@ class MapDailyConfirm extends Component{
                     this.generateServiceOrder();
 
                 }else{
-                    this.state.doingBusiness=false;
-
-                    Alert.alert(
-                        '错误',
-                        '服务订单的费用超过您现在的积分'
-                    );
+                    this.setState({doingBusiness:false})
+                    setTimeout(()=>{
+                        Alert.alert(
+                            '错误',
+                            '服务订单的费用超过您现在的积分'
+                        );
+                    },900)
                 }
 
 
             }
 
         }).catch((e)=>{
-            Alert.alert(
-                '错误',
-                e
-            );
+            this.setState({doingBusiness:false})
+            setTimeout(()=>{
+                Alert.alert(
+                    '错误',
+                    e
+                );
+            },900)
         });
 
     }
@@ -304,79 +315,158 @@ class MapDailyConfirm extends Component{
     //提交前的预审
     preCheck()
     {
-        //业务不处于进行中
-        if(this.state.doingBusiness==false)
+
+        this.setState({doingBusiness: true});
+
+        if(this.state.maintain.estimateTime)
         {
-            this.state.doingBusiness=true;
-            if(this.state.estimateTime)
+
+            var {unit,units,maintain}=this.state;
+            if(unit!==undefined&&unit!==null)//已选维修厂
             {
-
-                    var {unit,units,carManage}=this.state;
-                    if(unit!==undefined&&unit!==null)//已选检测公司
+                var access = this.verifyServiceSegment(maintain.servicePerson);
+                if (access == false) {
+                    this.setState({doingBusiness:false})
+                    setTimeout(()=>{
+                        Alert.alert(
+                            '错误',
+                            '您所选的预约时间不在工作人员时段,请重新选择'
+                        );
+                    },900)
+                    return ;
+                }else{
+                    if(maintain.destination!==undefined&&maintain.destination!==null&&
+                        (maintain.destination.placeId==undefined||maintain.destination.placeId==null))
                     {
-                        var access = this.verifyServiceSegment(carManage.servicePerson);
-                        if (access == false) {
-                            Alert.alert(
-                                '错误',
-                                '您所选的预约时间不在工作人员时段,请重新选择'
-                            );
-                            return ;
+
+                        //TODO:create a new destination
+                        createNewCustomerPlace({destination:maintain.destination}).then( (json)=> {
+                            if(json.re==1) {
+                                var customerPlace=json.data;
+                                this.state.maintain.destination=customerPlace;
+
+                                this.applyMaintainServiceOrder();
+                            }else if(json.re==2) {
+                                this.setState({doingBusiness:false})
+                            }else{
+                                this.setState({doingBusiness:false})
+                            }
+                        }).catch((err)=>{
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    err
+                                );
+                            },900)
+                        });
+                    }else{
+                        this.applyMaintainServiceOrder();
+                    }
+                }
+
+            }else{
+                //范围选择
+                var servicePersonIds = [];
+                var personIds = [];
+                this.props.dispatch(getServicePersonsByUnits({units:units})).then((json)=>{
+                    if(json.re==1)
+                    {
+                        //寻找符合时间段的服务人员
+                        json.data.map((servicePerson,i)=>{
+                            var flag=this.verifyServiceSegment(servicePerson);
+                            if(flag==false)
+                            {}else{
+                                servicePersonIds.push(servicePerson.servicePersonId);
+                                personIds.push(servicePerson.personId);
+                            }
+                        });
+
+                        if(servicePersonIds.length==0)
+                        {
+
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    '你所选的预约时间没有合适的服务人员,请重新选择'
+                                );
+                            },900)
+                            return {re:-1};
+
                         }else{
-                            if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                            {
+                            this.state.maintain.verify={
+                                servicePersonIds:servicePersonIds,
+                                personIds:personIds
+                            };
+                            return {re:1};
+                        }
 
-                                //TODO:create a new destination
-                                createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                    if(json.re==1) {
-                                        var customerPlace=json.data;
-                                        this.state.carManage.destination=customerPlace;
+                    }
+                }).then((json)=>{
+                    if(json.re==1)
+                    {
+                        if(maintain.destination!==undefined&&maintain.destination!==null&&
+                            (maintain.destination.placeId==undefined||maintain.destination.placeId==null))
+                        {
 
-                                        this.applyCarServiceOrder();
-                                    }else if(json.re==2) {
-                                        this.state.doingBusiness=false;
-                                    }else{
-                                        this.state.doingBusiness=false;
-                                    }
-                                }).catch((err)=>{
+                            //TODO:create a new destination
+                            createNewCustomerPlace({destination:maintain.destination}).then( (json)=> {
+                                if(json.re==1) {
+                                    var customerPlace=json.data;
+                                    this.state.carManage.destination=customerPlace;
+
+                                    this.applyMaintainServiceOrder();
+                                }else if(json.re==2) {
+                                    this.setState({doingBusiness:false})
+                                }else{
+                                    this.setState({doingBusiness:false})
+                                }
+                            }).catch((err)=>{
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
                                     Alert.alert(
                                         '错误',
                                         err
                                     );
-                                });
-                            }else{
-                                this.applyCarServiceOrder();
-                            }
-
-
+                                },900)
+                            });
+                        }else{
+                            this.applyMaintainServiceOrder();
                         }
-
-
-                    }else{
-
                     }
+                }).catch((e)=>{
+                    this.setState({doingBusiness:false})
+                    setTimeout(()=>{
+                        alert(e);
+                    },900)
+
+                })
 
 
-            }else{
+            }
+
+
+        }else{
+            this.setState({doingBusiness:false})
+            setTimeout(()=>{
                 Alert.alert(
                     '错误',
                     '请选择预约时间'
                 );
-            }
-
-        }else{
-
+            },900)
         }
+
+
     }
 
-    verifyDate(_date)
+    verifyDate(date)
     {
 
         this.state.selectTime=true;
 
-        var {carManage}=this.state;
+        var {maintain}=this.state;
 
-        var date=new Date(_date);
         var curDay=new Date();
         var hour=date.getHours();
         var day=date.getDay();
@@ -385,9 +475,9 @@ class MapDailyConfirm extends Component{
 
         if((date-curDay)>0&&curDay.getDate()!=date.getDate())
         {
-            if(carManage.servicePerson!==undefined&& carManage.servicePerson!==null){
+            if(maintain.servicePerson!==undefined&& maintain.servicePerson!==null){
 
-                var servicePerson=carManage.servicePerson;
+                var servicePerson=maintain.servicePerson;
                 var serviceSegments=servicePerson.serviceSegments;
                 serviceHour = parseInt(serviceSegments.substring(1, 2));
                 serviceDay = parseInt(serviceSegments.substring(0, 1));
@@ -431,8 +521,8 @@ class MapDailyConfirm extends Component{
                     if(parseInt(hour/12)==serviceHour-1)
                     {
                         //TODO:make a change
-                        this.state.carManage.estimateTime=date;
-                        this.setState({carManage:this.state.carManage,selectTime:false});
+                        this.state.maintain.estimateTime=date;
+                        this.setState({maintain:this.state.maintain,selectTime:false});
                         return;
                     }else{
                         setTimeout(()=>{
@@ -455,8 +545,8 @@ class MapDailyConfirm extends Component{
 
 
             }else{
-                this.state.carManage.estimateTime=date;
-                this.setState({carManage:this.state.carManage,selectTime:false});
+                this.state.maintain.estimateTime=date;
+                this.setState({maintain:this.state.maintain,selectTime:false});
 
             }
         }else{
@@ -490,6 +580,7 @@ class MapDailyConfirm extends Component{
         }
 
 
+
         this.state={
             contentInfo:contentInfo,
             unit:unit,
@@ -498,7 +589,9 @@ class MapDailyConfirm extends Component{
             doingBusiness:false,
             carInfo:carInfo,
             selectTime:false,
-            maintain:props.maintain!==undefined&&props.maintain!==null?props.maintain:null
+            maintain:props.maintain!==undefined&&props.maintain!==null?props.maintain:null,
+            modalVisible:false
+
         }
 
     }
@@ -523,7 +616,7 @@ class MapDailyConfirm extends Component{
             panelScaffoldedStyle={height:0};
         }
 
-        if(state.unit&&(state.carManage.servicePerson==undefined||state.carManage.servicePerson==null))
+        if(state.unit&&(state.maintain.servicePerson==undefined||state.maintain.servicePerson==null))
         {
 
 
@@ -531,7 +624,7 @@ class MapDailyConfirm extends Component{
 
                 if(json.re==1)
                 {
-                    this.setState({carManage:Object.assign(this.state.carManage,{servicePerson:json.data})});
+                    this.setState({maintain:Object.assign(this.state.maintain,{servicePerson:json.data})});
                 }else{
 
                     Alert.alert(
@@ -560,9 +653,9 @@ class MapDailyConfirm extends Component{
                         backgroundColor: '#F5FCFF',position:'relative',}}>
 
                     {/*header part*/}
-                    <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                    <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                        <View style={[styles.row,{marginTop:20}]}>
+                        <View style={[styles.row,{marginTop:0}]}>
 
                             <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                               onPress={()=>{
@@ -573,7 +666,7 @@ class MapDailyConfirm extends Component{
                             </TouchableOpacity>
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:12}}>
-                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>选择检测公司</Text>
+                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>提交维修订单</Text>
                             </View>
 
                             <View style={{width:80,alignItems:'center',marginRight:20,
@@ -598,9 +691,9 @@ class MapDailyConfirm extends Component{
 
                             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                 {
-                                    state.carManage.estimateTime!==undefined&&state.carManage.estimateTime!==null?
+                                    state.maintain.estimateTime!==undefined&&state.maintain.estimateTime!==null?
                                         <Text style={{fontSize:13}}>
-                                            {state.carManage.estimateTime}
+                                            {DateFilter.filter(state.maintain.estimateTime,'yyyy-mm-dd hh:mm')}
                                         </Text>:
                                         <Text style={{color:'#aaa',fontSize:13}}>
                                             服务时间
@@ -621,16 +714,23 @@ class MapDailyConfirm extends Component{
                                     date={this.state.issueDate}
                                     mode="datetime"
                                     placeholder="点击选择日期"
-                                    format="YYYY-MM-DD hh:mm"
+                                    format="YYYY-MM-DD HH:mm"
                                     minDate={new Date()}
-                                    confirmBtnText="Confirm"
+                                    confirmBtnText="确认"
                                     cancelBtnText="Cancel"
                                     iconSource={null}
                                     onDateChange={(date) => {
-                                        if(state.selectTime==false)
+
+                                         if(state.selectTime==false)
                                         {
                                             //TODO:校检date的合法性
-                                            this.verifyDate(date);
+                                            var reg=/([\d]{4})-([\d]{2})-([\d]{2})\s([\d]{2})\:([\d]{2})/;
+                                            var re=reg.exec(date);
+                                            if(re)
+                                            {
+                                                var tmpDate=new Date(re[1],parseInt(re[2])-1,re[3],re[4],re[5])
+                                                this.verifyDate(tmpDate);
+                                            }
                                         }else{
                                         }
 
@@ -646,57 +746,56 @@ class MapDailyConfirm extends Component{
 
 
                     {/*检测公司*/}
-                    <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                        <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
+                    {
+                        state.unit?
+                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
+                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:5,paddingHorizontal:4}}>
 
 
-                            <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
+                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                <Text style={{color:'#bf530c',fontSize:14}} >
-                                    检测公司
-                                </Text>
-                            </View>
+                                        <Text style={{color:'#bf530c',fontSize:14}} >
+                                            检测公司
+                                        </Text>
+                                    </View>
 
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
 
-                                <Text style={{fontSize:14,color:'#222'}}>
-                                    {state.unit.name}
-                                </Text>
-
-                            </View>
-
-
-
-                        </View>
-                    </View>
+                                        <Text style={{fontSize:14,color:'#222'}}>
+                                            {state.unit.name}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>:null
+                    }
 
                     {/*服务人员*/}
-                    <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
-                        <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
+                    {
+                        state.maintain.servicePerson?
+                            <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
+                                <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:5,paddingHorizontal:4}}>
 
 
-                            <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
+                                    <View style={{width:60,borderRightWidth:1,borderColor:'#bf530c',
                                     justifyContent:'center',alignItems:'center',paddingVertical:5}}>
-                                <Text style={{color:'#bf530c',fontSize:14}} >
-                                    服务人员
-                                </Text>
-                            </View>
+                                        <Text style={{color:'#bf530c',fontSize:14}} >
+                                            服务人员
+                                        </Text>
+                                    </View>
 
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-
-                                {
-                                    state.carManage.servicePerson?
-                                        <Text style={{fontSize:14,color:'#222'}}>
-                                            {state.carManage.servicePerson.perName}
-                                        </Text>:null
-                                }
-
-                            </View>
-
-                        </View>
-                    </View>
+                                    <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+                                        {
+                                            state.maintain.servicePerson?
+                                                <Text style={{fontSize:14,color:'#222'}}>
+                                                    {state.maintain.servicePerson.perName}
+                                                </Text>:null
+                                        }
+                                    </View>
+                                </View>
+                            </View>:null
+                    }
 
 
 
@@ -714,33 +813,22 @@ class MapDailyConfirm extends Component{
                             <Switch
                                 width={42}
                                 height={25}
-                                value={this.state.carManage.isAgent}
+                                value={this.state.maintain.isAgent}
                                 backgroundActive="#f79916"
                                 backgroundInactive="#666"
                                 onSyncPress={value =>{
-                                   this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
+                                   this.setState({maintain:Object.assign(this.state.maintain,{isAgent:value})})
                                 }}/>
 
                         </View>
 
-                        {/*<Switch activeButtonColor="#fff"   inactiveButtonPressedColor="#666" activeBackgroundColor="#bf530c"*/}
-                        {/*onChangeState={(toggle)=>{*/}
-
-                        {/*console.log(toggle);*/}
-                        {/*this.setState({carManage:Object.assign(this.state.carManage,{isAgent:toggle})})*/}
-                        {/*}}*/}
-
-                        {/*onPress={(status)=>{*/}
-                        {/*alert(status);*/}
-                        {/*}}*/}
-                        {/*/>*/}
                     </View>
 
 
 
                     {/*选择取车地点*/}
                     {
-                        this.state.carManage.isAgent==true?
+                        this.state.maintain.isAgent==true?
                             <View style={[styles.row,{padding:2,paddingHorizontal:12,width:width,marginTop:4}]}>
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:'#bf530c',
                             padding:3,paddingHorizontal:4}}>
@@ -753,9 +841,9 @@ class MapDailyConfirm extends Component{
 
                                     <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                         {
-                                            state.carManage.destination?
+                                            state.maintain.destination?
                                                 <Text style={{fontSize:13}}>
-                                                    {state.carManage.destination.title}
+                                                    {state.maintain.destination.title}
                                                 </Text>:
                                                 <Text style={{color:'#aaa',fontSize:13}}>
                                                     地点
@@ -766,19 +854,32 @@ class MapDailyConfirm extends Component{
                                     <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                                       onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
+                                          props.dispatch(fetchDestinationByPersonId()).then((json)=>{
+                                                var addresses=[];
                                                 if(json.data)
                                                 {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
+                                                    json.data.map((add)=>{
+                                                       addresses.push(add.title);
                                                     });
-                                                }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
+                                                    this.setState({addresses:addresses});
+                                                    this.state.actionSheetCallbacks.push(function(index){
 
+                                                      if(index==0)
+                                                      {
+                                                        this.setState({modalVisible:true})
+                                                      }else if(index>0)
+                                                      {
+                                                            var address=json.data[index-1];
+                                                            this.setState({maintain:Object.assign(this.state.maintain,{destination:address})})
+                                                      }else{
+                                                      }
+                                                    }.bind(this));
+
+                                                    setTimeout(()=>{
+                                                        this.ActionSheet.show();
+                                                    },400);
+
+                                                }
                                           });
                                       }}>
                                         <Text style={{color:'#fff',fontSize:12}}>
@@ -797,7 +898,8 @@ class MapDailyConfirm extends Component{
                         <TouchableOpacity style={{width:width*2/3,padding:9,paddingHorizontal:12,backgroundColor:'#11c1f3',
                                 alignItems:'center',borderRadius:6}}
                                           onPress={()=>{
-                                          this.preCheck();
+                                               if(this.state.doingBusiness==false)
+                                                    this.preCheck();
                                       }}
                         >
                             <Text style={{color:'#fff'}}>提交维修订单</Text>
@@ -805,12 +907,64 @@ class MapDailyConfirm extends Component{
 
                     </View>
 
+                    <Modal
+                        animationType={"slide"}
+                        transparent={false}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {alert("Modal has been closed.")}}>
 
+
+                        <View style={{marginTop: 22}}>
+                            <AppendCustomPlace
+                                onClose={(address)=>{
+                                    if(address)
+                                    {
+                                         this.setState({modalVisible:!this.state.modalVisible,
+                                                maintain:Object.assign(this.state.carManage,{destination:address})});
+
+                                    }else{
+                                         this.setState({modalVisible:!this.state.modalVisible});
+
+                                    }
+                                }}
+                                dispatch={this.props.dispatch}
+                            />
+                        </View>
+
+                    </Modal>
+
+
+
+                    {/*loading模态框*/}
+                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingBusiness}>
+
+                        <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                          onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                            <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                                <ActivityIndicator
+                                    animating={true}
+                                    style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                    size="large"
+                                    color="#00BFFF"
+                                />
+                                <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                    <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                        生成维修订单...
+                                    </Text>
+
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
 
                     <ActionSheet
                         ref={(o) => this.ActionSheet = o}
-                        title="选择车辆"
-                        options={['取消'].concat(this.state.cars)}
+                        title="选择地点"
+                        options={['取消','其他'].concat(this.state.addresses)}
                         cancelButtonIndex={CANCEL_INDEX}
                         onPress={this._handlePress.bind(this)}
                     />
@@ -882,7 +1036,15 @@ var styles = StyleSheet.create({
     appleSwitch: {
         marginTop: 0,
         marginBottom: 0,
-    }
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 
 
 });

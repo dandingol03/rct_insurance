@@ -32,7 +32,8 @@ import{
     disableServiceOrdersRefresh,
     enableServiceOrdersClear,
     updateCandidateState,
-    getServicePersonsByDetectUnites
+    getServicePersonsByDetectUnites,
+    fetchDestinationByPersonId
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -49,8 +50,8 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import Switch from 'react-native-switch-pro'
+import AppendCustomPlace from '../../components/modal/AppendCustomPlace';
 
-import ServiceOrders from '../service/ServiceOrders';
 
 
 
@@ -341,8 +342,6 @@ class MapAdministrateConfirm extends Component{
     //提交前的预审
     preCheck()
     {
-
-
         //业务不处于进行中
         this.setState({doingBusiness: true});
 
@@ -630,7 +629,8 @@ class MapAdministrateConfirm extends Component{
             actionSheetCallbacks:[],
             doingBusiness:false,
             carInfo:carInfo,
-            selectTime:false
+            selectTime:false,
+            modalVisible:false
         }
 
     }
@@ -923,18 +923,30 @@ class MapAdministrateConfirm extends Component{
                                     <TouchableOpacity style={{width:100,justifyContent:'center',alignItems:'center',padding:7,
                                     paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}
                                                       onPress={()=>{
-                                          props.dispatch(fetchCarsNotInDetectState()).then((json)=>{
-                                                var cars=[];
+                                          props.dispatch(fetchDestinationByPersonId()).then((json)=>{
+                                                var addresses=[];
                                                 if(json.data)
                                                 {
-                                                    json.data.map((car)=>{
-                                                       cars.push(car.carNum);
+                                                    json.data.map((add)=>{
+                                                       addresses.push(add.title);
                                                     });
+                                                    this.setState({addresses:addresses});
+                                                    this.state.actionSheetCallbacks.push(function(index){
+
+                                                      if(index==0)
+                                                      {
+                                                        this.setState({modalVisible:true})
+                                                      }else if(index>0)
+                                                      {
+                                                            var address=json.data[index-1];
+                                                            this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
+                                                      }else{
+                                                      }
+                                                    }.bind(this));
+                                                    setTimeout(()=>{
+                                                        this.ActionSheet.show();
+                                                    },400);
                                                 }
-                                                this.setState({cars:cars});
-                                                setTimeout(()=>{
-                                                    this.ActionSheet.show();
-                                                },400);
 
                                           });
                                       }}>
@@ -962,6 +974,35 @@ class MapAdministrateConfirm extends Component{
                         </TouchableOpacity>
 
                     </View>
+
+
+
+                    <Modal
+                        animationType={"slide"}
+                        transparent={false}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {alert("Modal has been closed.")}}
+                    >
+
+
+                        <View style={{marginTop: 22}}>
+                            <AppendCustomPlace
+                                onClose={(address)=>{
+                                    if(address)
+                                    {
+                                         this.setState({modalVisible:!this.state.modalVisible,
+                                                carManage:Object.assign(this.state.carManage,{destination:address})});
+
+                                    }else{
+                                         this.setState({modalVisible:!this.state.modalVisible});
+
+                                    }
+                                }}
+                                dispatch={this.props.dispatch}
+                            />
+                        </View>
+
+                    </Modal>
 
 
                     {/*loading模态框*/}
@@ -992,8 +1033,8 @@ class MapAdministrateConfirm extends Component{
 
                     <ActionSheet
                         ref={(o) => this.ActionSheet = o}
-                        title="选择车辆"
-                        options={['取消'].concat(this.state.cars)}
+                        title="选择地点"
+                        options={['取消','其他'].concat(this.state.addresses)}
                         cancelButtonIndex={CANCEL_INDEX}
                         onPress={this._handlePress.bind(this)}
                     />

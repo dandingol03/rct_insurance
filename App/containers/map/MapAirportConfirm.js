@@ -897,7 +897,7 @@ class MapAirportConfirm extends Component{
                                                               }else if(index>0)
                                                               {
                                                                     var address=json.data[index-1];
-                                                                this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
+                                                                    this.setState({carManage:Object.assign(this.state.carManage,{destination:address})})
                                                               }else{
                                                               }
                                                             }.bind(this));
