@@ -163,8 +163,13 @@ class MapDailyConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
+                                //TODO:上传音频材料、视频材料
+                                //if(this.state.maintain.description)
 
-                                //TODO:make dispatch
+
+
+
+
                                 this.props.dispatch(selectTab({tabIndex:1}));
                                 this.props.dispatch(enableServiceOrdersRefresh());
                                 this.props.dispatch(enableServiceOrdersClear());
@@ -176,9 +181,6 @@ class MapDailyConfirm extends Component{
 
                             }
                         })
-                        .catch((e)=>{
-
-                        });
                 }
 
 

@@ -768,13 +768,12 @@ class Maintain extends Component{
                                     <Text>文本描述</Text>
                                     <TextInput
                                         style={{height:100,borderWidth:1,padding:8,fontSize:13,marginTop:5}}
-                                        onChangeText={(description) =>
+                                        onChangeText={(text) =>
                                         {
-                                           this.state.description=description;
-                                           var description =  this.description;
-                                           this.setState({description:description});
+
+                                           this.setState({description:Object.assign(this.state.description,{text:text})});
                                         }}
-                                        value={this.state.description}
+                                        value={this.state.description.text}
                                         placeholder='请对故障进行文本描述...'
                                         placeholderTextColor="#aaa"
                                         underlineColorAndroid="transparent"
