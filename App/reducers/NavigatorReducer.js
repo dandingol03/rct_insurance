@@ -1,3 +1,6 @@
+/**
+ * Created by danding on 17/4/6.
+ */
 import {
     PAGE_REGISTER,
     PAGE_LOGIN,
@@ -7,7 +10,6 @@ import {
 } from '../constants/PageStateConstants';
 
 const initialState = {
-    state:PAGE_LOGIN,
     navigators:{
         home:null,
         my:null,
@@ -15,13 +17,17 @@ const initialState = {
     }
 };
 
-let pageState = (state = initialState, action) => {
+let navigatorState = (state = initialState, action) => {
 
     switch (action.type) {
 
-        case UPDATE_PAGE_STATE:
+
+        case UPDATE_NAVIGATOR:
+            var {route,navigator}=action.payload;
+            var _navigators=state.navigators;
+            _navigators[route]=navigator;
             return Object.assign({}, state, {
-                state:action.payload.state
+                navigators:_navigators
             })
             break;
         default:
@@ -29,4 +35,4 @@ let pageState = (state = initialState, action) => {
     }
 }
 
-export default pageState;
+export default navigatorState;

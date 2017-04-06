@@ -5,7 +5,8 @@ var Proxy = require('../proxy/Proxy');
 import {
     PAGE_LOGIN,
     PAGE_REGISTER,
-    UPDATE_PAGE_STATE
+    UPDATE_PAGE_STATE,
+    UPDATE_NAVIGATOR
 } from '../constants/PageStateConstants';
 
 
@@ -19,5 +20,4 @@ export let updatePageState=(payload)=>{
         });
     }
 }
-
 

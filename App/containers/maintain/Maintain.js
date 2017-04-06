@@ -2,7 +2,6 @@
  * Created by dingyiming on 2017/2/15.
  */
 import React,{Component} from 'react';
-
 import  {
     AppRegistry,
     StyleSheet,
@@ -19,7 +18,7 @@ import  {
     Platform,
     PermissionsAndroid,
 } from 'react-native';
-
+import _ from 'lodash'
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -207,14 +206,13 @@ class Maintain extends Component{
             this.camera.capture({mode: Camera.constants.CaptureMode.video})
                 .then((data) => {
                     var path=data.path;
-                    console.log(data);
                     this.state.videoPath=path;
-                    console.log('video path='+path);
-                    this.setState({cameraModalVisible:false,videoPath:path});
+                    var _maintain=_.cloneDeep(this.state.maintain);
+                    _maintain.description.video=path;
+                    this.setState({cameraModalVisible:false,videoPath:path,maintain:_maintain});
 
                     this.props.dispatch(generateVideoThumbnail(path)).then((json)=>{
                         var thumbnail=json.data;
-                        console.log('this.state.thumbnail==========='+thumbnail);
                         this.setState({thumbnail:thumbnail});
                     });
 
@@ -236,7 +234,6 @@ class Maintain extends Component{
 
         this.props.dispatch(generateVideoThumbnail(this.state.videoPath)).then((json)=>{
             var thumbnail=json.data;
-            console.log('thumbnail'+thumbnail);
             this.setState({thumbnail:thumbnail});
         });
     }
@@ -382,6 +379,7 @@ class Maintain extends Component{
 
         try {
             const filePath = await AudioRecorder.startRecording();
+
         } catch (error) {
             console.error(error);
         }
@@ -389,6 +387,9 @@ class Maintain extends Component{
 
     _finishRecording(didSucceed, filePath) {
         this.setState({ finished: didSucceed });
+        var _maintain=_.cloneDeep(this.state.maintain);
+        _maintain.description.audio=this.state.audioPath
+        this.setState({maintain:_maintain});
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
 
@@ -526,9 +527,8 @@ class Maintain extends Component{
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}}
                                                               onPress={()=>{
-                                             dailyChecked = this.state.dailyChecked;
-                                             dailyChecked[0] = !this.state.dailyChecked[0];
-                                             this.setState({dailyChecked:dailyChecked});
+                                                                  this.state.dailyChecked[0] = !this.state.dailyChecked[0];
+                                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                             }}>
 
                                                     <View style={{flex:1,alignItems:'center'}}>
@@ -542,10 +542,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[1] = !this.state.dailyChecked[1];
-
-                                                this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[1] = !this.state.dailyChecked[1];
+                                                this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain2.png')} style={{flex:5}}/>
@@ -558,10 +556,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                     dailyChecked = this.state.dailyChecked;
-                                                     dailyChecked[2] = !this.state.dailyChecked[2];
-
-                                                     this.setState({dailyChecked:dailyChecked});
+                                                     this.state.dailyChecked[2] = !this.state.dailyChecked[2];
+                                                     this.setState({dailyChecked:this.state.dailyChecked});
                                                  }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain3.png')} style={{flex:5}}/>
@@ -576,10 +572,8 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[3] = !this.state.dailyChecked[3];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[3] = !this.state.dailyChecked[3];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain4.png')} style={{flex:4}}/>
@@ -592,10 +586,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[4] = !this.state.dailyChecked[4];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[4] = !this.state.dailyChecked[4];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain5.png')} style={{flex:4}}/>
@@ -608,10 +600,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[5] = !this.state.dailyChecked[5];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[5] = !this.state.dailyChecked[5];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain6.png')} style={{flex:4}}/>
@@ -626,10 +616,8 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[6] = !this.state.dailyChecked[6];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[6] = !this.state.dailyChecked[6];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                             <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain7.png')} style={{flex:4}}/>
@@ -642,10 +630,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[7] = !this.state.dailyChecked[7];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[7] = !this.state.dailyChecked[7];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain8.png')} style={{flex:4}}/>
@@ -658,10 +644,8 @@ class Maintain extends Component{
                                             </TouchableOpacity>
 
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[8] = !this.state.dailyChecked[8];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[8] = !this.state.dailyChecked[8];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain9.png')} style={{flex:4}}/>
@@ -676,10 +660,8 @@ class Maintain extends Component{
 
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
-                                                 dailyChecked = this.state.dailyChecked;
-                                                 dailyChecked[9] = !this.state.dailyChecked[9];
-
-                                                 this.setState({dailyChecked:dailyChecked});
+                                                 this.state.dailyChecked[9] = !this.state.dailyChecked[9];
+                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
                                                         <Image resizeMode="contain" source={require('../../img/maintain10.png')} style={{flex:4}}/>
@@ -765,13 +747,12 @@ class Maintain extends Component{
                                     <Text>文本描述</Text>
                                     <TextInput
                                         style={{height:100,borderWidth:1,padding:8,fontSize:13,marginTop:5}}
-                                        onChangeText={(description) =>
+                                        onChangeText={(text) =>
                                         {
-                                           this.state.description=description;
-                                           var description =  this.description;
-                                           this.setState({description:description});
+
+                                           this.setState({description:Object.assign(this.state.description,{text:text})});
                                         }}
-                                        value={this.state.description}
+                                        value={this.state.description.text}
                                         placeholder='请对故障进行文本描述...'
                                         placeholderTextColor="#aaa"
                                         underlineColorAndroid="transparent"
@@ -808,10 +789,10 @@ class Maintain extends Component{
                                                 </TouchableOpacity>
 
                                                 <TouchableOpacity  onPress={
-                                                ()=>{
-                                                    this._play();
-                                                }
-                                            }>
+                                                    ()=>{
+                                                        this._play();
+                                                    }
+                                                }>
                                                     <View>
                                                         <Image resizeMode="cover" source={require('../../img/playAudio@2x.png')}></Image>
                                                     </View>
@@ -849,8 +830,8 @@ class Maintain extends Component{
 
                                                                 <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
                                                                                   onPress={()=>{
-                                                                this.navigate2VideoPlayer(this.state.videoPath);
-                                                              }}>
+                                                                    this.navigate2VideoPlayer(this.state.videoPath);
+                                                                 }}>
                                                                     <View>
                                                                         <Icon name="play-circle" color="#fff" size={35}></Icon>
                                                                     </View>
@@ -862,7 +843,7 @@ class Maintain extends Component{
                                                 <View>
                                                     <Image resizeMode="stretch" source={{uri:this.state.thumbnail}}
                                                            style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                                borderRadius:8,height:110,}}>
+                                                        borderRadius:8,height:110,}}>
                                                     <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
                                                         {
@@ -889,9 +870,6 @@ class Maintain extends Component{
                                                     </View>
                                                     </Image>
                                                 </View>
-
-
-
 
                                         }
 

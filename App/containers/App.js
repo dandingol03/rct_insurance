@@ -44,6 +44,10 @@ import {
 
 } from '../constants/PageStateConstants';
 
+import {
+    updateNavigator
+} from '../action/NavigatorAction';
+
 var WeChat = require('react-native-wechat');
 import ws from '../components/utils/WebSocket';
 
@@ -294,6 +298,9 @@ class App extends React.Component {
                           }}
                         renderScene={(route, navigator) => {
                             let Component = route.component;
+
+                                //this.props.dispatch(updateNavigator({route:route.name,navigator:navigator}))
+
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
 

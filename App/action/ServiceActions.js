@@ -105,11 +105,70 @@ export let generateCarServiceOrder=(payload)=>{
 
             const state = getState();
             var accessToken = state.user.accessToken;
-            var {carManage}=payload;
+            var {maintain,carManage}=payload;
             if(carManage.isAgent!=true)
                 carManage.isAgent=0;
             else
                 carManage.isAgent=1;
+
+
+            if(maintain)
+            {
+                //维修
+                Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'generateCarServiceOrder',
+                        info:{
+                            maintain:maintain,
+                            serviceType:maintain.serviceType,
+                            subServiceTypes:maintain.subServiceTypes
+                        }
+                    }
+                }).then((json)=>{
+                    resolve(json)
+                }).catch((e)=>{
+                    reject(e);
+                })
+            }else{
+                //车驾管
+                Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'generateCarServiceOrder',
+                        info:{
+                            carManage:carManage,
+                            serviceType:carManage.serviceType
+                        }
+                    }
+                }).then((json)=>{
+                    resolve(json)
+                }).catch((e)=>{
+                    reject(e);
+                })
+            }
+
+
+        });
+    }
+}
+
+//生成维修服务的订单费用
+export let generateMaintainServiceOrderFee=(payload)=>{
+    return (dispatch,getState)=>{
+        return new Promise((resolve, reject) => {
+
+            const state = getState();
+            var accessToken = state.user.accessToken;
+            var {maintain}=payload;
 
             Proxy.postes({
                 url: Config.server + '/svr/request',
@@ -118,10 +177,10 @@ export let generateCarServiceOrder=(payload)=>{
                     'Content-Type': 'application/json'
                 },
                 body: {
-                    request: 'generateCarServiceOrder',
+                    request: 'generateCarServiceOrderFee',
                     info:{
-                        carManage:carManage,
-                        serviceType:carManage.serviceType
+                        serviceType:maintain.serviceType,
+                        subServiceTypes:maintain.subServiceTypes
                     }
                 }
             }).then((json)=>{
@@ -135,6 +194,7 @@ export let generateCarServiceOrder=(payload)=>{
 }
 
 
+//生成增值服务的订单费用
 export let generateCarServiceOrderFee=(payload)=>{
 
     return (dispatch,getState)=>{

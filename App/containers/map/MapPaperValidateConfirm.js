@@ -17,6 +17,8 @@ import  {
     Alert,
     ListView,
     TouchableOpacity,
+    ActivityIndicator,
+    Modal
 } from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
@@ -77,12 +79,13 @@ class MapPaperValidateConfirm extends Component{
         const {navigator} =this.props;
 
         if(navigator) {
-            navigator.push({
-                name: 'ServiceOrders',
-                component: ServiceOrders,
-                params: {
-                }
-            })
+            navigator.popToTop();
+            // navigator.push({
+            //     name: 'ServiceOrders',
+            //     component: ServiceOrders,
+            //     params: {
+            //     }
+            // })
         }
     }
 
@@ -176,33 +179,40 @@ class MapPaperValidateConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
-                                this.state.doingBusiness=false;
-                                //TODO:make dispatch
-                                this.props.dispatch(selectTab({tabIndex:1}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
+                                    this.props.dispatch(selectTab({tabIndex:1}));
+                                    this.props.dispatch(enableServiceOrdersRefresh());
+                                    this.props.dispatch(enableServiceOrdersClear());
 
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功,请到我的界面进行查看',[{text:'确认',onPress:()=>{
 
-                                    this.navigate2ServiceOrders();
-                                }}])
+                                        this.navigate2ServiceOrders();
+                                    }}])
+                                },900)
+
                             }else{
-                                this.state.doingBusiness=false;
-                                Alert.alert('错误',json.data)
+                                this.setState({doingBusiness:false})
+                                setTimeout(()=>{
+                                    Alert.alert('错误',json.data)
+                                },900)
+
                             }
                         })
                         .catch((e)=>{
-                            Alert.alert('错误',e)
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert('错误',e)
+                            },900)
                         });
                 }
 
 
             }).catch((e)=>{
                 this.state.doingBusiness=false;
-                Alert.alert(
-                    '错误',
-                    e
-                );
+                setTimeout(()=>{
+                    Alert.alert('错误',e)
+                },900)
             })
 
         }
@@ -236,11 +246,13 @@ class MapPaperValidateConfirm extends Component{
                         if(carManage.destination==undefined||carManage.destination==null||
                             carManage.destination.address==undefined||carManage.destination.address==null)
                         {
-                            this.state.doingBusiness=false;
-                            Alert.alert(
-                                '错误',
-                                '请先选择取车地点'
-                            );
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    '请先选择取车地点'
+                                );
+                            },900)
                             return;
                         }
                     }
@@ -248,11 +260,13 @@ class MapPaperValidateConfirm extends Component{
                     this.generateServiceOrder();
 
                 }else{
-                    this.state.doingBusiness=false;
-                    Alert.alert(
-                        '错误',
-                        '服务订单的费用超过您现在的积分'
-                    );
+                    this.setState({doingBusiness:false})
+                    setTimeout(()=>{
+                        Alert.alert(
+                            '错误',
+                            '服务订单的费用超过您现在的积分'
+                        );
+                    },900)
                 }
 
 
@@ -271,129 +285,56 @@ class MapPaperValidateConfirm extends Component{
     //提交前的预审
     preCheck()
     {
-        //业务不处于进行中
-        if(this.state.doingBusiness==false)
+
+        this.setState({doingBusiness: true});
+
+        if(this.state.carManage.estimateTime)
         {
-            this.state.doingBusiness=true;
-            if(this.state.carManage.estimateTime)
+
+            var {place,places,carManage}=this.state;
+            if(place!==undefined&&place!==null)//已选车管所
             {
-
-                    var {place,places,carManage}=this.state;
-                    if(place!==undefined&&place!==null)//已选车管所
+                    if(carManage.destination!==undefined&&carManage.destination!==null&&
+                        (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
                     {
-                            if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                            {
 
-                                //TODO:create a new destination
-                                createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                    if(json.re==1) {
-                                        var customerPlace=json.data;
-                                        this.state.carManage.destination=customerPlace;
+                        //TODO:create a new destination
+                        createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
+                            if(json.re==1) {
+                                var customerPlace=json.data;
+                                this.state.carManage.destination=customerPlace;
 
-                                        this.applyCarServiceOrder();
-                                    }else if(json.re==2) {
-                                        this.state.doingBusiness=false;
-                                    }else{
-                                        this.state.doingBusiness=false;
-                                    }
-                                }).catch((err)=>{
-                                    this.state.doingBusiness=false;
-                                    Alert.alert(
-                                        '错误',
-                                        err
-                                    );
-                                });
-                            }else{
                                 this.applyCarServiceOrder();
+                            }else if(json.re==2) {
+                                this.setState({doingBusiness:false})
+                            }else{
+                                this.setState({doingBusiness:false})
                             }
-
-
-
-
+                        }).catch((err)=>{
+                            this.setState({doingBusiness:false})
+                            setTimeout(()=>{
+                                Alert.alert(
+                                    '错误',
+                                    err
+                                );
+                            },900)
+                        });
                     }else{
-                        //范围选择
-                        var servicePersonIds = [];
-                        var personIds = [];
-                        this.props.dispatch(getServicePersonsByPlaces({places:places}))
-                            .then((json)=>{
-                                if(json.re==1)
-                                {
-                                    //寻找符合时间段的服务人员
-                                    json.data.map(function(servicePerson,i) {
-                                        var flag=this.verifyServiceSegment(servicePerson);
-                                        if(flag==false)
-                                        {}else{
-                                            servicePersonIds.push(servicePerson.servicePersonId);
-                                            personIds.push(servicePerson.personId);
-                                        }
-                                    });
-
-
-                                    if(servicePersonIds.length==0)
-                                    {
-
-                                        Alert.alert(
-                                            '错误',
-                                            '你所选的预约时间没有合适的服务人员,请重新选择'
-                                        );
-                                        return {re:-1};
-
-                                    }else {
-                                        this.state.carManage.verify={
-                                            servicePersonIds:servicePersonIds,
-                                            personIds:personIds
-                                        };
-                                        return {re:1};
-                                    }
-                                }
-                            }).then((json)=>{
-                            if(json.re==1)
-                            {
-                                if(carManage.destination!==undefined&&carManage.destination!==null&&
-                                    (carManage.destination.placeId==undefined||carManage.destination.placeId==null))
-                                {
-
-                                    //TODO:create a new destination
-                                    createNewCustomerPlace({destination:carManage.destination}).then( (json)=> {
-                                        if(json.re==1) {
-                                            var customerPlace=json.data;
-                                            this.state.carManage.destination=customerPlace;
-
-                                            this.applyCarServiceOrder();
-                                        }else if(json.re==2) {
-                                            this.state.doingBusiness=false;
-                                        }else{
-                                            this.state.doingBusiness=false;
-                                        }
-                                    }).catch((err)=>{
-                                        Alert.alert(
-                                            '错误',
-                                            err
-                                        );
-                                    });
-                                }else{
-                                    this.applyCarServiceOrder();
-                                }
-                            }
-                        }).catch((e)=>{
-                            alert(e);
-                        })
-
+                        this.applyCarServiceOrder();
                     }
 
-
-            }else{
-                this.state.doingBusiness=false;
-                Alert.alert(
-                    '错误',
-                    '请选择预约时间'
-                );
             }
 
-        }else{
 
+        }else{
+            this.state.doingBusiness=false;
+            Alert.alert(
+                '错误',
+                '请选择预约时间'
+            );
         }
+
+
     }
 
     verifyDate(date)
@@ -687,7 +628,8 @@ class MapPaperValidateConfirm extends Component{
                         <TouchableOpacity style={{width:width*2/3,padding:9,paddingHorizontal:12,backgroundColor:'#11c1f3',
                                 alignItems:'center',borderRadius:6}}
                                           onPress={()=>{
-                                          this.preCheck();
+                                               if(this.state.doingBusiness==false)
+                                                    this.preCheck();
                                       }}
                         >
                             <Text style={{color:'#fff'}}>提交审证订单</Text>
@@ -695,6 +637,32 @@ class MapPaperValidateConfirm extends Component{
 
                     </View>
 
+
+                    {/*loading模态框*/}
+                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingBusiness}>
+
+                        <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                          onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                            <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                                <ActivityIndicator
+                                    animating={true}
+                                    style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                    size="large"
+                                    color="#00BFFF"
+                                />
+                                <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                    <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                        生成审证订单...
+                                    </Text>
+
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
 
 
                     <ActionSheet
@@ -772,7 +740,15 @@ var styles = StyleSheet.create({
     appleSwitch: {
         marginTop: 0,
         marginBottom: 0,
-    }
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 
 
 });
