@@ -76,12 +76,14 @@ class MapAdministrateConfirm extends Component{
         const {navigator} =this.props;
 
         if(navigator) {
-            navigator.push({
-                name: 'ServiceOrders',
-                component: ServiceOrders,
-                params: {
-                }
-            })
+            navigator.popToTop();
+
+            // navigator.resetTo({
+            //     name: 'ServiceOrders',
+            //     component: ServiceOrders,
+            //     params: {
+            //     }
+            // })
         }
     }
 
@@ -184,7 +186,7 @@ class MapAdministrateConfirm extends Component{
                                     this.props.dispatch(enableServiceOrdersRefresh());
                                     this.props.dispatch(enableServiceOrdersClear());
 
-                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功,请到我的界面进行查看',[{text:'确认',onPress:()=>{
 
                                         this.navigate2ServiceOrders();
                                     }}])
@@ -239,7 +241,7 @@ class MapAdministrateConfirm extends Component{
                                     this.props.dispatch(enableServiceOrdersRefresh());
                                     this.props.dispatch(enableServiceOrdersClear());
 
-                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功,请到我的界面进行查看',[{text:'确认',onPress:()=>{
 
                                         this.navigate2ServiceOrders();
                                     }}])
@@ -339,6 +341,8 @@ class MapAdministrateConfirm extends Component{
     //提交前的预审
     preCheck()
     {
+
+
         //业务不处于进行中
         this.setState({doingBusiness: true});
 
@@ -1077,5 +1081,9 @@ var styles = StyleSheet.create({
 
 });
 
-module.exports = connect()(MapAdministrateConfirm);
+module.exports = connect(
+    (state) => ({
+        nv:state.nv
+    })
+)(MapAdministrateConfirm);
 

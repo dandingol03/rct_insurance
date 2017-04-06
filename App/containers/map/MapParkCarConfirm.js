@@ -79,15 +79,18 @@ class MapParkCarConfirm extends Component{
     navigate2ServiceOrders()
     {
         const {navigator} =this.props;
-
         if(navigator) {
-            navigator.push({
-                name: 'ServiceOrders',
-                component: ServiceOrders,
-                params: {
-                }
-            })
+            navigator.popToTop();
         }
+
+        // if(navigator) {
+        //     navigator.push({
+        //         name: 'ServiceOrders',
+        //         component: ServiceOrders,
+        //         params: {
+        //         }
+        //     })
+        // }
     }
 
 
@@ -165,7 +168,7 @@ class MapParkCarConfirm extends Component{
                                     this.props.dispatch(enableServiceOrdersRefresh());
                                     this.props.dispatch(enableServiceOrdersClear());
 
-                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功,请到我的界面进行查看',[{text:'确认',onPress:()=>{
 
                                         this.navigate2ServiceOrders();
                                     }}])
@@ -217,7 +220,7 @@ class MapParkCarConfirm extends Component{
                                     this.props.dispatch(enableServiceOrdersRefresh());
                                     this.props.dispatch(enableServiceOrdersClear());
 
-                                    Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                    Alert.alert('信息','服务订单生成成功,请到我的界面进行查看',[{text:'确认',onPress:()=>{
 
                                         this.navigate2ServiceOrders();
                                     }}])
