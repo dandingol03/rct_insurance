@@ -163,11 +163,16 @@ class MapDailyConfirm extends Component{
                         .then((json)=>{
                             if(json.re==1)
                             {
-                                //TODO:上传音频材料、视频材料
-                                //if(this.state.maintain.description)
 
+                                if(this.state.maintain.description.audio)
+                                {
+                                    //TODO:上传音频
+                                }
 
-
+                                if(this.state.maintain.destination.video)
+                                {
+                                    //TODO:上传视频
+                                }
 
 
                                 this.props.dispatch(selectTab({tabIndex:1}));
