@@ -185,7 +185,6 @@ class My extends Component{
         }
     }
 
-
     navigate2CarOrders()
     {
         const { navigator } = this.props;
@@ -199,7 +198,6 @@ class My extends Component{
             })
         }
     }
-
 
     navigate2ServiceOrders()
     {

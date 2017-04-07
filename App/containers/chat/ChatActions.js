@@ -14,12 +14,12 @@ import {
 
 import { connect } from 'react-redux';
 
-import AudioChat from '../components/modal/AudioChat';
-import VideoChat from '../components/modal/VideoChat';
+import AudioChat from '../../components/modal/AudioChat';
+import VideoChat from '../../components/modal/VideoChat';
 import {
     uploadAudio,
     uploadVideo
-} from '../action/ServiceActions';
+} from '../../action/ServiceActions';
 
 class ChatActions extends Component{
 

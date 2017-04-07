@@ -136,7 +136,6 @@ export let clearTimerAction=function () {
 }
 
 
-
 let onOauth= () => {
     return {
         type:types.AUTH_BY_OAUTH
@@ -158,7 +157,6 @@ let getAccessToken= (accessToken)=>{
             auth:'failed'
         }
 }
-
 
 
 export let selectCarAction=function(car){
@@ -458,7 +456,6 @@ export let setLifePlanDetail=(plan)=>{
         planDetail:plan
     }
 }
-
 
 export let updateLifeModified=function(plans,modifiedPlan){
     return dispatch=> {

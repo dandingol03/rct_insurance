@@ -4,6 +4,7 @@
 import React,{Component} from 'react';
 
 import  {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -25,6 +26,7 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import _ from 'lodash';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
+
 import {
     enableCarOrdersOnFresh,
     fetchCarOrdersInHistory,
@@ -169,9 +171,7 @@ class CarOrders extends Component{
 
                 }else{}
             }
-
-
-            //TODO:make some dispatch
+    //TODO:make some dispatch
             this.props.dispatch(updateCarOrdersInHistory({historyOrders:historyOrders}));
             this.props.dispatch(updateAppliedCarOrders({appliedOrders:appliedOrders}))
             this.props.dispatch(disableCarOrdersOnFresh());
@@ -181,6 +181,7 @@ class CarOrders extends Component{
             this.setState({doingFetch:false});
             alert(e)
         });
+
     }
 
 
@@ -235,12 +236,9 @@ class CarOrders extends Component{
 
         }
 
-
-
         return (
             <View style={{flex:1}}>
-
-
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                 <View style={[{width:width,height:40,padding:10,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
@@ -281,15 +279,6 @@ class CarOrders extends Component{
                             {appliedListView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                        this.applyCarInsurance();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:14}}>提交车险意向</Text>
-                            </View>
-                        </TouchableOpacity>
                     </View>
 
 
@@ -299,20 +288,38 @@ class CarOrders extends Component{
                             {historyListView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                        this.applyCarInsurance();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:14}}>提交车险意向</Text>
-                            </View>
-                        </TouchableOpacity>
+
                     </View>
 
 
                 </ScrollableTabView>
 
+                {/*loading模态框*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取车险订单...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+                </Image>
 
             </View>);
     }

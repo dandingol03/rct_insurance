@@ -34,6 +34,7 @@ let car = (state = initialState, action) => {
                 carManage:Object.assign(state.carManage,{refresh:true})
             })
             break;
+
         case UPDATE_CAR_HISTORY_ORDERS:
 
             var {historyOrders}=action.payload;
@@ -52,6 +53,7 @@ let car = (state = initialState, action) => {
                 onFresh:false
             })
             break;
+
         default:
             return state;
     }

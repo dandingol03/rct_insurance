@@ -28,7 +28,7 @@ import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-nat
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Home from './home/index';
 import My from './my/My';
-import Chat from './Chat';
+import Chat from './chat/Chat';
 import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
@@ -379,7 +379,6 @@ class App extends React.Component {
         WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
 
         })
-
 
 
         var socket=new window.WebSocket('ws://139.129.96.231:3010');
