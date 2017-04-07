@@ -127,6 +127,7 @@ export let setTimerAction=function (timer) {
     };
 }
 
+
 export let clearTimerAction=function () {
     return dispatch=>{
         dispatch({
