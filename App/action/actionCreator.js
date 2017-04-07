@@ -132,7 +132,6 @@ export let clearTimerAction=function () {
 }
 
 
-
 let onOauth= () => {
     return {
         type:types.AUTH_BY_OAUTH
@@ -156,15 +155,12 @@ let getAccessToken= (accessToken)=>{
 }
 
 
-
 export let selectCarAction=function(car){
     return {
         type:types.SELECT_CUSTOMER_CAR,
         car:car
     }
 }
-
-
 
 let setCarOrdersInHistory=(orders)=>{
     return {
@@ -387,7 +383,6 @@ export let setLifePlanDetail=(plan)=>{
         planDetail:plan
     }
 }
-
 
 export let updateLifeModified=function(plans,modifiedPlan){
     return dispatch=> {

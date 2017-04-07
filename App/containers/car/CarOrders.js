@@ -4,6 +4,7 @@
 import React,{Component} from 'react';
 
 import  {
+    ActivityIndicator,
     AppRegistry,
     StyleSheet,
     ListView,
@@ -25,8 +26,10 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import _ from 'lodash';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import {fetchCarOrders,enableCarOrdersOnFresh} from '../../action/actionCreator';
+
+import {fetchCarOrders,enableCarOrdersOnFresh} from '../../action/CarActions';
 import DateFilter from '../../filter/DateFilter';
+import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 
 
 class CarOrders extends Component{
@@ -139,10 +142,12 @@ class CarOrders extends Component{
     fetchData(){
         const { accessToken } = this.props;
         const {dispatch} = this.props;
+        this.setState({doingFetch:true})
+
         dispatch(fetchCarOrders(accessToken,function () {
             this.setState({doingFetch:false});
         }.bind(this)));
-        this.state.doingFetch=true;
+
     }
 
 
@@ -162,6 +167,7 @@ class CarOrders extends Component{
         var applyedListView=null;
         var pricedListView=null;
         var historyListView=null;
+
         var {historyOrders,pricedAndPricingOrders,applyedOrders,onFresh}=this.props;
 
         if(onFresh==true)
@@ -216,68 +222,53 @@ class CarOrders extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={[{padding: 10,marginTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}
-                                      onPress={()=>{
+                <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
+                    <View style={[{flex:1,height:60,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
+                                          onPress={()=>{
                         this.goBack();
                     }}>
-                        <Icon name="angle-left" size={45} color="#222"/>
-                    </TouchableOpacity>
+                            <Icon name="angle-left" size={40} color="#fff"/>
+                        </TouchableOpacity>
 
-                    <View style={{flex:3,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:23,color:'#222',marginLeft:10}}>
-                            车险订单
-                        </Text>
-                    </View>
+                        <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:17,color:'#fff',marginLeft:4}}>
+                                车险订单
+                            </Text>
+                        </View>
 
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
-                                      onPress={()=>{
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                                          onPress={()=>{
                                            const {dispatch} = this.props;
                                             dispatch(enableCarOrdersOnFresh());
                                       }}>
-                        <Icon name='repeat' size={24} color='#222'/>
-                    </TouchableOpacity>
+                            <Icon name='repeat' size={22} color='#fff'/>
+                        </TouchableOpacity>
+                    </View>
 
-                </View>
 
-                <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
-                        var tabIndex=data.i;
-                        this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
-                >
+                <ScrollableTabView  style={{flex:25,padding:0,marginTop: 10}}
+                                    onChangeTab={(data)=>{
+                                        var tabIndex=data.i;
+                                        this.state.selectedTab=tabIndex;
+                                    }}
+                                    renderTabBar={() =>  <FacebookTabBar />}>
+
                     <View tabLabel='已申请' style={{flex:1}}>
                         {/*body*/}
                         <View style={{padding:20,height:height-264}}>
                             {applyedListView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                        this.applyCarInsurance();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>提交车险意向</Text>
-                            </View>
-                        </TouchableOpacity>
                     </View>
 
-                    <View tabLabel='估价列表' style={{flex:1}}>
+                    {/*<View tabLabel='估价列表' style={{flex:1}}>*/}
 
-                        <View style={{padding:20,height:height-264}}>
-                            {pricedListView}
-                        </View>
+                        {/*<View style={{padding:20,height:height-264}}>*/}
+                            {/*{pricedListView}*/}
+                        {/*</View>*/}
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                        this.applyCarInsurance();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>提交车险意向</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+                    {/*</View>*/}
 
                     <View tabLabel='已完成' style={{flex:1}}>
 
@@ -285,19 +276,37 @@ class CarOrders extends Component{
                             {historyListView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                        padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                        this.applyCarInsurance();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:19}}>提交车险意向</Text>
-                            </View>
-                        </TouchableOpacity>
                     </View>
 
 
                 </ScrollableTabView>
+                </Image>
+
+                {/*loading模态框*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取车险订单...
+                                </Text>
+
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
 
 
             </View>);

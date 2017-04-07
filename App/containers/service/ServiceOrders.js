@@ -403,7 +403,10 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            {appliedList}
+                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {appliedList}
+                            </View>
+
                         </View>
                         <View tabLabel="服务中">
 
@@ -425,7 +428,9 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            {handlingList}
+                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {handlingList}
+                            </View>
                         </View>
 
 
@@ -445,7 +450,10 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            {finishedList}
+                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {finishedList}
+                            </View>
+
                         </View>
                     </ScrollableTabView>
 

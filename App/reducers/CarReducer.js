@@ -30,6 +30,7 @@ let car = (state = initialState, action) => {
                 carManage:Object.assign(state.carManage,{refresh:true})
             })
             break;
+
         default:
             return state;
     }

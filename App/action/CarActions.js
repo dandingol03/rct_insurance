@@ -2,11 +2,21 @@ import Config from '../../config';
 var Proxy = require('../proxy/Proxy');
 import {
     SET_CAR_ORDERS_REFRESH,
+    SET_CAR_HISTORY_ORDERS,
+    SET_CAR_PRICED_ORDERS,
+    SET_CAR_APPLYED_ORDERS,
+
+    ENABLE_CARORDERS_ONFRESH,
+    DISABLE_CARORDERS_ONFRESH,
 } from '../constants/OrderConstants';
 
 import {
     SET_CAR_MANAGE_REFRESH
 } from '../constants/CarManageConstants';
+
+
+
+
 
 export let enableCarManageRefresh=()=>{
     return {
@@ -21,6 +31,33 @@ export let enableCarOrderRefresh=()=>{
         data:true
     }
 }
+let disableCarOrdersOnFresh=()=>{
+    return {
+        type:types.DISABLE_CARORDERS_ONFRESH
+    }
+}
+
+let setCarOrdersInHistory=(orders)=>{
+    return {
+        type:types.SET_CAR_HISTORY_ORDERS,
+        orders:orders
+    }
+}
+
+let setCarOrdersInPricedAndInPricing=(orders)=>{
+    return {
+        type:types.SET_CAR_PRICED_AND_PRICING_ORDERS,
+        orders:orders
+    }
+}
+
+let setCarOrdersInApplyed=(orders)=>{
+    return {
+        type:types.SET_CAR_APPLYED_ORDERS,
+        orders:orders
+    }
+}
+
 
 export let getCarInfoByCarNum=(payload)=>{
     return (dispatch,getState)=>{
@@ -50,6 +87,86 @@ export let getCarInfoByCarNum=(payload)=>{
             })
         });
     }
+}
+
+//拉取车险订单
+export let fetchCarOrders=function (accessToken,cb) {
+
+    return dispatch=> {
+        var pricedOrPricingOrders=[];
+        Proxy.postes({
+            url: Config.server + '/svr/request',
+            headers: {
+                'Authorization': "Bearer " + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request: 'getCarOrdersInHistory'
+            }
+        }).then(function (json) {
+            var historyOrders=[];
+            if(json.re==1) {
+                historyOrders=json.data;
+            }
+
+            if(historyOrders !== undefined && historyOrders !== null &&historyOrders.length > 0) {
+                dispatch(setCarOrdersInHistory(historyOrders));
+            }
+
+            return Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarOrderInPricedState'
+                }
+            });
+        }).then(function (json) {
+            if(json.re==1)
+            {
+                pricedOrPricingOrders=json.data;
+            }
+            return Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getApplyedCarOrders'
+                }
+            });
+        }).then(function (json) {
+            var applyedOrders=[];
+            if(json.re==1)
+            {
+                if(json.data!==undefined&&json.data!==null)
+                {
+                    json.data.map(function (order,i) {
+                        if(order.orderState==2)
+                            pricedOrPricingOrders.push(order);
+                        if(order.orderState==1)
+                            applyedOrders.push(order);
+                    })
+                }
+            }
+
+            if(pricedOrPricingOrders !== undefined && pricedOrPricingOrders !== null &&pricedOrPricingOrders.length > 0)
+                dispatch(setCarOrdersInPricedAndInPricing(pricedOrPricingOrders));
+            if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
+                dispatch(setCarOrdersInApplyed(applyedOrders));
+            dispatch(disableCarOrdersOnFresh());
+            if(cb)
+                cb();
+        }).catch(function (err) {
+            if(cb)
+                cb();
+            alert(err);
+        })
+    }
+
 }
 
 //创建车辆
