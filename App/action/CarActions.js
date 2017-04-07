@@ -54,6 +54,35 @@ let setCarOrdersInApplyed=(orders)=>{
     }
 }
 
+//拉取邮箱地址
+export let fetchRecvAddresses=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCustomerMailAddresses',
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
 
 export let getCarInfoByCarNum=(payload)=>{
     return (dispatch,getState)=>{
