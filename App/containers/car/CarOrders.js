@@ -37,6 +37,8 @@ import {
 } from '../../action/actionCreator';
 import DateFilter from '../../filter/DateFilter';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
+import CarOrderPrices from '../../containers/car/CarOrderPrices';
+
 
 class CarOrders extends Component{
 
@@ -44,6 +46,20 @@ class CarOrders extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2CarOrderPrices(order)
+    {
+        const {navigator} =this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'CarOrderPrices',
+                component: CarOrderPrices,
+                params: {
+                    order: order
+                }
+            })
         }
     }
 
@@ -55,16 +71,10 @@ class CarOrders extends Component{
 
         var row=(
             <TouchableOpacity style={lineStyle} onPress={()=>{
-                 rowData.checked=!rowData.checked;
-                 var relativePersons=this.state.relativePersons;
-                 if(rowData.checked==true)
-                 {
-                      relativePersons.map(function(person,i) {
-                          if(person.personId!=rowData.personId)
-                              person.checked=false;
-                      });
-                 }
-                 this.setState({relativePersons:this.state.relativePersons,insuranceder:rowData});   }}>
+
+                        if(rowData.pricedCount&&rowData.pricedCount>0)
+                            this.navigate2CarOrderPrices(rowData)
+                  }}>
                 <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
                     <Text style={{fontSize:13,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'yyyy-mm-dd')}</Text>
                     <Text style={{fontSize:13,paddingTop:2,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'hh:mm')}</Text>
@@ -90,18 +100,15 @@ class CarOrders extends Component{
                     </View>
                 </View>
 
-                <TouchableOpacity style={{flex:2,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,
-                        borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}}
-                                  onPress={()=>{
-                                      this.navigate2ApplyedLifeOrderDetail(rowData);
-                 }}>
+                <View style={{flex:2,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,
+                        borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}}>
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}>
                         <Text style={{color:'#222',fontSize:13,marginRight:5}}>
                             详细
                         </Text>
                         <Icon name="angle-right" size={30} color="#222"/>
                     </View>
-                </TouchableOpacity>
+                </View>
             </TouchableOpacity>
         );
 
