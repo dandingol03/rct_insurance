@@ -34,8 +34,8 @@ import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
 
 import WebSocket from '../components/utils/WebSocket';
 import {
-    uploadAudio,
-    uploadVideo
+    uploadAudioChat,
+    uploadVideoChat
 } from '../action/ServiceActions';
 
 import AudioExample from '../../AudioExample'
@@ -77,12 +77,12 @@ class Chat extends Component{
     }
 
 
-    //上传音频
+    //上传音频:
     uploadAudio(payload){
 
         var {path}=payload;
         var audio = payload;
-        this.props.dispatch(uploadAudio(audio))
+        this.props.dispatch(uploadAudioChat({path:audio,filename:'chatter.wav'}))
     }
 
     sendWav=(attachId) =>{
@@ -116,7 +116,7 @@ class Chat extends Component{
     uploadVideo(payload){
 
         var {path}=payload;
-        this.props.dispatch(uploadVideo(path)).then((json)=>{
+        this.props.dispatch(uploadVideoChat(path)).then((json)=>{
             if(json.re==1)
             {
                 var attachId=json.data;

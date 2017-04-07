@@ -9,7 +9,11 @@ import {updateRegistrationId} from './JpushActions';
 import {activeTTSToken} from './TTSActions';
 import WS from '../components/utils/WebSocket';
 import PreferenceStore from '../components/utils/PreferenceStore';
-
+import {
+    UPDATE_CAR_HISTORY_ORDERS,
+    UPDATE_APPLIED_CAR_ORDERS,
+    DISABLE_CARORDERS_ONFRESH
+} from '../constants/OrderConstants';
 
 
 export let loginAction=function(username,password,cb){
@@ -166,12 +170,20 @@ export let selectCarAction=function(car){
 
 
 
-let setCarOrdersInHistory=(orders)=>{
+export let updateCarOrdersInHistory=(payload)=>{
     return {
-        type:types.SET_CAR_HISTORY_ORDERS,
-        orders:orders
+        type:UPDATE_CAR_HISTORY_ORDERS,
+        payload:payload
     }
 }
+
+export let updateAppliedCarOrders=(payload)=>{
+    return {
+        type:UPDATE_APPLIED_CAR_ORDERS,
+        payload:payload
+    }
+}
+
 
 let setCarOrdersInPricedAndInPricing=(orders)=>{
     return {
@@ -193,9 +205,9 @@ export let enableCarOrdersOnFresh=()=>{
     }
 }
 
-let disableCarOrdersOnFresh=()=>{
+export let disableCarOrdersOnFresh=()=>{
     return {
-        type:types.DISABLE_CARORDERS_ONFRESH
+        type:DISABLE_CARORDERS_ONFRESH
     }
 }
 
@@ -233,45 +245,38 @@ let disableLifeOrdersOnFresh=()=>{
 }
 
 
-export let fetchCarOrders=function (accessToken,cb) {
+export let fetchCarOrdersInHistory=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
 
-    return dispatch=> {
-        var pricedOrPricingOrders=[];
-        Proxy.postes({
-            url: Config.server + '/svr/request',
-            headers: {
-                'Authorization': "Bearer " + accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: {
-                request: 'getCarOrdersInHistory'
-            }
-        }).then(function (json) {
-            var historyOrders=[];
-            if(json.re==1) {
-                historyOrders=json.data;
-            }
+            var state=getState();
+            var accessToken=state.user.accessToken;
 
-            if(historyOrders !== undefined && historyOrders !== null &&historyOrders.length > 0) {
-                dispatch(setCarOrdersInHistory(historyOrders));
-            }
-
-            return Proxy.postes({
+            Proxy.postes({
                 url: Config.server + '/svr/request',
                 headers: {
                     'Authorization': "Bearer " + accessToken,
                     'Content-Type': 'application/json'
                 },
                 body: {
-                    request: 'getCarOrderInPricedState'
+                    request: 'getCarOrdersInHistory'
                 }
-            });
-        }).then(function (json) {
-            if(json.re==1)
-            {
-                pricedOrPricingOrders=json.data;
-            }
-            return Proxy.postes({
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+export let fetchApplyedCarOrders=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            Proxy.postes({
                 url: Config.server + '/svr/request',
                 headers: {
                     'Authorization': "Bearer " + accessToken,
@@ -280,34 +285,100 @@ export let fetchCarOrders=function (accessToken,cb) {
                 body: {
                     request: 'getApplyedCarOrders'
                 }
-            });
-        }).then(function (json) {
-            var applyedOrders=[];
-            if(json.re==1)
-            {
-                if(json.data!==undefined&&json.data!==null)
-                {
-                    json.data.map(function (order,i) {
-                        if(order.orderState==2)
-                            pricedOrPricingOrders.push(order);
-                        if(order.orderState==1)
-                            applyedOrders.push(order);
-                    })
-                }
-            }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+              reject(e)
+            })
 
-            if(pricedOrPricingOrders !== undefined && pricedOrPricingOrders !== null &&pricedOrPricingOrders.length > 0)
-                dispatch(setCarOrdersInPricedAndInPricing(pricedOrPricingOrders));
-            if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
-                dispatch(setCarOrdersInApplyed(applyedOrders));
-            dispatch(disableCarOrdersOnFresh());
-            if(cb)
-                cb();
-        }).catch(function (err) {
-            if(cb)
-                cb();
-            alert(err);
-        })
+        });
+    }
+}
+
+
+
+export let fetchCarOrders=function () {
+
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+
+            var pricedOrPricingOrders=[];
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarOrdersInHistory'
+                }
+            }).then(function (json) {
+                var historyOrders=[];
+                if(json.re==1) {
+                    historyOrders=json.data;
+                }
+
+                if(historyOrders !== undefined && historyOrders !== null &&historyOrders.length > 0) {
+                    dispatch(setCarOrdersInHistory(historyOrders));
+                }
+
+                return Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'getCarOrderInPricedState'
+                    }
+                });
+            }).then(function (json) {
+                if(json.re==1)
+                {
+                    pricedOrPricingOrders=json.data;
+                }
+                return Proxy.postes({
+                    url: Config.server + '/svr/request',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        request: 'getApplyedCarOrders'
+                    }
+                });
+            }).then(function (json) {
+                var applyedOrders=[];
+                if(json.re==1)
+                {
+                    if(json.data!==undefined&&json.data!==null)
+                    {
+                        json.data.map(function (order,i) {
+                            if(order.orderState==2)
+                                pricedOrPricingOrders.push(order);
+                            if(order.orderState==1)
+                                applyedOrders.push(order);
+                        })
+                    }
+                }
+
+                if(pricedOrPricingOrders !== undefined && pricedOrPricingOrders !== null &&pricedOrPricingOrders.length > 0)
+                    dispatch(setCarOrdersInPricedAndInPricing(pricedOrPricingOrders));
+                if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
+                    dispatch(setCarOrdersInApplyed(applyedOrders));
+                dispatch(disableCarOrdersOnFresh());
+                if(cb)
+                    cb();
+            }).catch(function (err) {
+                if(cb)
+                    cb();
+                alert(err);
+            })
+        });
     }
 
 }

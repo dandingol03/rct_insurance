@@ -94,6 +94,7 @@ class LifeOrders extends Component{
         var lineStyle=null;
         lineStyle={flex:1,flexDirection:'row',padding:2,paddingLeft:0,paddingRight:0,borderBottomWidth:1,
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'};
+
         var row=(
             <View style={lineStyle}>
                 <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
@@ -257,62 +258,62 @@ class LifeOrders extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{flex:1,height:60,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
-                                      onPress={()=>{
-                        this.goBack();
-                    }}>
-                        <Icon name="angle-left" size={40} color="#fff"/>
-                    </TouchableOpacity>
+                    <View style={[{flex:1,height:60,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
+                                          onPress={()=>{
+                            this.goBack();
+                        }}>
+                            <Icon name="angle-left" size={40} color="#fff"/>
+                        </TouchableOpacity>
 
-                    <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:17,color:'#fff',marginLeft:4}}>
-                            寿险订单
-                        </Text>
-                    </View>
-
-                    <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
-                                      onPress={()=>{
-                                           const {dispatch} = this.props;
-                                           dispatch(enableLifeOrdersOnFresh());
-                                      }}>
-                        <Icon name='repeat' size={22} color='#fff'/>
-                    </TouchableOpacity>
-                </View>
-
-                <ScrollableTabView
-                    style={{flex:25,padding:0,marginTop: 10}}
-                    onChangeTab={(data)=>{
-                        var tabIndex=data.i;
-                        this.state.selectedTab=tabIndex;
-                    }}
-                    renderTabBar={() =>  <FacebookTabBar />}>
-
-                    <View tabLabel='已申请' style={{flex:1,margin:10}}>
-                        {/*body*/}
-                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
-                            {applyedListView}
+                        <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:17,color:'#fff',marginLeft:4}}>
+                                寿险订单
+                            </Text>
                         </View>
 
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                                          onPress={()=>{
+                                               const {dispatch} = this.props;
+                                               dispatch(enableLifeOrdersOnFresh());
+                                          }}>
+                            <Icon name='repeat' size={22} color='#fff'/>
+                        </TouchableOpacity>
                     </View>
 
-                    <View tabLabel='寿险方案' style={{flex:1,margin:10}}>
+                    <ScrollableTabView
+                        style={{flex:25,padding:0,marginTop: 10}}
+                        onChangeTab={(data)=>{
+                            var tabIndex=data.i;
+                            this.state.selectedTab=tabIndex;
+                        }}
+                        renderTabBar={() =>  <FacebookTabBar />}>
 
-                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
-                            {pricedListView}
+                        <View tabLabel='已申请' style={{flex:1,margin:10}}>
+                            {/*body*/}
+                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {applyedListView}
+                            </View>
+
                         </View>
 
-                    </View>
+                        <View tabLabel='寿险方案' style={{flex:1,margin:10}}>
 
-                    <View tabLabel='已完成' style={{flex:1,margin:10}}>
+                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {pricedListView}
+                            </View>
 
-                        <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
-                            {historyListView}
                         </View>
 
-                    </View>
+                        <View tabLabel='已完成' style={{flex:1,margin:10}}>
 
-                </ScrollableTabView>
+                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                                {historyListView}
+                            </View>
+
+                        </View>
+
+                    </ScrollableTabView>
 
                 </Image>
 

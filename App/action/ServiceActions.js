@@ -1365,7 +1365,7 @@ export let generateVideoThumbnail=(payload)=>{
 }
 
 
-//上传音频用
+//上传普通音频
 export let uploadAudio=(payload)=>{
     return (dispatch,getState)=> {
         return new Promise((resolve, reject) => {
@@ -1373,12 +1373,47 @@ export let uploadAudio=(payload)=>{
             var state=getState();
             var accessToken=state.user.accessToken;
 
-            var {path}=payload;
+            var {path,filename,orderId}=payload;
 
             if (path) {
                 // Create the form data object
                 var data = new FormData();
-                data.append('file', {uri: path, name: 'chatter.wav', type: 'multipart/form-data'});
+                data.append('file', {uri: path, name: filename, type: 'multipart/form-data'});
+
+
+                Proxy.post({
+                    url:'http://211.87.225.199:8080/insurancems/insurance/insuranceTransformAmrToMp3.do?'+
+                    'request=uploadAudio&orderId='+orderId+'&fileName='+filename+'&audioType=serviceVideo',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type':'multipart/form-data',
+                    },
+                    body: data,
+                },(json)=> {
+
+                    resolve(json)
+                }, (err) =>{
+                    reject(err)
+                });
+            }
+        });
+    }
+}
+
+//上传聊天音频
+export let uploadAudioChat=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            var {path,filename}=payload;
+
+            if (path) {
+                // Create the form data object
+                var data = new FormData();
+                data.append('file', {uri: path, name: filename, type: 'multipart/form-data'});
 
 
                 Proxy.post({
@@ -1399,7 +1434,109 @@ export let uploadAudio=(payload)=>{
     }
 }
 
+//更新订单的附加videoAttachment
+export let updateServiceVideoAttachment=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {videoAttachId,orderId}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'updateServiceVideoAttachment',
+                    info:{
+                        orderId: orderId,
+                        videoAttachId:videoAttachId
+                    }
+                }
+            }).then((json)=>{
+                resolve(json);
+            }).catch((e)=>{
+                reject(e)
+            })
+
+
+        });
+    }
+}
+
+//创建attachment
+export let createVideoAttachment=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {path,orderId}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'createVideoAttachment',
+                    info:{
+                        orderId: orderId,
+                        docType:'I7',
+                        path:path
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+
+//上传普通视频
 export let uploadVideo=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+            var {path,filename,orderId}=payload;
+            if (path) {
+                // Create the form data object
+                var data = new FormData();
+                data.append('file', {uri: path, name:filename, type: 'multipart/form-data'});
+
+
+                Proxy.post({
+                    url:Config.server+'/svr/request?request=uploadVideo&orderId='+orderId+'&fileName='+filename+'&videoType=serviceVideo',
+                    headers: {
+                        'Authorization': "Bearer " + accessToken,
+                        'Content-Type':'multipart/form-data',
+                    },
+                    body: data,
+                },(json)=> {
+
+                    resolve(json)
+                }, (err) =>{
+                    reject(err)
+                });
+            }
+
+
+        });
+    }
+}
+
+
+//上传视频聊天
+export let uploadVideoChat=(payload)=>{
     return (dispatch,getState)=> {
         return new Promise((resolve, reject) => {
             var state=getState();

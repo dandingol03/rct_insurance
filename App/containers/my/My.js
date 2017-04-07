@@ -185,6 +185,22 @@ class My extends Component{
         }
     }
 
+
+    navigate2CarOrders()
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'CarOrders',
+                component: CarOrders,
+                params: {
+
+                }
+            })
+        }
+    }
+
+
     navigate2ServiceOrders()
     {
         const { navigator } = this.props;
@@ -438,7 +454,7 @@ class My extends Component{
                         {/*车险订单*/}
                         <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
                                           onPress={()=>{
-                                              console.log('qqq');
+                                              this.navigate2CarOrders();
                                           }}>
                             <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_carInsurance.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
