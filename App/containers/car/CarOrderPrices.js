@@ -331,7 +331,7 @@ class CarOrderPrices extends Component{
 
 
                     {/*估价列表*/}
-                    <View style={{padding:8,paddingHorizontal:4,height:height-210}}>
+                    <View style={{padding:8,paddingHorizontal:4,height:height-200}}>
                         {listView}
                     </View>
 
