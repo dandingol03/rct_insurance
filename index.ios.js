@@ -27,8 +27,7 @@ var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACS
 
 
 import { GiftedChat } from 'react-native-gifted-chat';
-import ChatDemo from './App/containers/chat/App';
-import Chat from './App/containers/Chat.js';
+
 
 class Chatter extends React.Component {
     constructor(props) {
@@ -52,6 +51,7 @@ class Chatter extends React.Component {
             ],
         });
     }
+
     onSend(messages = []) {
 
         //TODO:send a a image
