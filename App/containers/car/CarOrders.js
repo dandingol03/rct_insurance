@@ -356,7 +356,15 @@ var styles = StyleSheet.create({
     },
     row:{
         flexDirection:'row'
-    }
+    },
+    modalContainer:{
+        flex:1,
+        justifyContent: 'center',
+        padding: 20
+    },
+    modalBackgroundStyle:{
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 });
 
 

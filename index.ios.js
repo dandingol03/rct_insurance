@@ -28,6 +28,8 @@ var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACS
 
 import { GiftedChat } from 'react-native-gifted-chat';
 
+import ChatDemo from './App/containers/chat/App';
+
 
 class Chatter extends React.Component {
     constructor(props) {
