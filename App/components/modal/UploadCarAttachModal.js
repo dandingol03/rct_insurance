@@ -91,11 +91,140 @@ class UploadCarAttachModal extends Component{
         });
     }
 
+    uploadCarAttachConfirm(){
+        if( this.state.carAttachId1_img!==undefined&&this.state.carAttachId1_img!==null
+            &&this.state.carAttachId2_img!==undefined&&this.state.carAttachId2_img!==null
+            &&this.state.carAttachId3_img!==undefined&&this.state.carAttachId3_img!==null
+            &&this.state.carAttachId4_img!==undefined&&this.state.carAttachId4_img!==null
+            &&this.state.carAttachId5_img!==undefined&&this.state.carAttachId5_img!==null
+            &&this.state.carAttachId6_img!==undefined&&this.state.carAttachId6_img!==null
+        )
+        {
+            var order=this.props.order;
+            var carId=this.props.order.carId;
+
+            var carAttachId1=null;
+            var carAttachId2=null;
+            var carAttachId3=null;
+            var carAttachId4=null;
+            var carAttachId5=null;
+            var carAttachId6=null;
+
+            this.props.dispatch(uploadPhoto({path:carAttachId1_img,filename:'carAttachId1',
+                imageType:'carPhoto',docType:'I2',carId:carId})).then((json)=>{
+                if(json.re==1)
+                {
+                    alert('upload attach1 success');
+                    for(var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId1=json.data;
+                }
+                return this.props.dispatch(uploadPhoto({path:carAttachId2_img,filename:'carAttachId2',
+                    imageType:'carPhoto',docType:'I2',carId:carId}));
+            }).then((json)=> {
+                if (json.re == 1) {
+                    alert('upload 2 success');
+                    for (var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId2 = json.data;
+                }
+                return this.props.dispatch(uploadPhoto({path:carAttachId3_img,filename:'carAttachId3',
+                    imageType:'carPhoto',docType:'I2',carId:carId}));
+            }).then((json)=> {
+                if (json.re == 1) {
+                    alert('upload 3 success');
+                    for (var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId3 = json.data;
+                }
+                return this.props.dispatch(uploadPhoto({path:carAttachId4_img,filename:'carAttachId4',
+                    imageType:'carPhoto',docType:'I2',carId:carId}));
+            }).then((json)=> {
+                if (json.re == 1) {
+                    alert('upload 4 success');
+                    for (var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId4 = json.data;
+                }
+                return this.props.dispatch(uploadPhoto({path:carAttachId5_img,filename:'carAttachId5',
+                    imageType:'carPhoto',docType:'I2',carId:carId}));
+            }).then((json)=> {
+                if (json.re == 1) {
+                    alert('upload 5 success');
+                    for (var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId5 = json.data;
+                }
+                return this.props.dispatch(uploadPhoto({path:carAttachId6_img,filename:'carAttachId6',
+                    imageType:'carPhoto',docType:'I2',carId:carId}));
+            }).then((json)=> {
+                if (json.re == 1) {
+                    alert('upload 6 success');
+                    for (var field in res) {
+                        alert('field=' + field + '\r\n' + res[field]);
+                    }
+                    carAttachId6 = json.data;
+                    var ob={
+                        carAttachId1:carAttachId1,
+                        carAttachId2:carAttachId2,
+                        carAttachId3:carAttachId3,
+                        carAttachId4:carAttachId4,
+                        carAttachId5:carAttachId5,
+                        carAttachId6:carAttachId6
+                    }
+
+
+                    Proxy.postes({
+                        url: Config.server + '/svr/request',
+                        headers: {
+                            'Authorization': "Bearer " + accessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            request: 'updateInsuranceCarInfo',
+                            info:{
+                                carId:carId,
+                                ob:ob
+                            }
+                        }
+                    }).then((json)=>{
+                     this.close();
+                     //this.propd.applyCarOrderPrice();
+
+                    }).catch((e)=>{
+                        var str='';
+                        for(var field in err) {
+                            str+=err[field];
+                        }
+                        alert('error=\r\n' + str);
+                    })
+
+                }
+
+            })
+
+        }else{
+            Alert.alert('信息','请同时上传验车照片6面',[
+                {
+                    text:'确认',onPress:()=>{}
+                }
+            ])
+        }
+
+    }
+
     constructor(props)
     {
         super(props);
+        const {accessToken}=this.props;
 
         this.state={
+            accessToken:accessToken,
 
             carAttachId1_img:null,
             carAttachId2_img:null,
