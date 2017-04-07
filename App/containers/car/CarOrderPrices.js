@@ -129,7 +129,7 @@ class CarOrderPrices extends Component{
                 }}
             />);
 
-        var row=
+        var row=(
             <View style={{borderColor:'#ccc',borderWidth:1,backgroundColor:'transparent',
                 marginBottom:10,borderRadius:5,paddingBottom:10}}>
 
@@ -173,10 +173,79 @@ class CarOrderPrices extends Component{
 
                 {productList}
 
+                {
+                    rowData.nonDeductibleInsurance&&rowData.nonDeductibleInsurance!=0?
+                        <View style={[styles.row,{alignItems:'center',padding:1,paddingHorizontal:15}]}>
+
+                            <View style={{flex:1,alignItems:'flex-start'}}>
+                                <Text style={{color:'#222',fontSize:13}}>
+                                    不计免赔
+                                </Text>
+                            </View>
+
+                            <View style={{flex:1,alignItems:'flex-end'}}>
+                                <Text style={{color:'#222',fontSize:14}}>
+                                    {rowData.nonDeductibleInsurance}
+                                </Text>
+                            </View>
+                        </View>:null
+                }
+
+                {
+                    rowData.carTax&&rowData.carTax>0?
+                        <View style={[styles.row,{alignItems:'center',padding:1,paddingHorizontal:15}]}>
+
+                            <View style={{flex:1,alignItems:'flex-start'}}>
+                                <Text style={{color:'#222',fontSize:13}}>
+                                    车船税
+                                </Text>
+                            </View>
+
+                            <View style={{flex:1,alignItems:'flex-end'}}>
+                                <Text style={{color:'#222',fontSize:14}}>
+                                    {rowData.carTax}
+                                </Text>
+                            </View>
+                        </View>:null
+                }
+
+                <View style={[styles.row,{alignItems:'center',padding:1,paddingHorizontal:15}]}>
+
+                    <View style={{flex:1,alignItems:'flex-start'}}>
+                        <Text style={{color:'#0a9dc7',fontWeight:'bold',fontSize:16}}>
+                            积分
+                        </Text>
+                    </View>
+
+                    <View style={{flex:1,alignItems:'flex-end'}}>
+                        <Text style={{color:'#0a9dc7',fontWeight:'bold',fontSize:16}}>
+                            {rowData.score}
+                        </Text>
+                    </View>
+
+                </View>
 
 
 
-            </View>;
+
+                <View style={[styles.row,{alignItems:'center',padding:1,paddingHorizontal:15}]}>
+
+                    <View style={{flex:1,alignItems:'flex-start'}}>
+                    </View>
+
+                    <View style={[styles.row,{flex:1,justifyContent:'flex-end'}]}>
+                        <Text style={{color:'#222',fontWeight:'bold',fontSize:16}}>
+                            总计:
+                        </Text>
+
+                        <Text style={{color:'#222',fontWeight:'bold',fontSize:16}}>
+                            ￥{rowData.insuranceFeeTotal}
+                        </Text>
+                    </View>
+
+                </View>
+
+            </View>);
 
         return row;
     }
@@ -241,7 +310,8 @@ class CarOrderPrices extends Component{
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-                    <View style={[{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:54,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <View style={[{padding: 10,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                            height:40,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
 
                         <TouchableOpacity style={{width:80}} onPress={()=>{
                             this.goBack();
@@ -261,7 +331,7 @@ class CarOrderPrices extends Component{
 
 
                     {/*估价列表*/}
-                    <View style={{padding:8,paddingHorizontal:4,height:height-274}}>
+                    <View style={{padding:8,paddingHorizontal:4,height:height-210}}>
                         {listView}
                     </View>
 
