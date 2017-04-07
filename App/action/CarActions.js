@@ -55,6 +55,64 @@ let setCarOrdersInApplyed=(orders)=>{
 }
 
 
+//拉取车险订单和相关产品
+export let fetchApplyedCarOrderByOrderId=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+
+            var {orderId}=payload;
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getApplyedCarOrderByOrderId',
+                    info:{
+                        orderId:orderId
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+//拉取邮箱地址
+export let fetchRecvAddresses=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCustomerMailAddresses',
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+
 export let getCarInfoByCarNum=(payload)=>{
     return (dispatch,getState)=>{
         return new Promise((resolve, reject) => {

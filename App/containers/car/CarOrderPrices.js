@@ -22,15 +22,9 @@ import  {
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
-import CheckBox from 'react-native-check-box';
 import _ from 'lodash';
-import Config from '../../../config';
-import Proxy from '../../proxy/Proxy';
-import NewCarBind from '../../components/modal/NewCarBind';
 import UpdateCarInfo from '../../components/UpdateCarInfo';
-import CarInsurance from './CarInsurance';
-import CarInfoDetail from './CarInfoDetail';
-
+import CarOrderPay from './CarOrderPay';
 
 
 class CarOrderPrices extends Component{
@@ -43,42 +37,25 @@ class CarOrderPrices extends Component{
     }
 
 
-    toggleAll(){
-        if(this.state.relatedGoods!==undefined&&this.state.relatedGoods!==null)
-        {
-            var relatedGoods=_.cloneDeep(this.state.relatedGoods);
-            if(this.state.selectAll!=true)
-            {
-                relatedGoods.map(function (good, i){
-                    good.checked=true;
-                });
-            }else{
-                relatedGoods.map(function (good, i){
-                    good.checked=false;
-                });
-            }
-            var dataSource = this.state.dataSource.cloneWithRows(relatedGoods);
-            this.setState({
-                relatedGoods: relatedGoods,
-                selectAll:!this.state.selectAll,
-                dataSource:dataSource
-            });
-        }
-    }
-
-
-
-    navigate2NewCarCreate(carNum,city)
+    navigate2CarOrderPay()
     {
 
         const {navigator} =this.props;
         if(navigator) {
+
+            var {order}=this.state;
+            var price=null;
+            order.prices.map((item,i)=>{
+                if(item.checked==true)
+                    price=item
+            })
+
             navigator.push({
-                name: 'updateCarInfo',
-                component: UpdateCarInfo,
+                name: 'CarOrderPay',
+                component: CarOrderPay,
                 params: {
-                    carNum: carNum,
-                    city:city
+                    price:price,
+                    order:order
                 }
             })
         }
@@ -129,16 +106,43 @@ class CarOrderPrices extends Component{
                 }}
             />);
 
+        var selectedStyle={borderColor:'rgb(255, 59, 48)'};
+        var unSelectedStyle={borderColor:'#ccc'};
+
         var row=(
-            <View style={{borderColor:'#ccc',borderWidth:1,backgroundColor:'transparent',
-                marginBottom:10,borderRadius:5,paddingBottom:10}}>
+            <TouchableOpacity style={[{borderWidth:1,backgroundColor:'transparent',
+                marginBottom:10,borderRadius:5,paddingBottom:10},rowData.checked==true?selectedStyle:unSelectedStyle,styles.card]}
+                              onPress={()=>{
+                                  var _order=_.cloneDeep(this.state.order)
+                                  _order.prices.map((price,i)=>{
+                                      if(price.priceId==rowData.priceId)
+                                      {
+                                          if(price.checked==true)
+                                              price.checked=false;
+                                          else
+                                              price.checked=true;
+                                      }else{
+                                          price.checked=false;
+                                      }
+                                  })
+                                this.setState({order:_order})
+                        }}
+            >
 
                 <View style={lineStyle}>
                     <View style={{borderRadius:6,width:100,justifyContent:'center',alignItems:'center'}}>
-                        <View style={{height:28,borderColor:'#aaa',borderRadius:6,borderWidth:1,paddingHorizontal:15,
+                        {
+                            rowData.checked==true?
+                                <View style={{height:28,borderColor:'rgb(255, 59, 48)',borderRadius:6,borderWidth:1,paddingHorizontal:15,
+                                justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                                    <Text style={{color:'rgb(255, 59, 48)',fontSize:12}}>已选中</Text>
+                                    <Icon name="check" size={20} color="#f1c300"></Icon>
+                                </View>:
+                                <View style={{height:28,borderColor:'#aaa',borderRadius:6,borderWidth:1,paddingHorizontal:15,
                                 justifyContent:'center',alignItems:'center'}}>
-                            <Text style={{color:'#222',fontSize:12}}>点击选中</Text>
-                        </View>
+                                    <Text style={{color:'#222',fontSize:12}}>点击选中</Text>
+                                </View>
+                        }
 
                     </View>
                     <View style={{flex:1,justifyContent:'center',alignItems:'flex-start',paddingLeft:20}}>
@@ -245,7 +249,7 @@ class CarOrderPrices extends Component{
 
                 </View>
 
-            </View>);
+            </TouchableOpacity>);
 
         return row;
     }
@@ -290,10 +294,10 @@ class CarOrderPrices extends Component{
         var state=this.state;
 
         var listView=null;
-        if(props.order.prices&&props.order.prices.length>0)
+        if(state.order.prices&&state.order.prices.length>0)
         {
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-            var dataSource= ds.cloneWithRows(props.order.prices);
+            var dataSource= ds.cloneWithRows(state.order.prices);
             listView=
                 <ScrollView>
                     <ListView
@@ -311,7 +315,7 @@ class CarOrderPrices extends Component{
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                     <View style={[{padding: 10,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
-                            height:40,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                            height:40,backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
 
                         <TouchableOpacity style={{width:80}} onPress={()=>{
                             this.goBack();
@@ -338,7 +342,7 @@ class CarOrderPrices extends Component{
                     <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
                             padding:10,borderRadius:10,justifyContent:'center'}]}
                                       onPress={()=>{
-                                             this.setState({modalVisible:true});
+                                             this.navigate2CarOrderPay();
                                           }}>
                         <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                             <Text style={{color:'#fff',fontSize:15}}>提交已选方案</Text>
@@ -360,8 +364,11 @@ var styles = StyleSheet.create({
         alignItems: 'center',
     },
     card: {
-        borderBottomWidth: 0,
-        shadowColor: '#eee',
+        borderWidth: 1,
+        backgroundColor: '#fff',
+        margin: 5,
+        padding: 2,
+        shadowColor: '#ccc',
         shadowOffset: { width: 2, height: 2, },
         shadowOpacity: 0.5,
         shadowRadius: 3,

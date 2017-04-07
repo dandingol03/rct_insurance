@@ -87,7 +87,7 @@ class Contact extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{flex:1,padding: 10,paddingTop:20,height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',flexDirection:'row',
+                <View style={{flex:1,padding: 10,paddingTop:10,height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',flexDirection:'row',
                     alignItems:'center',justifyContent:'flex-start',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
                     <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                       onPress={()=>{
