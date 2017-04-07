@@ -28,17 +28,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ChatActions from './ChatActions';
 import ChatView from './ChatView';
 
-import CustomView from './chat/CustomView';
+import CustomView from './CustomView';
 
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
 
-import WebSocket from '../components/utils/WebSocket';
+import WebSocket from '../../components/utils/WebSocket';
 import {
-    uploadAudio,
-    uploadVideo
-} from '../action/ServiceActions';
+    uploadAudioChat,
+    uploadVideoChat
+} from '../../action/ServiceActions';
 
-import AudioExample from '../../AudioExample'
 
 class Chat extends Component{
 
@@ -63,26 +62,12 @@ class Chat extends Component{
     }
 
 
-    navigate2AudioExample(audioPath){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'AudioExample',
-                component: AudioExample,
-                params: {
-                    path:audioPath
-                }
-            })
-        }
-    }
-
-
-    //上传音频
+    //上传音频:
     uploadAudio(payload){
 
         var {path}=payload;
         var audio = payload;
-        this.props.dispatch(uploadAudio(audio))
+        this.props.dispatch(uploadAudioChat({path:audio,filename:'chatter.wav'}))
     }
 
     sendWav=(attachId) =>{
@@ -116,7 +101,7 @@ class Chat extends Component{
     uploadVideo(payload){
 
         var {path}=payload;
-        this.props.dispatch(uploadVideo(path)).then((json)=>{
+        this.props.dispatch(uploadVideoChat(path)).then((json)=>{
             if(json.re==1)
             {
                 var attachId=json.data;
@@ -177,7 +162,7 @@ class Chat extends Component{
         this._isMounted = true;
         this.setState(() => {
             return {
-                messages: require('./chat/data/messages.js'),
+                messages: require('./data/messages.js'),
             };
         });
     }
@@ -197,7 +182,7 @@ class Chat extends Component{
             if (this._isMounted === true) {
                 this.setState((previousState) => {
                     return {
-                        messages: GiftedChat.prepend(previousState.messages, require('./chat/data/old_messages.js')),
+                        messages: GiftedChat.prepend(previousState.messages, require('./data/old_messages.js')),
                         loadEarlier: false,
                         isLoadingEarlier: false,
                     };

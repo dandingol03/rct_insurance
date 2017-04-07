@@ -15,7 +15,6 @@ import {
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Sound from 'react-native-sound';
-import AudioExample from '../../AudioExample';
 
 import Video from 'react-native-video';
 

@@ -11,7 +11,8 @@ import  {
     Text,
     View,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+    Modal
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -28,6 +29,7 @@ import Proxy from '../../proxy/Proxy';
 import {
     closeMessage
 } from '../../action/JpushActions';
+
 
 
 class Home extends Component{
@@ -217,6 +219,8 @@ class Home extends Component{
             userCounters:null,
             orderCounters:null,
 
+            carAttachModal:false,
+
         };
     }
 
@@ -302,7 +306,6 @@ class Home extends Component{
 
                     </View>
                 </Image>
-
 
             </View>);
     }

@@ -28,7 +28,6 @@ var {height, width} = Dimensions.get('window');
 import{
     fetchServicePersonByUnitId,
     createNewCustomerPlace,
-    generateCarServiceOrderFee,
     generateMaintainServiceOrderFee,
     generateCarServiceOrder,
     selectTab,
@@ -37,7 +36,11 @@ import{
     enableServiceOrdersClear,
     updateCandidateState,
     fetchDestinationByPersonId,
-    getServicePersonsByUnits
+    getServicePersonsByUnits,
+    uploadAudio,
+    uploadVideo,
+    createVideoAttachment,
+    updateServiceVideoAttachment
 } from '../../action/ServiceActions';
 import {
     fetchCarsNotInDetectState
@@ -136,6 +139,66 @@ class MapDailyConfirm extends Component{
     }
 
 
+    //上传视频
+    videoCheck(orderId)
+    {
+        return new Promise((resolve, reject) => {
+            if(this.state.maintain.destination.video)
+            {
+                this.props.dispatch(uploadVideo({
+                    path:this.state.maintain.destination.audio,
+                    filename:'serviceAudio.wav',
+                    orderId:orderId
+                })).then((json)=>{
+                    if(json.re==1)
+                    {
+                        var path=json.data;
+                        this.props.dispatch(createVideoAttachment({path:path,orderId:orderId})).then((json)=>{
+                            if(json.re==1)
+                            {
+                                var videoAttachId=json.data;
+                                this.props.dispatch(updateServiceVideoAttachment({videoAttachId:videoAttachId,orderId:orderId}))
+                                    .then((json)=>{
+                                        resolve(json)
+                                    })
+                            }else{
+                                //TODO:....
+                            }
+                        })
+                    }else{
+                        reject(json.data)
+                    }
+                }).catch((e)=>{
+                    reject(e)
+                })
+            }
+        });
+    }
+
+    //上传音频
+    audioCheck(orderId)
+    {
+
+        return new Promise((resolve, reject) => {
+            if(this.state.maintain.description.audio)
+            {
+                //TODO:上传音频
+                this.props.dispatch(uploadAudio({
+                    path:this.state.maintain.destination.audio,
+                    filename:'serviceAudio.wav',
+                    orderId:orderId
+                })).then((json)=>{
+                    resolve({re:1})
+                }).catch((e)=>{
+                    reject(e)
+                })
+            }else{
+                resolve({re:1})
+            }
+        });
+    }
+
+
     //生成服务订单
     generateServiceOrder()
     {
@@ -164,25 +227,30 @@ class MapDailyConfirm extends Component{
                             if(json.re==1)
                             {
 
-                                if(this.state.maintain.description.audio)
-                                {
-                                    //TODO:上传音频
-                                }
+                                //TODO:需要测试
+                                this.audioCheck(order.orderId).then((json)=>{
 
-                                if(this.state.maintain.destination.video)
-                                {
-                                    //TODO:上传视频
-                                }
+                                    if(json.re==1)
+                                    {
+                                           this.videoCheck(order.orderId).then((json)=>{
 
+                                               if(json.re==1)
+                                               {
 
-                                this.props.dispatch(selectTab({tabIndex:1}));
-                                this.props.dispatch(enableServiceOrdersRefresh());
-                                this.props.dispatch(enableServiceOrdersClear());
+                                                   this.props.dispatch(selectTab({tabIndex:1}));
+                                                   this.props.dispatch(enableServiceOrdersRefresh());
+                                                   this.props.dispatch(enableServiceOrdersClear());
 
-                                Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
+                                                   Alert.alert('信息','服务订单生成成功',[{text:'确认',onPress:()=>{
 
-                                    this.navigate2ServiceOrders();
-                                }}])
+                                                       this.navigate2ServiceOrders();
+                                                   }}])
+                                               }
+                                           })
+                                    }else{
+
+                                    }
+                                })
 
                             }
                         })
