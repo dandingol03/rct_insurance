@@ -38,7 +38,7 @@ import {
 import DateFilter from '../../filter/DateFilter';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import CarOrderPrices from '../../containers/car/CarOrderPrices';
-
+import CarOrderDetail from '../../containers/car/CarOrderDetail';
 
 class CarOrders extends Component{
 
@@ -46,6 +46,20 @@ class CarOrders extends Component{
         const { navigator } = this.props;
         if(navigator) {
             navigator.pop();
+        }
+    }
+
+    navigate2CarOrderDetail(orderId)
+    {
+        const {navigator} =this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'CarOrderDetail',
+                component: CarOrderDetail,
+                params: {
+                    orderId: orderId
+                }
+            })
         }
     }
 
@@ -74,6 +88,8 @@ class CarOrders extends Component{
 
                         if(rowData.pricedCount&&rowData.pricedCount>0)
                             this.navigate2CarOrderPrices(rowData)
+                        else
+                            this.navigate2CarOrderDetail(rowData.orderId)
                   }}>
                 <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
                     <Text style={{fontSize:13,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'yyyy-mm-dd')}</Text>
