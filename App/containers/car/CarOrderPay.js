@@ -27,9 +27,9 @@ import {saveContactInfo} from '../../action/UserActions';
 import {
     fetchRecvAddresses
 } from '../../action/CarActions';
+import UploadCarAttachModal from '../../components/modal/UploadCarAttachModal';
 
 class CarOrderPay extends Component{
-
 
     goBack(){
         const { navigator } = this.props;
@@ -37,7 +37,6 @@ class CarOrderPay extends Component{
             navigator.pop();
         }
     }
-
 
     onSubmit(val)
     {
@@ -160,7 +159,8 @@ class CarOrderPay extends Component{
             price:props.price,
             order:props.order,
             personInfo:props.personInfo,
-            fetched:false
+            fetched:false,
+            carAttachModal:false,
         };
     }
 
@@ -202,7 +202,6 @@ class CarOrderPay extends Component{
 
         return (
             <View style={styles.container}>
-
 
                 <View style={[{width:width,height:40,padding:10,paddingTop:10,alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
@@ -254,7 +253,6 @@ class CarOrderPay extends Component{
                             </View>
 
                         </View>
-
 
                         {/*发票抬头*/}
                         <View style={[styles.card,{borderWidth:1,borderBottomColor:'#ddd',borderTopColor:'#eee',borderLeftWidth:0,
@@ -363,6 +361,23 @@ class CarOrderPay extends Component{
 
                 </View>
 
+                <Modal
+                    animationType={"slide"}
+                    transparent={false}
+                    visible={this.state.carAttachModal}
+                    onRequestClose={() => {
+                            console.log("Modal has been closed.");
+                        }}
+                >
+
+                    <UploadCarAttachModal
+                        onClose={()=>{
+                                this.setState({carAttachModal:!this.state.carAttachModal});
+                            }}
+                        accessToken={this.props.accessToken}
+                    />
+
+                </Modal>
 
 
             </View>

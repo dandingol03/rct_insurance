@@ -31,7 +31,6 @@ import {
 } from '../../action/JpushActions';
 
 
-
 class Home extends Component{
 
     goBack(){
@@ -218,8 +217,6 @@ class Home extends Component{
             }),
             userCounters:null,
             orderCounters:null,
-
-            carAttachModal:false,
 
         };
     }

@@ -45,12 +45,9 @@ class CarInfoDetail extends Component{
         this[actionSheet].show();
     }
 
-
-
     setLifeInsurer(insurer){
         var lifeInsurer = insurer;
         this.setState({insurer:lifeInsurer});
-
 
     }
 
