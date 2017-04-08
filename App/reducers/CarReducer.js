@@ -3,7 +3,8 @@ import {
     SET_CAR_ORDERS_REFRESH,
     UPDATE_CAR_HISTORY_ORDERS,
     UPDATE_APPLIED_CAR_ORDERS,
-    DISABLE_CARORDERS_ONFRESH
+    DISABLE_CARORDERS_ONFRESH,
+    UPDATE_CAR_ORDER_MODIFY
 } from '../constants/OrderConstants';
 import {
     SET_CAR_MANAGE_REFRESH
@@ -16,6 +17,9 @@ const initialState = {
     onFresh:true,
     carManage:{
         onFresh:true
+    },
+    carOrdermodify:{
+        flag:false
     }
 };
 
@@ -54,6 +58,11 @@ let car = (state = initialState, action) => {
             })
             break;
 
+        case UPDATE_CAR_ORDER_MODIFY:
+            return Object.assign({}, state, {
+                carOrdermodify:Object.assign(state.carOrdermodify,action.payload)
+            })
+            break;
         default:
             return state;
     }

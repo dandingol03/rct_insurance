@@ -22,11 +22,20 @@ import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
-
-import {saveContactInfo} from '../../action/UserActions';
+import CarOrders from '../../containers/car/CarOrders';
 import {
-    fetchRecvAddresses
+    fetchRecvAddresses,
+    getOrderStateByOrderId,
+    getCarValidateState,
+    applyCarOrderPrice,
+    updateInsuranceCarOrder,
+    enableCarOrderRefresh
 } from '../../action/CarActions';
+
+import {
+    updateRootTab
+}  from '../../action/TabActions';
+
 
 class CarOrderPay extends Component{
 
@@ -38,37 +47,104 @@ class CarOrderPay extends Component{
         }
     }
 
-
-    onSubmit(val)
+    applyCarOrderPrice()
     {
-        var {field,personInfo}=this.state;
-        //TODO:make a check of val
-        switch(field)
-        {
-            case 'perName':
-                //不能含有英文
-                var reg=/\w|\s/;
-                if(reg.exec(val)!==null)
-                {
-                    this.setState({promptVisible:false});
-                    setTimeout(function () {
-                        Alert.alert(
-                            '错误',
-                            '用户名不能包含英文或者数字'
-                        );
-                    },300);
-                    return ;
-                }
-                break;
-        }
-        personInfo[field]=val;
-        this.setState({promptVisible: false, personInfo: personInfo});
+        var {price,order}=this.state;
+        var invoiceTitle=order.invoiceTitle;
+        this.props.dispatch(applyCarOrderPrice({price:price,invoiceTitle:invoiceTitle})).then((json)=>{
+            price.discount=1;
+            if(json.re==1)
+            {
+                this.props.dispatch(updateInsuranceCarOrder({order:order,price:price})).then((json)=>{
+                    if(json.re==1)
+                    {
+
+
+                        Alert.alert('信息','核保已通过,请至就近网点刷卡或银行转账:'+'\r\n'+'户名:青岛海纳汽车保险销售有限公司济南分公司高新营业部'+'\r\n'+
+                            '开户行:招商银行济南分行济南高新支行'+'\r\n'+'帐号:531904581010801',[
+                            {
+                                text:'确认',onPress:()=>{
+                                    this.props.dispatch(enableCarOrderRefresh());
+                                    this.props.dispatch(updateRootTab({tab:'my'}));
+
+                                    var {navigator} =this.props;
+                                    if(navigator) {
+                                        navigator.popToTop();
+                                    }
+
+                                }
+                            }
+                        ]);
+
+
+
+
+
+
+                    }
+                })
+            }
+        }).catch((e)=>{
+            alert(e)
+        })
+
+
     }
 
-    onApply()
+    checkCarNeedValidateWhetherOrNot()
     {
-        var {dispatch}=this.props;
-        dispatch(saveContactInfo(this.state.personInfo));
+        var {order}=this.state;
+        var carId=order.carId;
+        this.props.dispatch(getCarValidateState({carId:carId})).then((json)=>{
+            if(json.re==1)
+            {
+                //不需要验车
+                this.applyCarOrderPrice();
+            }else if(json.re==2)
+            {
+                //TODO:verify carAttachId
+
+            }else{
+                alert('返回信息不正确');
+            }
+        }).catch((e)=>{
+            alert(e)
+        })
+    }
+
+
+    //购买车险
+    apply()
+    {
+        var {order}=this.state;
+        if(order.invoiceTitle&&order.invoiceTitle!='')
+        {
+            this.props.dispatch(getOrderStateByOrderId({orderId:order.orderId})).then((json)=>{
+                if(json.re==1)
+                {
+                    var confirmed=json.data;
+                    if(confirmed==true)
+                    {
+
+                        Alert.alert(
+                            '错误',
+                            '您已支付过一次'
+                        );
+                        return ;
+                    }else{
+
+                        this.checkCarNeedValidateWhetherOrNot();
+                    }
+                }else{
+                    Alert.alert(
+                        '错误',
+                        '无效的orderId'
+                    );
+                }
+            }).catch((e)=>{
+                alert(e)
+            })
+        }
     }
 
 
@@ -160,7 +236,8 @@ class CarOrderPay extends Component{
             price:props.price,
             order:props.order,
             personInfo:props.personInfo,
-            fetched:false
+            nv:props.nv,
+            fetched:false,
         };
     }
 
@@ -356,7 +433,7 @@ class CarOrderPay extends Component{
                     <TouchableOpacity style={{width:width/2,borderRadius:8,
                         backgroundColor:'#28a54c',padding:12,alignItems:'center'}}
                                       onPress={()=>{
-                         this.onApply();
+                         this.apply();
                       }}>
                         <Text style={{color:'#fff'}}>确认购买</Text>
                     </TouchableOpacity>
