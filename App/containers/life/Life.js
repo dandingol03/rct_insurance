@@ -287,7 +287,8 @@ class Life extends Component{
         return (
 
             <View style={{flex:1}}>
-                <View style={[{flex:1,padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                <View style={[{flex:1,padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',
+                flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
                     <TouchableOpacity onPress={()=>{
                         this.goBack();
                     }}>

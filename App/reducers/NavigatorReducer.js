@@ -14,7 +14,8 @@ const initialState = {
         home:null,
         my:null,
         chat:null
-    }
+    },
+    queue:['maintain']
 };
 
 let navigatorState = (state = initialState, action) => {
@@ -23,11 +24,16 @@ let navigatorState = (state = initialState, action) => {
 
 
         case UPDATE_NAVIGATOR:
-            var {route,navigator}=action.payload;
+            var {route,navigator,queue}=action.payload;
             var _navigators=state.navigators;
-            _navigators[route]=navigator;
+            var routes=navigator.getCurrentRoutes();
+            _navigators[routes[0].name]=navigator;
+            var _queue=_.cloneDeep(state.queue)
+            if(queue)
+                _queue=queue;
             return Object.assign({}, state, {
-                navigators:_navigators
+                navigators:_navigators,
+                queue:queue
             })
             break;
         default:

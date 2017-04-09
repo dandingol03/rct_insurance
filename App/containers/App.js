@@ -14,7 +14,7 @@ import {
     TouchableOpacity,
     TouchableHighlight
 } from 'react-native';
-
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -29,6 +29,7 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import Home from './home/index';
 import My from './my/My';
 import Chat from './chat/Chat';
+import Maintain from './maintain/Maintain';
 import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
@@ -44,9 +45,14 @@ import {
 
 } from '../constants/PageStateConstants';
 
+
+import {
+    updateRootTab
+}  from '../action/TabActions';
 import {
     updateNavigator
 } from '../action/NavigatorAction';
+
 
 var WeChat = require('react-native-wechat');
 import ws from '../components/utils/WebSocket';
@@ -199,7 +205,7 @@ class App extends React.Component {
         super(props);
         this.state={
             tab:'product',
-            selectedTab:'home',
+            selectedTab:props.tab.rootTab,
             name:null,
             recved:this.props.notification.recved,
         }
@@ -265,7 +271,10 @@ class App extends React.Component {
                 selectedTitleStyle={{color:'#00c9ff'}}
                 renderIcon={() => <Icon name={icon} size={25} color="#fff"/>}
                 renderSelectedIcon={() => <Icon name={icon} size={25} color='#00c9ff' />}
-                onPress={() => this.setState({ selectedTab: route })}
+                onPress={() => {
+                    this.setState({ selectedTab: route });
+                    this.props.dispatch(updateRootTab({tab:route}));
+                }}
                 tabStyle={{backgroundColor:'transparent'}}
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
@@ -299,7 +308,9 @@ class App extends React.Component {
                         renderScene={(route, navigator) => {
                             let Component = route.component;
 
-                                //this.props.dispatch(updateNavigator({route:route.name,navigator:navigator}))
+
+                            //this.props.dispatch(updateNavigator({route:route.name,navigator:navigator}))
+
 
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
@@ -325,6 +336,7 @@ class App extends React.Component {
                     {this._createNavigatorItem('home','home')}
                     {this._createNavigatorItem('my','user-circle')}
                     {this._createNavigatorItem('chat','car')}
+
                 </TabNavigator>
             );
         }else{
@@ -449,6 +461,8 @@ export default connect(
     (state) => ({
         auth: state.user.auth,
         notification:state.notification,
-        page:state.page
+        page:state.page,
+        tab:state.tab,
+        nv:state.nv
     })
 )(App);

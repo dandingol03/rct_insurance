@@ -18,6 +18,8 @@ import  {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
+var Proxy = require('../../proxy/Proxy');
+var Config = require('../../../config');
 
 var {height, width} = Dimensions.get('window');
 
@@ -57,7 +59,6 @@ class UploadCarAttachModal extends Component{
             }
             else {
                 let source = { uri: response.uri };
-                this.setState({assetsBundle:Object.assign(this.state.assetsBundle,{[this.state.assetId]:source})});
                 switch(assetId)
                 {
                     case 'carAttachId1_img':
@@ -65,8 +66,8 @@ class UploadCarAttachModal extends Component{
                         console.log('carAttachId1_img.uri = ', response.uri);
                         break;
                     case 'carAttachId2_img':
-                        this.setState({carAttachId3_img: source});
-                        console.log('carAttachId3_img.uri = ', response.uri);
+                        this.setState({carAttachId2_img: source});
+                        console.log('carAttachId2_img.uri = ', response.uri);
                         break;
                     case 'carAttachId3_img':
                         this.setState({carAttachId3_img: source});
@@ -92,6 +93,8 @@ class UploadCarAttachModal extends Component{
     }
 
     uploadCarAttachConfirm(){
+        var accessToken = this.props.accessToken;
+
         if( this.state.carAttachId1_img!==undefined&&this.state.carAttachId1_img!==null
             &&this.state.carAttachId2_img!==undefined&&this.state.carAttachId2_img!==null
             &&this.state.carAttachId3_img!==undefined&&this.state.carAttachId3_img!==null
@@ -100,8 +103,8 @@ class UploadCarAttachModal extends Component{
             &&this.state.carAttachId6_img!==undefined&&this.state.carAttachId6_img!==null
         )
         {
-            var order=this.props.order;
             var carId=this.props.order.carId;
+
 
             var carAttachId1=null;
             var carAttachId2=null;
@@ -110,14 +113,18 @@ class UploadCarAttachModal extends Component{
             var carAttachId5=null;
             var carAttachId6=null;
 
+            var carAttachId1_img=this.state.carAttachId1_img;
+            var carAttachId2_img=this.state.carAttachId2_img;
+            var carAttachId3_img=this.state.carAttachId3_img;
+            var carAttachId4_img=this.state.carAttachId4_img;
+            var carAttachId5_img=this.state.carAttachId5_img;
+            var carAttachId6_img=this.state.carAttachId6_img;
+
             this.props.dispatch(uploadPhoto({path:carAttachId1_img,filename:'carAttachId1',
                 imageType:'carPhoto',docType:'I2',carId:carId})).then((json)=>{
                 if(json.re==1)
                 {
                     alert('upload attach1 success');
-                    for(var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
                     carAttachId1=json.data;
                 }
                 return this.props.dispatch(uploadPhoto({path:carAttachId2_img,filename:'carAttachId2',
@@ -125,9 +132,6 @@ class UploadCarAttachModal extends Component{
             }).then((json)=> {
                 if (json.re == 1) {
                     alert('upload 2 success');
-                    for (var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
                     carAttachId2 = json.data;
                 }
                 return this.props.dispatch(uploadPhoto({path:carAttachId3_img,filename:'carAttachId3',
@@ -135,9 +139,7 @@ class UploadCarAttachModal extends Component{
             }).then((json)=> {
                 if (json.re == 1) {
                     alert('upload 3 success');
-                    for (var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
+
                     carAttachId3 = json.data;
                 }
                 return this.props.dispatch(uploadPhoto({path:carAttachId4_img,filename:'carAttachId4',
@@ -145,9 +147,7 @@ class UploadCarAttachModal extends Component{
             }).then((json)=> {
                 if (json.re == 1) {
                     alert('upload 4 success');
-                    for (var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
+
                     carAttachId4 = json.data;
                 }
                 return this.props.dispatch(uploadPhoto({path:carAttachId5_img,filename:'carAttachId5',
@@ -155,9 +155,7 @@ class UploadCarAttachModal extends Component{
             }).then((json)=> {
                 if (json.re == 1) {
                     alert('upload 5 success');
-                    for (var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
+
                     carAttachId5 = json.data;
                 }
                 return this.props.dispatch(uploadPhoto({path:carAttachId6_img,filename:'carAttachId6',
@@ -165,9 +163,7 @@ class UploadCarAttachModal extends Component{
             }).then((json)=> {
                 if (json.re == 1) {
                     alert('upload 6 success');
-                    for (var field in res) {
-                        alert('field=' + field + '\r\n' + res[field]);
-                    }
+
                     carAttachId6 = json.data;
                     var ob={
                         carAttachId1:carAttachId1,
@@ -193,8 +189,8 @@ class UploadCarAttachModal extends Component{
                             }
                         }
                     }).then((json)=>{
+
                      this.close();
-                     //this.propd.applyCarOrderPrice();
 
                     }).catch((e)=>{
                         var str='';

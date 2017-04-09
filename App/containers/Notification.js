@@ -22,6 +22,7 @@ import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
+import FacebookTabBar from '../components/toolbar/FacebookTabBar';
 import _ from 'lodash';
 import {
     fetchCarOrders,
@@ -71,7 +72,7 @@ class Notification extends Component{
                 <View style={{width:2,backgroundColor:'#666',height:50}}>
                 </View>
                 <View style={{position:'absolute',left:75,top:12}}>
-                    <Icon name="circle-o" size={14} color="#00f" style={{backgroundColor:'#fff'}}/>
+                    <Icon name="circle-o" size={14} color="#00f" style={{backgroundColor:'transparent'}}/>
                 </View>
 
                 <View style={{flex:4,flexDirection:'row',justifyContent:'flex-start',alignItems:'center',padding:2,marginLeft:13,
@@ -197,8 +198,6 @@ class Notification extends Component{
 
     render(){
 
-
-
         var props=this.props;
         var state=this.state;
 
@@ -268,21 +267,21 @@ class Notification extends Component{
 
         return (
             <View style={{flex:1}}>
+                <Image resizeMode="stretch" source={require('../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-
-                <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',flexDirection:'row',
+                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',flexDirection:'row',
                     alignItems:'center',justifyContent:'flex-start',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
                     <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                       onPress={()=>{
                                           this.goBack();
                                       }}>
 
-                        <Icon name="angle-left" size={40} color="#222"></Icon>
+                        <Icon name="angle-left" size={40} color="#fff"></Icon>
                     </TouchableOpacity>
 
 
                     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{color:'#222',fontWeight:'bold'}}>通知</Text>
+                        <Text style={{color:'#fff',fontWeight:'bold'}}>通知</Text>
                     </View>
 
                     <TouchableOpacity style={{width:80,justifyContent:'center',paddingLeft:30}}
@@ -291,17 +290,18 @@ class Notification extends Component{
                                             dispatch(enableCarOrdersOnFresh());
                                       }}
                     >
-                        <Icon name='repeat' size={24} color='#555'/>
+                        <Icon name='repeat' size={24} color='#fff'/>
                     </TouchableOpacity>
 
                 </View>
 
 
-                <ScrollableTabView style={{flex:1,padding:0,margin:0}} onChangeTab={(data)=>{
-                        var tabIndex=data.i;
-                        this.state.selectedTab=tabIndex;
-                    }} renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0}} activeTextColor="#00c9ff"  inactiveTextColor="#222" underlineStyle={{backgroundColor:'#00c9ff'}}/>}
-                >
+                <ScrollableTabView style={{flex:1,padding:0,margin:0}}
+                                   onChangeTab={(data)=>{
+                                        var tabIndex=data.i;
+                                        this.state.selectedTab=tabIndex;
+                                    }}
+                                   renderTabBar={() =>  <FacebookTabBar />}>
                     <View tabLabel='车险' style={{flex:1}}>
                         {/*body*/}
                         <View style={{padding:20,height:height-264}}>
@@ -332,7 +332,7 @@ class Notification extends Component{
 
                 </ScrollableTabView>
 
-
+                </Image>
             </View>);
     }
 }

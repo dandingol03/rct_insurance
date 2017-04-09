@@ -13,6 +13,8 @@ import notification from './NotificationReducer';
 import pageState from './PageStateReducer';
 import WsReducer from './WsReducer';
 import NvReducer from './NavigatorReducer';
+import tabReducer from './tabReducer';
+
 
 export default rootReducer = combineReducers({
     user,
@@ -24,5 +26,6 @@ export default rootReducer = combineReducers({
     notification:notification,
     page:pageState,
     ws:WsReducer,
-    nv:NvReducer
+    nv:NvReducer,
+    tab:tabReducer
 })

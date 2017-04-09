@@ -5,9 +5,9 @@ import {
     SET_CAR_HISTORY_ORDERS,
     SET_CAR_PRICED_ORDERS,
     SET_CAR_APPLYED_ORDERS,
-
     ENABLE_CARORDERS_ONFRESH,
     DISABLE_CARORDERS_ONFRESH,
+    UPDATE_CAR_ORDER_MODIFY
 } from '../constants/OrderConstants';
 
 import {
@@ -29,13 +29,13 @@ export let enableCarOrderRefresh=()=>{
 }
 let disableCarOrdersOnFresh=()=>{
     return {
-        type:types.DISABLE_CARORDERS_ONFRESH
+        type:DISABLE_CARORDERS_ONFRESH
     }
 }
 
 let setCarOrdersInHistory=(orders)=>{
     return {
-        type:types.SET_CAR_HISTORY_ORDERS,
+        type:SET_CAR_HISTORY_ORDERS,
         orders:orders
     }
 }
@@ -54,6 +54,178 @@ let setCarOrdersInApplyed=(orders)=>{
     }
 }
 
+export let updateCarOrderModify=(payload)=>{
+    return {
+        type:UPDATE_CAR_ORDER_MODIFY,
+        payload:payload
+    }
+}
+
+export let updateInsuranceCarOrder=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {order,price}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'updateInsuranceCarOrder',
+                    info: {
+                        orderId: order.orderId,
+                        fields:{
+                            insurerId:19,
+                            companyId:price.companyId,
+                            discount:price.discount,
+                            benefit:price.benefit,
+                            insuranceFeeTotal:price.insuranceFeeTotal,
+                            contractFee:price.contractFee,
+                            commission:price.commission,
+                            score:price.score,
+                            exchangeMoney:price.exchangeMoney,
+                            orderDate:new Date()
+                        }
+
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+export let applyCarOrderPrice=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {price,invoiceTitle}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'applyCarOrderPrice',
+                    info: {
+                        price: price,
+                        invoiceTitle:invoiceTitle
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+export let getCarValidateState=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {carId}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarValidateState',
+                    info:{
+                        carId:carId
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+
+export let getOrderStateByOrderId=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {orderId}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getOrderStateByOrderId',
+                    info:{
+                        orderId:orderId,
+                        type:'car'
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        })
+    }
+}
+
+
+
+//修改车险订单状态
+export let updateCarOrderState=(payload)=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state = getState();
+            var accessToken = state.user.accessToken;
+            var {orderId,orderState}=payload;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'updateCarOrderState',
+                    info:{
+                        orderId:orderId,
+                        orderState:orderState
+                    }
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
 
 //拉取车险订单和相关产品
 export let fetchApplyedCarOrderByOrderId=(payload)=>{

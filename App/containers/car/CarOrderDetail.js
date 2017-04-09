@@ -23,8 +23,9 @@ var {height, width} = Dimensions.get('window');
 import DateFilter from '../../filter/DateFilter';
 import {saveContactInfo} from '../../action/UserActions';
 import {
-    fetchRecvAddresses,
-    fetchApplyedCarOrderByOrderId
+    fetchApplyedCarOrderByOrderId,
+    updateCarOrderState,
+    updateCarOrderModify
 } from '../../action/CarActions';
 
 class CarOrderDetail extends Component{
@@ -37,12 +38,20 @@ class CarOrderDetail extends Component{
         }
     }
 
-    onApply()
+    modifyOrder()
     {
-        var {dispatch}=this.props;
-        dispatch(saveContactInfo(this.state.personInfo));
-    }
+        var {orderId,order}=this.state;
+        this.props.dispatch(updateCarOrderState({orderId:orderId,orderState:0})).then((json)=>{
+            if(json.re==1)
+            {
+                //TODO:make a dispatch
+                this.props.dispatch(updateCarOrderModify({orderId:orderId,carId:order.carId,flag:true}));
 
+            }
+        }).catch((e)=>{
+            alert(e)
+        })
+    }
 
     renderProductRow(rowData,sectionId,rowId){
 
@@ -117,13 +126,13 @@ class CarOrderDetail extends Component{
         });
     }
 
-
     constructor(props) {
         super(props);
         this.state={
             orderId:props.orderId,
             personInfo:props.personInfo,
-            fetched:false
+            car:props.car,
+            fetched:false,
         };
     }
 
@@ -181,26 +190,32 @@ class CarOrderDetail extends Component{
                 <ScrollView>
                     <View style={{padding:0}}>
 
-                        <View style={[styles.row,{padding:8,paddingHorizontal:12,backgroundColor:'#eee'}]}>
+                        <View style={[styles.row,{padding:7,paddingHorizontal:12,backgroundColor:'#eee'}]}>
                             <Text style={{color:'#222',fontSize:14,fontWeight:'bold'}}>编号</Text>
                         </View>
-                        <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'#222'}}>车牌号:</Text>
-                            </View>
-                            <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'#222'}}>{state.order.carInfo.carNum}</Text>
-                            </View>
-                        </View>
+                        {
+                            state.order&&state.order.carInfo?
+                                <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
+                                    <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'#222'}}>车牌号:</Text>
+                                    </View>
+                                    <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'#222'}}>{state.order.carInfo.carNum}</Text>
+                                    </View>
+                                </View>:null
+                        }
 
-                        <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'#222'}}>订单号:</Text>
-                            </View>
-                            <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'#222'}}>{state.order.orderNum}</Text>
-                            </View>
-                        </View>
+                        {
+                            state.order?
+                                <View style={[styles.row,{padding:7,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
+                                    <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'#222'}}>订单号:</Text>
+                                    </View>
+                                    <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'#222'}}>{state.order.orderNum}</Text>
+                                    </View>
+                                </View>:null
+                        }
 
 
                         {/*订单产品*/}
@@ -211,28 +226,31 @@ class CarOrderDetail extends Component{
                         {productList}
 
 
+                        {
+                            state.order?
+                                <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
+                                    <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>被保险人:</Text>
+                                    </View>
+                                    <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>{state.order.insuranceder.perName}</Text>
+                                    </View>
+                                </View>:null
+                        }
 
-                        <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>被保险人:</Text>
-                            </View>
-                            <View style={{flex:2,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>{state.order.insuranceder.perName}</Text>
-                            </View>
-                        </View>
-
-
-                        <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
-                            <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>申请日期:</Text>
-                            </View>
-                            <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
-                                <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>
-                                    {DateFilter.filter(state.order.applyTime,'yyyy-mm-dd hh:mm')}
-                                </Text>
-                            </View>
-                        </View>
-
+                        {
+                            state.order?
+                                <View style={[styles.row,{padding:8,paddingHorizontal:12,borderBottomWidth:1,borderColor:'#aaa'}]}>
+                                    <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>申请日期:</Text>
+                                    </View>
+                                    <View style={{flex:3,alignItems:'flex-start',justifyContent:'center'}}>
+                                        <Text style={{color:'rgba(228, 93, 46, 0.87)'}}>
+                                            {DateFilter.filter(state.order.applyTime,'yyyy-mm-dd hh:mm')}
+                                        </Text>
+                                    </View>
+                                </View>:null
+                        }
 
                     </View>
                 </ScrollView>
@@ -240,19 +258,21 @@ class CarOrderDetail extends Component{
 
 
 
-                {/*保存提交*/}
-                <View style={{ flex:3,width:width,alignItems:'center',marginTop:20}}>
+                {/*修改订单*/}
+                {
+                    state.car.carOrdermodify.flag!=true?
+                        <View style={{ flex:3,width:width,alignItems:'center',marginTop:20}}>
 
-                    <TouchableOpacity style={{width:width/2,borderRadius:8,
-                        backgroundColor:'#28a54c',padding:12,alignItems:'center'}}
-                                      onPress={()=>{
-                         this.onApply();
-                      }}>
-                        <Text style={{color:'#fff'}}>修改订单</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={{width:width/2,borderRadius:8,
+                                backgroundColor:'#11c1f3',padding:12,alignItems:'center'}}
+                                                      onPress={()=>{
+                                 this.modifyOrder();
+                              }}>
+                                <Text style={{color:'#fff'}}>修改订单</Text>
+                            </TouchableOpacity>
 
-                </View>
-
+                        </View>:null
+                }
 
 
             </View>
@@ -301,7 +321,9 @@ const mapStateToProps = (state, ownProps) => {
 
     var personInfo=state.user.personInfo;
     var score=state.user.score;
+    var car=state.car;
     return {
+        car:car,
         personInfo,
         score,
         ...ownProps,

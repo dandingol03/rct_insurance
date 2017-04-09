@@ -132,13 +132,8 @@ class CarOrders extends Component{
         return row;
     }
 
-
-
-
-
     //拉取订单数据
     fetchData(){
-
         this.state.doingFetch=true;
 
         var historyOrders=null;
