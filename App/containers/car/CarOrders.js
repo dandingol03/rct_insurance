@@ -101,17 +101,20 @@ class CarOrders extends Component{
                             {rowData.orderNum}
                         </Text>
                         {
-                            rowData.orderState==2?
+                            rowData.orderState==3?
                                 <Text style={{color:'#222',fontSize:13,padding:2,fontWeight:'bold'}}>
-                                    客户确认
-                                </Text>:
-                                rowData.pricedCount&&rowData.pricedCount>0?
-                                <Text style={{color:'#ff4f39',fontSize:13,padding:2}}>
-                                    已报价公司数: <Text style={{color:'#222',fontWeight: 'bold',fontSize:13}}>{rowData.pricedCount}</Text>
-                                </Text>:
+                                    已完成
+                                </Text>:rowData.orderState==2?
                                     <Text style={{color:'#222',fontSize:13,padding:2,fontWeight:'bold'}}>
-                                        已申请
-                                    </Text>
+                                        客户确认
+                                    </Text>:
+                                    rowData.pricedCount&&rowData.pricedCount>0?
+                                    <Text style={{color:'#ff4f39',fontSize:13,padding:2}}>
+                                        已报价公司数: <Text style={{color:'#222',fontWeight: 'bold',fontSize:13}}>{rowData.pricedCount}</Text>
+                                    </Text>:
+                                        <Text style={{color:'#222',fontSize:13,padding:2,fontWeight:'bold'}}>
+                                            已申请
+                                        </Text>
                         }
                     </View>
                 </View>

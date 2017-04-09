@@ -262,9 +262,10 @@ class CarOrderDetail extends Component{
 
 
 
+
                 {/*修改订单*/}
                 {
-                    state.car.carOrdermodify.flag!=true?
+                    state.car.carOrdermodify.flag!=true&&state.order.orderState!=3?
                         <View style={{ flex:3,width:width,alignItems:'center',marginTop:20}}>
 
                             <TouchableOpacity style={{width:width/2,borderRadius:8,
