@@ -139,7 +139,6 @@ class CarManage extends Component{
         });
     }
 
-
     renderRow(rowData,sectionId,rowId){
 
         var lineStyle=null;
@@ -239,8 +238,6 @@ class CarManage extends Component{
 
         return row;
     }
-
-
 
     fetchData(){
 

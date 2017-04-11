@@ -17,8 +17,8 @@ import { connect } from 'react-redux';
 import AudioChat from '../../components/modal/AudioChat';
 import VideoChat from '../../components/modal/VideoChat';
 import {
-    uploadAudio,
-    uploadVideo
+    uploadAudioChat,
+    uploadVideoChat,
 } from '../../action/ServiceActions';
 
 class ChatActions extends Component{
@@ -44,12 +44,10 @@ class ChatActions extends Component{
 
         var {path}=payload;
         var audio = payload;
-        this.props.dispatch(uploadAudio(audio)).then((json)=>{
+        this.props.dispatch(uploadAudioChat(audio)).then((json)=>{
             console.log('uploadAudio.json,re======'+json.re);
             if(json.re==1)
             {
-                // var attachId=json.data;
-                // this.sendWav(attachId);
                 this.props.onSend({
                     audio: {
                         path:audio.path,
@@ -72,11 +70,9 @@ class ChatActions extends Component{
         var {path}=payload;
         var video = payload;
 
-        this.props.dispatch(uploadVideo(path)).then((json)=>{
+        this.props.dispatch(uploadVideoChat(path)).then((json)=>{
             if(json.re==1)
             {
-                // var attachId=json.data;
-                // this.sendVideo(attachId);
                 this.props.onSend({
                     video: {
                         path:video.path,

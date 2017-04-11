@@ -38,6 +38,8 @@ class AudioChat extends Component{
     }
 
     sendAudio(){
+        // this.state.audio={path:'file:///var/mobile/Containers/Data/Application/54E4BFED-8439-4938-9045-D6E478CCC532/Documents/test.aac',
+        // duration:3};
         if(this.state.audio!==undefined&&this.state.audio!==null){
             this.props.setAudio(this.state.audio);
             this.close();

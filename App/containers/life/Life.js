@@ -169,7 +169,6 @@ class Life extends Component{
         });
     }
 
-
     navigate2LifeOrders(){
         const { navigator } = this.props;
         if(navigator) {

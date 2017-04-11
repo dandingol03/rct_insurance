@@ -29,7 +29,8 @@ import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-s
 import Home from './home/index';
 import My from './my/My';
 import Chat from './chat/Chat';
-import Maintain from './maintain/Maintain';
+import HandPickedProduct from './HandPickedProduct';
+
 import {fetchAccessToken} from '../action/UserActions';
 import {
     createNotification,
@@ -49,6 +50,7 @@ import {
 import {
     updateRootTab
 }  from '../action/TabActions';
+
 import {
     updateNavigator
 } from '../action/NavigatorAction';
@@ -224,6 +226,9 @@ class App extends React.Component {
             case 'chat':
                 component=Chat;
                 break;
+            case 'product':
+                component=HandPickedProduct;
+                break;
             default:
                 break;
         }
@@ -260,7 +265,6 @@ class App extends React.Component {
                 );
             }
         };
-
 
 
         return (
@@ -334,6 +338,7 @@ class App extends React.Component {
             return (
                 <TabNavigator  tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     {this._createNavigatorItem('home','home')}
+                    {this._createNavigatorItem('product','thumbs-o-up')}
                     {this._createNavigatorItem('my','user-circle')}
                     {this._createNavigatorItem('chat','car')}
 
@@ -404,6 +409,7 @@ class App extends React.Component {
 
 
     }
+
     onReceiveMessage(message) {
         //TODO:make a notification through
         var notification=message._data;

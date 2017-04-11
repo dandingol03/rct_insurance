@@ -7,6 +7,9 @@
 import React,{Component} from 'react';
 
 import  {
+    Modal,
+    ActivityIndicator,
+    ListView,
     AppRegistry,
     Animated,
     Easing,
@@ -26,40 +29,17 @@ import { connect } from 'react-redux';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AudioExample from '../../AudioExample';
+
 import Config from '../../config';
 import Proxy from '../proxy/Proxy';
-import MaintainExample from '../../MaintainExample';
+
 
 class HandPickedProduct extends Component{
 
-    navigate2AudioExample(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'audioExample',
-                component: AudioExample,
-                params: {
 
-                }
-            })
-        }
-    }
+    //拉取寿险产品
+    fetchProducts() {
 
-    navigate2MaintainExample(){
-        const { navigator } = this.props;
-        if(navigator) {
-            navigator.push({
-                name: 'maintainExample',
-                component: MaintainExample,
-                params: {
-
-                }
-            })
-        }
-    }
-
-    sendNotification(){
         Proxy.post({
             url:Config.server+'/svr/request',
             headers: {
@@ -67,191 +47,122 @@ class HandPickedProduct extends Component{
                 'Content-Type': 'application/json'
             },
             body: {
-                request:'sendNotification',
+                request:'fetchLifeProduct',
             }
         },(json)=> {
-            if(json.re==1){
-                console.log('发送成功');
+            if(json.re==1) {
+                if(json.data!==undefined&&json.data!==null)
+                {
+                    this.state.products=json.data;
+                    this.setState({products:json.data});
+
+                }
             }
-            else{
-                console.log('发送失败');
-            }
+
         }, (err) =>{
+            for(var field in err)
+                str+=err[field];
+            console.error('err=\r\n'+str);
         });
+}
+
+
+    renderRow(rowData,sectionId,rowId){
+
+        var row=
+            <View style={{padding:10}}>
+                <View>
+                    <Image style={styles.logo} source={require('../img/lifeBetter.jpg')} />
+                </View>
+
+                <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                    <Text style={{margin:10,}}>{rowData.productName}</Text>
+
+                    <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',margin:10}}>
+                        <Text style={{color:'#e2511c'}}>保额：$</Text>
+                        <Text style={{color:'#e2511c'}}>{rowData.insuranceQuota}</Text>
+                    </View>
+
+                </View>
+            </View>;
+
+        return row;
     }
+
 
 
     constructor(props) {
         super(props);
         this.state={
-            mode:'text',
-            audio:{mode:'stopped'},
-            record:false,
-            send:false,
-            toolsShowFlag:false,
-            fadeInOpacity: new Animated.Value(0), // 初始值
-            text:null,
-            avatarSource:null,
+            products:null,
+            doingFetch:false,
+
         };
     }
 
     render() {
 
+        var listView=null;
+        const products=this.state.products;
+        if(products!==undefined&&products!==null&&Object.prototype.toString.call(products)=='[object Array]')
+        {
+            var data=products;
+            var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+            listView=
+                <ScrollView>
+                    <ListView
+                        automaticallyAdjustContentInsets={false}
+                        dataSource={ds.cloneWithRows(data)}
+                        renderRow={this.renderRow.bind(this)}
+
+                    />
+                </ScrollView>;
+        }else{
+            if(this.state.doingFetch==false)
+                this.fetchProducts();
+        }
+
+
         return (
             <View style={{flex:1}}>
 
                 <View style={{flex:1,backgroundColor:'rgba(17, 17, 17, 0.6)',justifyContent: 'center',alignItems: 'center',}}>
-                    <Text style={{color:'#fff',fontSize:15,paddingTop:10}}>客服咨询</Text>
+                    <Text style={{color:'#fff',fontSize:15,paddingTop:10}}>精选产品</Text>
                 </View>
 
-                <View style={{flex:10,justifyContent: 'center',alignItems: 'center'}}>
+                <View style={{flex:12,justifyContent: 'center',alignItems: 'center'}}>
 
-                    <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
-                        this.navigate2AudioExample();
-                             }}>
-                        <View>
-                            <Text style={{fontSize: 30}}>AudioExample</Text>
-                        </View>
-
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
-                        this.navigate2MaintainExample();
-                             }}>
-                        <View>
-                            <Text style={{fontSize: 30}}>MaintainExample</Text>
-                        </View>
-
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{flex:1,alignItems: 'center',justifyContent: 'center',backgroundColor: 'white',}} onPress={()=>{
-                        this.sendNotification();
-                             }}>
-                        <View>
-                            <Text style={{fontSize: 30}}>sendNotification</Text>
-                        </View>
-
-                    </TouchableOpacity>
-
-                </View>
-
-                <View style={{flex:1,backgroundColor:'#ddd',justifyContent: 'center',alignItems: 'center',flexDirection:'row'}}>
-
-                    <View style={{flex:9,justifyContent: 'center',alignItems: 'center',flexDirection:'row'}}>
-                        {
-                            this.state.mode=='audio'?
-                                <View style={{justifyContent: 'center',alignItems: 'center',flexDirection:'row',padding:5}}>
-                                    <TouchableOpacity style={{flex:1,marginRight:5,paddingTop:3,justifyContent: 'center',alignItems: 'center',}}
-                                                      onPress={()=>{
-                                                    var record = this.state.record;
-                                                    this.setState({mode:'record'})
-                                                }}>
-                                        <Icon name="keyboard-o" size={25} color="#343434" />
-                                    </TouchableOpacity>
-
-                                    {
-                                        this.state.audio.mode=='stopped'?
-                                            <TouchableOpacity style={{flex:5,backgroundColor:'#fff',height:25,borderRadius:6,borderWidth:1,borderColor:'#ddd',
-                                              justifyContent: 'center',alignItems: 'center'}}
-                                                              onPress={()=>{
-                                                    var audio = {mode:'recording'};
-                                                    this.setState({audio:audio})
-                                                }}>
-                                                <View>
-                                                    <Text>按住我说话</Text>
-                                                </View>
-                                            </TouchableOpacity>:
-                                            <TouchableOpacity style={{flex:5,backgroundColor:'#fff',height:25,borderRadius:6,borderWidth:1,borderColor:'#ddd',
-                                 justifyContent: 'center',alignItems: 'center'}}
-                                                              onPress={()=>{
-                                                    var audio = {mode:'stopped'};
-                                                    this.setState({audio:audio})
-                                                }}>
-                                                <View>
-                                                    <Text>正在录音...</Text>
-                                                </View>
-                                            </TouchableOpacity>
-
-                                    }
-
-                                </View>
-                                :
-                                <View style={{justifyContent: 'center',alignItems: 'center',flexDirection:'row',padding:5}}>
-                                    <TouchableOpacity  style={{flex:1,marginLeft:5,paddingTop:3,justifyContent: 'flex-start',alignItems: 'flex-start'}}
-                                                       onPress={()=>{
-                                                    var record = this.state.record;
-                                                    this.setState({mode:'audio'})
-                                                }
-                                                }>
-                                        <Icon name="microphone" size={25} color="#343434"/>
-                                    </TouchableOpacity>
-                                    <View style={{flex:8,backgroundColor:'#fff',height:25,borderRadius:6,borderWidth:1,borderColor:'#ddd',
-                                  justifyContent: 'center',alignItems: 'center'}}>
-                                        <TextInput
-                                            style={{height:30,fontSize:15}}
-                                            onChangeText={(planFee) =>
-                              {
-
-                              }}
-                                            placeholderTextColor="#aaa"
-                                            underlineColorAndroid="transparent"
-                                        />
-                                    </View>
-                                </View>
-                        }
-
+                    <View style={{padding:8,paddingLeft:0,paddingRight:0,height:height-100}}>
+                        {listView}
                     </View>
-
-                    <View style={{flex:1,padding:5}}>
-                        {
-                            this.state.send?
-                                <Icon name="send" size={25} color="#343434" />:
-
-                                <TouchableOpacity  style={{flex:1,marginLeft:5,paddingTop:3,justifyContent: 'flex-start',alignItems: 'flex-start'}}
-                                                   onPress={()=>{
-                                                 if(this.state.toolsShowFlag==false){
-                                                    var toolsShowFlag = this.state.toolsShowFlag;
-                                                    this.setState({toolsShowFlag:!toolsShowFlag});
-                                                    Animated.timing(this.state.fadeInOpacity, {
-                                                    toValue: 1, // 目标值
-                                                    duration: 2500, // 动画时间
-                                                    easing: Easing.linear // 缓动函数
-                                                    }).start();
-                                                 }
-                                                 if(this.state.toolsShowFlag==true){
-                                                    Animated.timing(this.state.fadeInOpacity, {
-                                                    toValue:0, // 目标值
-                                                    duration: 2500, // 动画时间
-                                                    easing: Easing.linear // 缓动函数
-                                                    }).start(function(){
-                                                    var toolsShowFlag = this.state.toolsShowFlag;
-                                                    this.setState({toolsShowFlag:!toolsShowFlag});
-                                                    });
-                                                 }
-
-                                                }
-                                                }>
-                                    <Icon name="plus-circle" size={25} color="#343434" />
-                                </TouchableOpacity>
-
-                        }
-                    </View>
-
                 </View>
 
-                {
-                    this.state.toolsShowFlag?
-                        <Animated.View style={{flex:2,backgroundColor:'#ddd',justifyContent:'flex-start',alignItems: 'center',
-                     flexDirection:'row',padding:8,opacity:this.state.fadeInOpacity}}>
-                            <View style={{flex:2,backgroundColor:'#fff',justifyContent:'flex-start',alignItems: 'center',flexDirection:'row',
-                          borderRadius:8,padding:8}}>
-                                <View>
-                                    <Icon name="youtube-play" size={35} color="#343434" />
-                                    <Text style={{fontSize:12}}>小视频</Text>
-                                </View>
+                {/*loading模态框*/}
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+
+                    <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
+                                      onPress={()=>{
+                                            //TODO:cancel this behaviour
+                                          }}>
+
+                        <View style={{width:width*2/3,height:80,backgroundColor:'rgba(60,60,60,0.9)',position:'relative',
+                                        justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                            <ActivityIndicator
+                                animating={true}
+                                style={[styles.loader, {height: 40,position:'absolute',top:8,right:20,transform: [{scale: 1.6}]}]}
+                                size="large"
+                                color="#00BFFF"
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
+                                <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
+                                    拉取精选产品...
+                                </Text>
+
                             </View>
-                        </Animated.View>:null
-                }
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
 
             </View>
         )
@@ -268,12 +179,10 @@ var styles = StyleSheet.create({
     tabContainer:{
         marginTop: 30
     },
-    imageStyle: {
-        width: 70,
-        height: 70,
-        marginTop: 10,
-        backgroundColor: 'gray'
-    }
+    logo:{
+        width:width-20,
+        height:230
+    },
 });
 
 
