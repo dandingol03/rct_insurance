@@ -161,7 +161,7 @@ class Audio extends Component {
                 });
 
                 setTimeout(() => {
-                    whoosh.setVolume(100);
+                    sound.setVolume(100);
                     sound.play((success) => {
                         if (success) {
                             console.log('successfully finished playing');

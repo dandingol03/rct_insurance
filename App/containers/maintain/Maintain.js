@@ -25,7 +25,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 
 import VideoPlayer from './VideoPlayer.js';
-import Audio from './Audio.js';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import BaiduHome from '../map/BaiduHome';
@@ -69,6 +68,20 @@ class Maintain extends Component{
         }
     }
 
+
+    navigate2AudioExample(audioPath)
+    {
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.push({
+                name: 'audioExample',
+                component: AudioExample,
+                params: {
+                    path:audioPath
+                }
+            })
+        }
+    }
 
     navigate2BaiduHome()
     {
@@ -345,6 +358,7 @@ class Maintain extends Component{
                 });
 
                 setTimeout(() => {
+                    sound.setVolume(10);
                     sound.play((success) => {
                         if (success) {
                             console.log('successfully finished playing');
@@ -388,9 +402,10 @@ class Maintain extends Component{
     _finishRecording(didSucceed, filePath) {
         this.setState({ finished: didSucceed });
         var _maintain=_.cloneDeep(this.state.maintain);
-        _maintain.description.audio=this.state.audioPath
+        _maintain.description.audio=this.state.audioPath;
         this.setState({maintain:_maintain});
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
+
     }
 
     //进行维修业务的保存
@@ -456,7 +471,7 @@ class Maintain extends Component{
             },
             miles:0,
             routineName:'',
-            maintain:{},
+            maintain:{description:{}},
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
             currentTime: 0.0,
             recording: false,
@@ -790,7 +805,8 @@ class Maintain extends Component{
 
                                                 <TouchableOpacity  onPress={
                                                     ()=>{
-                                                        this._play();
+                                                       this._play();
+                                                       //this.navigate2AudioExample(this.state.audioPath);
                                                     }
                                                 }>
                                                     <View>

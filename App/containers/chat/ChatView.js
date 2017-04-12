@@ -14,50 +14,68 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Sound from 'react-native-sound';
+// import Sound from 'react-native-sound';
+const Sound = require('react-native-sound');
 
 import Video from 'react-native-video';
 
 
 export default class ChatView extends React.Component {
 
-    async _play(audioPath) {
 
-        if (this.state.recording) {
-            await this._stop();
-        }
+    playAudioMessage(path){
 
-        // These timeouts are a hacky workaround for some issues with react-native-sound.
-        // See https://github.com/zmxv/react-native-sound/issues/89.
-        setTimeout(() => {
-            console.log(this.state.audioPath);
-            try{
-                var sound = new Sound(audioPath,'', (error) => {
-                    if (error) {
-                        console.log('failed to load the sound', error);
-                    }
-                });
+            setTimeout(() => {
+                console.log('++++path===='+path);
 
-                setTimeout(() => {
-                    sound.play((success) => {
-                        if (success) {
-                            console.log('successfully finished playing');
-                        } else {
-                            console.log('playback failed due to audio decoding errors');
+                try{
+                    var sound = new Sound(path, '', (error) => {
+                        if (error) {
+                            console.log('failed to load the sound', error);
+                        }else{
+                            setTimeout(() => {
+                                sound.setVolume(10);
+
+                                this.setState({isPlaying:true});
+                                sound.play((success) => {
+                                    if (success) {
+                                        console.log('successfully finished playing');
+                                        this.setState({isPlaying:false});
+                                    } else {
+                                        console.log('playback failed due to audio decoding errors');
+                                        this.setState({isPlaying:false});
+                                    }
+                                });
+
+                                if(this.state.stop==true){
+                                    sound.stop();
+                                    this.setState({stop:false});
+                                }
+
+                            }, 100);
+
                         }
                     });
-                }, 100);
-            }catch(e)
-            {
-                alert(e)
-            }
-        }, 100);
-    }
 
+                    if(this.state.isPlaying==true){
+                        sound.stop();
+                        this.setState({isPlaying:false});
+                    }
+
+
+                }catch(e)
+                {
+                    this.setState({isPlaying:false});
+                    alert(e)
+                }
+            }, 100);
+
+    }
 
 
     constructor(props) {
         super(props);
+        Sound.setCategory('Playback', true); // true = mixWithOthers
         const { accessToken } = this.props;
         const { navigator } = this.props;
 
@@ -75,6 +93,8 @@ export default class ChatView extends React.Component {
             skin: 'custom',
             isBuffering: false,
 
+            isPlaying:false,
+            stop:false,
         };
     }
 
@@ -116,7 +136,12 @@ export default class ChatView extends React.Component {
             return (
                 <TouchableOpacity style={{borderTopLeftRadius:6,borderTopRightRadius:6,padding:4,justifyContent: 'center',alignItems: 'center',flexDirection:'row',}}
                                   onPress={() => {
-                                      this._play(this.props.currentMessage.audio.path);
+                                       this.playAudioMessage(this.props.currentMessage.audio.path);
+                                       if(this.state.isPlaying==true&&this.state.stop==false){
+                                           this.setState({stop:!this.state.stop});
+                                       }
+
+
                                   }}>
                     <Icon name="volume-up" size={25} color="#fff" />
                     <Text style={{marginLeft:10,color:'#fff'}}>{this.props.currentMessage.audio.duration}s</Text>

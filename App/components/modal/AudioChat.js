@@ -25,7 +25,7 @@ var Proxy = require('../../proxy/Proxy');
 var Config = require('../../../config');
 import Sound from 'react-native-sound';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
-
+var RNFS = require('react-native-fs');
 
 class AudioChat extends Component{
 
@@ -38,8 +38,7 @@ class AudioChat extends Component{
     }
 
     sendAudio(){
-        // this.state.audio={path:'file:///var/mobile/Containers/Data/Application/54E4BFED-8439-4938-9045-D6E478CCC532/Documents/test.aac',
-        // duration:3};
+
         if(this.state.audio!==undefined&&this.state.audio!==null){
             this.props.setAudio(this.state.audio);
             this.close();
@@ -61,12 +60,74 @@ class AudioChat extends Component{
     }
 
     componentDidMount() {
+
         this._checkPermission().then((hasPermission) => {
             this.setState({ hasPermission });
 
             if (!hasPermission) return;
 
-            this.prepareRecordingPath(this.state.audioPath);
+            var dir = RNFS.DocumentDirectoryPath+'/audioMessage';
+            console.log('dir='+dir);
+
+            var isExists = null;
+
+            RNFS.exists(dir).then((exist)=>{
+                isExists = exist;
+                console.log('exist==='+isExists);
+
+                if(isExists==true){
+                    RNFS.readDir(dir)
+                        .then((result) => {
+                            console.log('audioMessage中包含的文件', result);
+
+                            var max=0;
+                            result.map((item,i)=>{
+                                var filename=item.path;
+                                filename = filename.substr(filename.length-20);
+                                console.log('filename====='+filename);
+                                var reg=/.*?\/(.*)\.aac/;
+                                if(reg.exec(filename)&&reg.exec(filename)[1])
+                                {
+                                    var serialNum=parseInt(reg.exec(filename)[1]);
+                                    console.log('serialNum====='+serialNum);
+                                    if(serialNum>=max)
+                                        max=(serialNum+1);
+                                }
+                            });
+
+                            while(max.toString().length<3)
+                                max='0'+max;
+                            this.state.audioNum = max;
+                            this.state.audioPath = RNFS.DocumentDirectoryPath+'/audioMessage/'+max+'.aac';
+                            this.prepareRecordingPath(this.state.audioPath);
+
+
+                        })
+                        .catch((err) => {
+                            console.log(err.message, err.code);
+                        });
+                }else{
+                    RNFS.mkdir(RNFS.DocumentDirectoryPath+'/audioMessage');
+
+                    RNFS.readDir( RNFS.DocumentDirectoryPath)
+                        .then((result) => {
+                            console.log('GOT RESULT', result);
+
+                            this.state.audioPath = RNFS.DocumentDirectoryPath+'/audioMessage/000.aac';
+                            this.state.audioNum = 0;
+                            this.prepareRecordingPath(this.state.audioPath);
+
+                        })
+                        .catch((err) => {
+                            console.log(err.message, err.code);
+                        });
+
+                }
+
+            })
+
+
+            //this.prepareRecordingPath(this.state.audioPath);
 
             AudioRecorder.onProgress = (data) => {
                 this.setState({currentTime: Math.floor(data.currentTime)});
@@ -133,6 +194,8 @@ class AudioChat extends Component{
             }
             return filePath;
 
+            console.log('stopFilePath====='+filePath);
+
         } catch (error) {
             console.error(error);
         }
@@ -143,27 +206,28 @@ class AudioChat extends Component{
         if (this.state.recording) {
             await this._stop();
         }
-
         // These timeouts are a hacky workaround for some issues with react-native-sound.
         // See https://github.com/zmxv/react-native-sound/issues/89.
         setTimeout(() => {
-            console.log(this.state.audioPath);
+
             try{
                 var sound = new Sound(this.state.audioPath, '', (error) => {
                     if (error) {
                         console.log('failed to load the sound', error);
+                    }else{
+                        setTimeout(() => {
+                            sound.play((success) => {
+                                if (success) {
+                                    console.log('successfully finished playing');
+                                } else {
+                                    console.log('playback failed due to audio decoding errors');
+                                }
+                            });
+                        }, 100);
+
                     }
                 });
 
-                setTimeout(() => {
-                    sound.play((success) => {
-                        if (success) {
-                            console.log('successfully finished playing');
-                        } else {
-                            console.log('playback failed due to audio decoding errors');
-                        }
-                    });
-                }, 100);
             }catch(e)
             {
                 alert(e)
@@ -172,6 +236,7 @@ class AudioChat extends Component{
     }
 
     async _record() {
+
         if (this.state.recording) {
             alert('Already recording!');
             return;
@@ -190,13 +255,19 @@ class AudioChat extends Component{
 
         try {
             const filePath = await AudioRecorder.startRecording();
+            console.log('AudioRecorder.startRecording====='+filePath);
+
+
         } catch (error) {
             console.error(error);
         }
     }
 
     _finishRecording(didSucceed, filePath) {
-        var audio = {path:filePath,duration:this.state.currentTime};
+
+        var audio = {path:this.state.audioPath,duration:this.state.currentTime};
+        console.log('audio.path'+this.state.audioPath);
+
         this.setState({finished:didSucceed,audio:audio});
         console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
@@ -207,7 +278,8 @@ class AudioChat extends Component{
         this.state={
             accessToken:this.props.accessToken,
             audio:null,
-            audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
+            audioNum:0,
+            audioPath:null,
             currentTime: 0.0,
             recording: false,
             stoppedRecording: false,

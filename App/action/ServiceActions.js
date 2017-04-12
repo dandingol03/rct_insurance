@@ -1413,7 +1413,7 @@ export let uploadAudioChat=(payload)=>{
             if (path) {
                 // Create the form data object
                 var data = new FormData();
-                data.append('file', {uri: path, name: filename, type: 'multipart/form-data'});
+                data.append('file', {uri: path, name: 'mmm', type: 'multipart/form-data'});
 
 
                 Proxy.post({
