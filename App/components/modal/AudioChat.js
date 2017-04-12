@@ -209,7 +209,6 @@ class AudioChat extends Component{
         // These timeouts are a hacky workaround for some issues with react-native-sound.
         // See https://github.com/zmxv/react-native-sound/issues/89.
         setTimeout(() => {
-
             try{
                 var sound = new Sound(this.state.audioPath, '', (error) => {
                     if (error) {
@@ -223,7 +222,7 @@ class AudioChat extends Component{
                                     console.log('playback failed due to audio decoding errors');
                                 }
                             });
-                        }, 100);
+                        }, 10);
 
                     }
                 });

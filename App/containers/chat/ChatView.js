@@ -29,15 +29,15 @@ export default class ChatView extends React.Component {
                 console.log('++++path===='+path);
 
                 try{
-                    var sound = new Sound(path, '', (error) => {
+                    this.state.sound = new Sound(path, '', (error) => {
                         if (error) {
                             console.log('failed to load the sound', error);
                         }else{
                             setTimeout(() => {
-                                sound.setVolume(10);
+                                this.state.sound.setVolume(10);
 
                                 this.setState({isPlaying:true});
-                                sound.play((success) => {
+                                this.state.sound.play((success) => {
                                     if (success) {
                                         console.log('successfully finished playing');
                                         this.setState({isPlaying:false});
@@ -47,20 +47,10 @@ export default class ChatView extends React.Component {
                                     }
                                 });
 
-                                if(this.state.stop==true){
-                                    sound.stop();
-                                    this.setState({stop:false});
-                                }
-
                             }, 100);
 
                         }
                     });
-
-                    if(this.state.isPlaying==true){
-                        sound.stop();
-                        this.setState({isPlaying:false});
-                    }
 
 
                 }catch(e)
@@ -93,8 +83,8 @@ export default class ChatView extends React.Component {
             skin: 'custom',
             isBuffering: false,
 
+            sound:null,
             isPlaying:false,
-            stop:false,
         };
     }
 
@@ -136,11 +126,14 @@ export default class ChatView extends React.Component {
             return (
                 <TouchableOpacity style={{borderTopLeftRadius:6,borderTopRightRadius:6,padding:4,justifyContent: 'center',alignItems: 'center',flexDirection:'row',}}
                                   onPress={() => {
-                                       this.playAudioMessage(this.props.currentMessage.audio.path);
-                                       if(this.state.isPlaying==true&&this.state.stop==false){
-                                           this.setState({stop:!this.state.stop});
-                                       }
-
+                                      if(this.state.isPlaying==false){
+                                         this.playAudioMessage(this.props.currentMessage.audio.path);
+                                      }
+                                      if(this.state.sound!==undefined&&this.state.sound!==null&&this.state.isPlaying==true){
+                                         this.state.sound.stop();
+                                         this.state.sound.release();
+                                         this.setState({isPlaying:false});
+                                      }
 
                                   }}>
                     <Icon name="volume-up" size={25} color="#fff" />
