@@ -14,6 +14,8 @@ import {
 
 import { connect } from 'react-redux';
 
+import WebSocket from '../../components/utils/WebSocket';
+
 import AudioChat from '../../components/modal/AudioChat';
 import VideoChat from '../../components/modal/VideoChat';
 import {
@@ -34,6 +36,8 @@ class ChatActions extends Component{
             audioPath:null,
             videoPath:null,
             audioDuration:null,
+            audio:null,
+            video:null,
 
         };
         this.onActionsPress = this.onActionsPress.bind(this);
@@ -45,15 +49,18 @@ class ChatActions extends Component{
         var {path}=payload;
         var audio = payload;
         this.props.dispatch(uploadAudioChat(audio)).then((json)=>{
-            console.log('uploadAudio.json,re======'+json.re);
             if(json.re==1)
             {
-                this.props.onSend({
-                    audio: {
-                        path:audio.path,
-                        duration:audio.duration,
-                    },
-                });
+                var attachId=json.data;
+                this.sendWav(attachId);
+
+                // this.props.onSend({
+                //     audio: {
+                //         path:audio.path,
+                //         duration:audio.duration,
+                //     },
+                // });
+
             }
         }).catch((e)=>{
             Alert.alert(
@@ -61,6 +68,35 @@ class ChatActions extends Component{
                 e
             );
         });
+    }
+
+    sendWav=(attachId) =>{
+
+        var {audio}=this.state;
+
+        if(audio.path!==undefined&&audio.path!==null&&
+            audio.duration!==null&&audio.duration!==undefined)
+        {
+            var msg={
+                action:'msg',
+                msgid:WebSocket.getMsgId(),
+                timems:new Date().getTime(),
+                msg:{
+                    _id:WebSocket.getMsgId(),
+                    user:{_id:1},
+                    createdAt:new Date(),
+                    type:'audio',
+                    content:attachId,
+                    audioLength:audio.duration,
+                    path:audio.path
+                },
+                to:{
+                    userid: 14,
+                    groupid:'presale'
+                }
+            };
+            WebSocket.send(msg);
+        }
     }
 
 
@@ -73,12 +109,16 @@ class ChatActions extends Component{
         this.props.dispatch(uploadVideoChat(path)).then((json)=>{
             if(json.re==1)
             {
-                this.props.onSend({
-                    video: {
-                        path:video.path,
-                        thumbnail:video.thumbnail,
-                    },
-                });
+                var attachId=json.data;
+                this.sendVideo(attachId,video.path,video.thumbnail);
+
+                // this.props.onSend({
+                //     video: {
+                //         path:video.path,
+                //         thumbnail:video.thumbnail,
+                //     },
+                // });
+
             }
         }).catch((e)=>{
             Alert.alert(
@@ -88,8 +128,31 @@ class ChatActions extends Component{
         })
     }
 
+    sendVideo= (attachId,path,thumb) =>{
+
+        var msg={
+            action:'msg',
+            msgid:WebSocket.getMsgId(),
+            timems:new Date().getTime(),
+            msg:{
+                type:'video',
+                content:attachId,
+                path: path,
+                thumb:thumb,
+                _id:WebSocket.getMsgId(),
+                user:{_id:1},
+                createdAt:new Date(),
+            },
+            to:{
+                userid: 14,
+                groupid:'presale'
+            }
+        };
+        WebSocket.send(msg);
+    }
+
     setAudio(audio){
-        this.setState({audioPath:audio.path,audioDuration:audio.duration});
+        this.setState({audio:audio,audioPath:audio.path,audioDuration:audio.duration});
         this.uploadAudio(audio);
 
     }
@@ -99,7 +162,6 @@ class ChatActions extends Component{
         this.uploadVideo(video);
 
     }
-
 
     setVideoPath(video){
         this.setState({videoPath: video});
@@ -215,6 +277,7 @@ class ChatActions extends Component{
 
                     />
                 </Modal>
+
                 {this.renderIcon()}
             </TouchableOpacity>
         );

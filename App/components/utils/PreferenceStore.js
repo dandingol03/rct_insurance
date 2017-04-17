@@ -18,7 +18,14 @@ var PreferenceStore={
             keychainService:'app'
         });
 
-    }
+    },
+    delete:function (key) {
+        return   SInfo.deleteItem(key,{
+            sharedPreferencesName:'shared_preferences',
+            keychainService:'app'
+        });
+
+    },
 
 };
 module.exports=PreferenceStore

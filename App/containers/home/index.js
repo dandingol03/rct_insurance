@@ -40,6 +40,28 @@ class Home extends Component{
         }
     }
 
+    sendNotification(){
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'sendNotification',
+            }
+        },(json)=> {
+            if(json.re==1){
+                console.log('发送成功');
+            }
+            else{
+                console.log('发送失败');
+            }
+        }, (err) =>{
+        });
+    }
+
+
     navigate2CarManage(){
         const { navigator } = this.props;
         if(navigator) {
@@ -247,7 +269,6 @@ class Home extends Component{
                         <Text>成交订单数:</Text>
                         <Text>{this.state.userCounters}</Text>
                     </View>
-
                 </View>
 
                 {/* body*/}

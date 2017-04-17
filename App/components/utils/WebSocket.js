@@ -50,8 +50,7 @@ var ob={
                     {
                         //TODO:make a dispatch
                         Store.dispatch(recvWSMessage(Object.assign({type:'fromMe'},this.tmpMsg)));
-                        //$rootScope.msg.push(Object.assign({type:'fromMe'},self.tmpMsg));
-                        //$rootScope.$emit('MSG_NEW');
+
                     }
                 }else if(json.result=='error')
                 {
@@ -68,6 +67,8 @@ var ob={
                 console.log('msg come from '+json.from);
                 console.log('msg ='+json.msg);
                 Store.dispatch(recvWSMessage(Object.assign({type:'fromThem'},json.msg)));
+
+
                 //$rootScope.msg.push(Object.assign({type:'fromThem'},json.msg));
                 //$rootScope.$emit('MSG_NEW');
                 break;

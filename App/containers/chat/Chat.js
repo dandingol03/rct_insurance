@@ -50,8 +50,11 @@ class Chat extends Component{
                 msgid:WebSocket.getMsgId(),
                 timems:new Date().getTime(),
                 msg:{
+                    _id:WebSocket.getMsgId(),
                     type:'plain',
-                    content:text
+                    content:text,
+                    user:{_id:1},
+                    createdAt:new Date(),
                 },
                 to:{
                     userid: 14,
@@ -61,14 +64,118 @@ class Chat extends Component{
         }
     }
 
+    //上传音频
+    uploadAudio(payload){
+
+        var {path}=payload;
+        var audio = payload;
+        this.props.dispatch(uploadAudioChat(audio)).then((json)=>{
+            if(json.re==1)
+            {
+                var attachId=json.data;
+                this.sendWav(attachId);
+
+                this.props.onSend({
+                    audio: {
+                        path:audio.path,
+                        duration:audio.duration,
+                    },
+                });
+
+            }
+        }).catch((e)=>{
+            Alert.alert(
+                'error',
+                e
+            );
+        });
+    }
+
+    sendWav=(attachId) =>{
+
+        var {audio}=this.state;
+
+        if(audio.path!==undefined&&audio.path!==null&&
+            audio.duration!==null&&audio.duration!==undefined)
+        {
+            var msg={
+                action:'msg',
+                msgid:WebSocket.getMsgId(),
+                timems:new Date().getTime(),
+                msg:{
+                    type:'audio',
+                    content:attachId,
+                    audioLength:audio.duration,
+                    path:audio.path
+                },
+                to:{
+                    userid: 14,
+                    groupid:'presale'
+                }
+            };
+            WebSocket.send(msg);
+        }
+    }
+
+    //上传视频
+    uploadVideo(payload){
+
+        var {path}=payload;
+        var video = payload;
+
+        this.props.dispatch(uploadVideoChat(path)).then((json)=>{
+            if(json.re==1)
+            {
+                var attachId=json.data;
+                this.sendVideo(attachId,video.path,video.thumbnail);
+
+                this.props.onSend({
+                    video: {
+                        path:video.path,
+                        thumbnail:video.thumbnail,
+                    },
+                });
+
+            }
+        }).catch((e)=>{
+            Alert.alert(
+                'error',
+                e
+            );
+        })
+    }
+
+    sendVideo= (attachId,path,thumb) =>{
+
+        var msg={
+            action:'msg',
+            msgid:WebSocket.getMsgId(),
+            timems:new Date().getTime(),
+            msg:{
+                type:'video',
+                content:attachId,
+                path: path,
+                thumb:thumb
+            },
+            to:{
+                userid: 14,
+                groupid:'presale'
+            }
+        };
+        WebSocket.send(msg);
+    }
+
     constructor(props) {
         super(props);
-        const { navigator } = this.props;
+
         this.state = {
-            messages: [],
+            messages:[],
+            storeMessages:this.props.messages,
+            msg:this.props.msg,
             loadEarlier: true,
             typingText: null,
             isLoadingEarlier: false,
+            txt:'666',
 
         };
 
@@ -79,6 +186,9 @@ class Chat extends Component{
         this.renderBubble = this.renderBubble.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
         this.onLoadEarlier = this.onLoadEarlier.bind(this);
+
+        this.renderSend=this.renderSend.bind(this);
+        //this.onInputTextChanged=this.onInputTextChanged.bind(this);
 
         this._isAlright = null;
     }
@@ -118,15 +228,19 @@ class Chat extends Component{
 
     onSend(messages = []) {
 
-        messages[0].dym=true;
-        this.setState((previousState) => {
-            return {
-                messages: GiftedChat.append(previousState.messages, messages),
-            };
-        });
+        if(messages[0].text!=undefined&&messages[0].text!=null){
+            var text = messages[0].text;
+            this.state.txt=text;
+            this.sendTxt(this.state.txt);
+        }
+        // this.setState((previousState) => {
+        //     return {
+        //         messages: GiftedChat.append(previousState.messages, messages),
+        //     };
+        // });
 
         // for demo purpose
-        this.answerDemo(messages);
+        // this.answerDemo(messages);
     }
 
     answerDemo(messages) {
@@ -164,8 +278,13 @@ class Chat extends Component{
         }, 1000);
     }
 
+
+
+
     onReceive(text) {
+
         this.setState((previousState) => {
+
             return {
                 messages: GiftedChat.append(previousState.messages, {
                     _id: Math.round(Math.random() * 1000000),
@@ -186,7 +305,8 @@ class Chat extends Component{
             return (
                 <ChatActions
                     {...props}
-                    navigator={this.props.navigator}
+                    uploadAudio={(audio)=>{this. uploadAudio(audio);}}
+                    uploadVideo={(video)=>{this. uploadVideo(video);}}
                 />
             );
         }
@@ -220,14 +340,6 @@ class Chat extends Component{
         );
     }
 
-    renderCustomView(props) {
-        return (
-            <CustomView
-                {...props}
-            />
-        );
-    }
-
     renderChatView(props) {
         return (
             <ChatView
@@ -249,6 +361,103 @@ class Chat extends Component{
         return null;
     }
 
+    renderSend(){
+
+        return (
+            <TouchableOpacity style={{padding:10}}
+                              onPress={()=>{
+                                  this.sendTxt(this.state.txt);
+                              }}>
+                <Icon name="send-o" size={25} color="#aaa" />
+            </TouchableOpacity>
+        );
+
+    }
+
+
+    componentWillReceiveProps(nextProps)
+    {
+        var length = nextProps.messages.length ;
+
+        if(nextProps.messages!==this.state.messages){
+
+            switch (nextProps.messages[length-1].type) {
+                case 'plain':
+                    this.setState((previousState) => {
+
+                        return {
+                            messages: GiftedChat.append(previousState.messages, {
+                                _id:nextProps.messages[length-1]._id,
+                                text: nextProps.messages[length-1].content,
+                                createdAt:nextProps.messages[length-1].createdAt,
+                                user: {
+                                    _id: nextProps.messages[length-1].source=='fromMe'?1:2,
+                                },
+                            }),
+                        };
+                    });
+                    break;
+                case 'audio':
+                    this.setState((previousState) => {
+                            return {
+                                messages: GiftedChat.append(previousState.messages,{
+                                    _id:nextProps.messages[length-1]._id,
+                                    createdAt:nextProps.messages[length-1].createdAt,
+                                    user: {
+                                        _id: nextProps.messages[length-1].source=='fromMe'?1:2,
+                                    },
+                                    audio: {
+                                        path:nextProps.messages[length-1].path,
+                                        duration:nextProps.messages[length-1].audioLength,
+                                    },
+                                }),
+                            };
+                        });
+
+                    break;
+                case 'video':
+                    this.setState((previousState) => {
+                        return {
+                            messages: GiftedChat.append(previousState.messages,{
+                                _id:nextProps.messages[length-1]._id,
+                                createdAt:nextProps.messages[length-1].createdAt,
+                                user: {
+                                    _id: nextProps.messages[length-1].source=='fromMe'?1:2,
+                                },
+                                video: {
+                                    path:nextProps.messages[length-1].path,
+                                    thumbnail:nextProps.messages[length-1].thumb,
+                                },
+                            }),
+                        };
+                    });
+
+                    break;
+                default:
+                    break;
+            }
+
+
+            // if(nextProps.messages[length-1].type=='plain'){
+            //     this.setState((previousState) => {
+            //
+            //         return {
+            //             messages: GiftedChat.append(previousState.messages, {
+            //                 _id:nextProps.messages[length-1]._id,
+            //                 text: nextProps.messages[length-1].content,
+            //                 createdAt:nextProps.messages[length-1].createdAt,
+            //                 user: {
+            //                     _id: nextProps.messages[length-1].source=='fromMe'?1:2,
+            //                 },
+            //             }),
+            //         };
+            //     });
+            // }
+
+        }
+
+    }
+
     render() {
         return (
               <GiftedChat
@@ -264,9 +473,9 @@ class Chat extends Component{
 
                   renderActions={this.renderCustomActions}
                   renderBubble={this.renderBubble}
-                  //renderCustomView={this.renderChatView}
                   renderCustomView={this.renderChatView}
                   renderFooter={this.renderFooter}
+
               />
 
         )
@@ -274,7 +483,12 @@ class Chat extends Component{
 
     componentDidMount()
     {
-        this.sendTxt('hi,my name is danding');
+        // this.sendTxt('hi,my name is danding');
+
+        // //收到监听
+        // this.listener = DeviceEventEmitter.addListener('通知名称',(e)=> {
+        //     alert(e);
+        // })
     }
 
 }
@@ -291,19 +505,33 @@ var styles = StyleSheet.create({
         height: 70,
         marginTop: 10,
         backgroundColor: 'gray'
-    }
+    },
+    footerContainer: {
+        marginTop: 5,
+        marginLeft: 10,
+        marginRight: 10,
+        marginBottom: 10,
+    },
+    footerText: {
+        fontSize: 14,
+        color: '#aaa',
+    },
 });
 
 
 const mapStateToProps = (state, ownProps) => {
 
     var {personInfo,accessToken,score}=state.user;
+    var {msg,messages} =state.ws;
 
     return {
         personInfo,
         score,
         accessToken,
+        msg,
+        messages,
         ...ownProps,
+
     }
 }
 

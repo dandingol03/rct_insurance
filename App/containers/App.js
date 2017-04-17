@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import {
+    Dimensions,
     View,
     StyleSheet,
     Text,
@@ -16,6 +17,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+var {height, width} = Dimensions.get('window');
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Login from '../containers/Login';
@@ -30,6 +32,8 @@ import Home from './home/index';
 import My from './my/My';
 import Chat from './chat/Chat';
 import HandPickedProduct from './HandPickedProduct';
+
+var RNFS = require('react-native-fs');
 
 import {fetchAccessToken} from '../action/UserActions';
 import {
@@ -93,26 +97,35 @@ class App extends React.Component {
                                 if(json.re==1)
                                 {
                                     var path=json.data;
+                                    console.log('播放音频文件path:   '+path);
+
+                                    RNFS.readDir(RNFS.DocumentDirectoryPath)
+                                        .then((result) => {
+                                            console.log('下载到的播音文件', result);})
+
                                     //TODO:播放音频文件
                                     var sound = new Sound(json.data, '', (error) => {
                                         if (error) {
                                             console.log('failed to load the sound', error);
+                                        }else{
+
+                                            this.state.soundMounted=sound;
+                                            setTimeout(() => {
+                                                sound.setVolume(10);
+                                                sound.play((success) => {
+                                                    if (success) {
+                                                        console.log('successfully finished playing');
+                                                        sound.release();
+                                                        this.state.soundMounted=null;
+                                                    } else {
+                                                        console.log('playback failed due to audio decoding errors');
+                                                        sound.release();
+                                                        this.state.soundMounted=null;
+                                                    }
+                                                });
+                                            }, 100);
                                         }
                                     });
-                                    this.state.soundMounted=sound;
-                                    setTimeout(() => {
-                                        sound.play((success) => {
-                                            if (success) {
-                                                console.log('successfully finished playing');
-                                                sound.release();
-                                                this.state.soundMounted=null;
-                                            } else {
-                                                console.log('playback failed due to audio decoding errors');
-                                                sound.release();
-                                                this.state.soundMounted=null;
-                                            }
-                                        });
-                                    }, 100);
 
                                     //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
                                     this.props.dispatch(alertWithType({msg:content}));
@@ -163,26 +176,31 @@ class App extends React.Component {
                                             if(json.re==1)
                                             {
                                                 var path=json.data;
+
+                                                console.log('播放音频文件路径:  '+path);
+
                                                 //TODO:播放音频文件
                                                 var sound = new Sound(json.data, '', (error) => {
                                                     if (error) {
                                                         console.log('failed to load the sound', error);
+                                                    }else{
+                                                        this.state.soundMounted=sound;
+                                                        setTimeout(() => {
+                                                            sound.play((success) => {
+                                                                if (success) {
+                                                                    console.log('successfully finished playing');
+                                                                    sound.release();
+                                                                    this.state.soundMounted=null;
+                                                                } else {
+                                                                    console.log('playback failed due to audio decoding errors');
+                                                                    sound.release();
+                                                                    this.state.soundMounted=null;
+                                                                }
+                                                            });
+                                                        }, 100);
                                                     }
                                                 });
-                                                this.state.soundMounted=sound;
-                                                setTimeout(() => {
-                                                    sound.play((success) => {
-                                                        if (success) {
-                                                            console.log('successfully finished playing');
-                                                            sound.release();
-                                                            this.state.soundMounted=null;
-                                                        } else {
-                                                            console.log('playback failed due to audio decoding errors');
-                                                            sound.release();
-                                                            this.state.soundMounted=null;
-                                                        }
-                                                    });
-                                                }, 100);
+
 
                                                 //TODO:popup插件,当点击这个插件时取消音频播放,sound.stop();sound.release();
                                                 this.props.dispatch(alertWithType({msg:content}));
@@ -283,14 +301,16 @@ class App extends React.Component {
                 onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
             >
 
-                <View style={{flex:1}}>
+                <View style={{flex:1,}}>
 
-                    <StatusBarAlert
-                        backgroundColor="#3CC29E"
-                        color="white"
-                        visible={this.props.notification.validate}
-                        message={this.props.notification.msg}
-                        onPress={() => {
+                    {
+                        this.props.notification.validate?
+                            <StatusBarAlert
+                                backgroundColor="#3CC29E"
+                                color="white"
+                                visible={this.props.notification.validate}
+                                message={this.props.notification.msg}
+                                onPress={() => {
 
                             //如果挂载音频不为空，则点击停止
                             if(this.state.soundMounted!==undefined&&this.state.soundMounted!==null)
@@ -302,7 +322,12 @@ class App extends React.Component {
                             }
                             this.props.dispatch(closeMessage());
                         }}
-                    />
+                                statusbarHeight={30}
+                            />
+                            :null
+
+                    }
+
 
                     <Navigator
                         initialRoute={{ name: route, component:component }}
@@ -311,14 +336,9 @@ class App extends React.Component {
                           }}
                         renderScene={(route, navigator) => {
                             let Component = route.component;
-
-
                             //this.props.dispatch(updateNavigator({route:route.name,navigator:navigator}))
-
-
                             return (<Component {...route.params} navigator={navigator} />);
                           }}
-
 
                     />
 
@@ -402,6 +422,7 @@ class App extends React.Component {
 
         //进行websocket连接
         ws.connect();
+
 
         // setTimeout(()=>{
         //     this.setState({recved:true});

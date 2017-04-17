@@ -56,7 +56,6 @@ class dym extends Component{
         }
     }
 
-
     sendNotification(){
         Proxy.post({
             url:Config.server+'/svr/request',

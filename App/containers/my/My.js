@@ -38,7 +38,8 @@ import Portrait from '../Portrait';
 import WxShareModal from '../../components/modal/WxShareModal';
 import Notification from '../Notification';
 var WeChat = require('react-native-wechat');
-var resolveAssetSource= require('resolveAssetSource')
+var resolveAssetSource= require('resolveAssetSource');
+import PreferenceStore from '../../components/utils/PreferenceStore';
 
 
 class My extends Component{
@@ -541,6 +542,8 @@ class My extends Component{
                                               this.closePopover();
                                               setTimeout(()=>{
                                                    BackAndroid.exitApp();
+                                                   PreferenceStore.delete('username');
+                                                   PreferenceStore.delete('password');
                                               },300);
 
                                           }}>

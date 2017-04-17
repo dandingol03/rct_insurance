@@ -1317,46 +1317,6 @@ export let generateVideoThumbnail=(payload)=>{
                     );
                 });
 
-                // Proxy.postes({
-                //     url: Config.server + '/svr/request?request=generatedThumbnail',
-                //     headers: {
-                //         'Authorization': "Bearer " + accessToken,
-                //         'Content-Type': 'multipart/form-data'
-                //     },
-                //     body: data
-                // }).then((json)=>{
-                //     for(var field in json) {
-                //         console.log('field=' + field + '\r\n' + json[field]);
-                //     }
-                //     // if(json.re==1)
-                //     // {
-                //         var thumbnail=json.path;
-                //         console.log(' 生成===');
-                //         //TODO:make this to thumbnail download
-                //
-                //         var dirs = RNFetchBlob.fs.dirs
-                //         RNFetchBlob
-                //             .config({
-                //                 fileCache : true,
-                //                 appendExt : 'mp3',
-                //                 path : dirs.DocumentDir + '/video-thumbnail.png'
-                //             })
-                //             .fetch('POST',url, {
-                //                     Authorization : 'Bearer '+accessToken,
-                //                     "Content-Type":"application/json"
-                //                 },
-                //                 JSON.stringify({
-                //                     request:'downloadGeneratedThumbnail'
-                //                 })
-                //             ).then((res)=>{
-                //
-                //             resolve({re:1,data:res.path()});
-                //         });
-                //
-                //     //}
-                // }).catch((e)=>{
-                //     reject(e)
-                // })
 
             }
 
@@ -1424,7 +1384,6 @@ export let uploadAudioChat=(payload)=>{
                     },
                     body: data,
                 },(json)=> {
-
                     resolve(json)
                 }, (err) =>{
                    reject(err)

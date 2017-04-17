@@ -215,6 +215,7 @@ class AudioChat extends Component{
                         console.log('failed to load the sound', error);
                     }else{
                         setTimeout(() => {
+                            sound.setVolume(10);
                             sound.play((success) => {
                                 if (success) {
                                     console.log('successfully finished playing');

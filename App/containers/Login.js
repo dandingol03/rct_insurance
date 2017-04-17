@@ -9,6 +9,7 @@ var {
 } = React;
 
 import {
+    Alert,
     Image,
     View,
     StyleSheet,
@@ -78,9 +79,26 @@ var  Login =React.createClass({
 
                 //make a test
 
-                dispatch(loginAction(user.username,user.password)).then(()=>{
+                dispatch(loginAction(user.username,user.password,(errorMsg)=> {
+                    this.setState({showProgress: false,user:{}});
+
+                    if(errorMsg!==undefined&&errorMsg!==null){
+                        var string = errorMsg;
+                        setTimeout(()=>{
+                            Alert.alert(
+                                '错误',
+                                string,
+                                [
+                                    {text: 'OK', onPress: () => {
+                                    }},
+                                ]
+                            );
+                        },900)
+                    }
+                })).then(()=>{
 
                     this.setState({showProgress: false,user:{}});
+
                 }).catch((e)=>{
                     alert(e);
                 })

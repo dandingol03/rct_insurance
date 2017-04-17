@@ -18,6 +18,7 @@ import {
 
 export let loginAction=function(username,password,cb){
 
+    var errorReason = null;
     return dispatch=> {
 
         return new Promise((resolve, reject) => {
@@ -32,7 +33,12 @@ export let loginAction=function(username,password,cb){
                 },
                 body: "grant_type=password&password=" + password + "&username=" + username
             }).then((json)=> {
+                if(json.code=401){
+                    errorReason='用户名或密码错误';
+                }
+
                 accessToken = json.access_token;
+
 
                 //TODO:make a dispatch
                 dispatch(updateCertificate({username: username, password: password}));
@@ -57,6 +63,24 @@ export let loginAction=function(username,password,cb){
 
                 if (json.re == 1) {
                     dispatch(updatePersonInfo({data: json.data}));
+                }
+
+                if (json.re == 2) {
+                    errorReason = json.data;
+                    dispatch(getAccessToken(null));
+                    dispatch(clearTimerAction());
+                    // if (cb)
+                    //     cb('此帐号非手机端帐号');
+                    return;
+                }
+
+                if (json.re == 3) {
+                    errorReason = json.data;
+                    dispatch(getAccessToken(null));
+                    dispatch(clearTimerAction());
+                    // if (cb)
+                    //     cb('该用户不存在');
+                    return;
                 }
 
                 return Proxy.postes({
@@ -105,12 +129,11 @@ export let loginAction=function(username,password,cb){
                 if (cb)
                     cb();
 
-
             }).catch((err)=> {
                 dispatch(getAccessToken(null));
                 dispatch(clearTimerAction());
                 if (cb)
-                    cb();
+                    cb(errorReason);
             });
         });
     }

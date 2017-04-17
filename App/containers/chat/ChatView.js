@@ -172,6 +172,15 @@ export default class ChatView extends React.Component {
             );
         }
 
+        else if (this.props.currentMessage.txt)
+        {
+            return (
+                <View style={{borderTopLeftRadius:6,borderTopRightRadius:6,padding:4}}>
+                    <Text>{this.props.currentMessage.txt.content}</Text>
+                </View>);
+        }
+
+
         else if (this.props.currentMessage.dym)
         {
             return (

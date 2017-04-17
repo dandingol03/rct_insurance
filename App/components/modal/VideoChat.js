@@ -164,17 +164,13 @@ class VideoChat extends Component{
         // });
     }
 
-
     constructor(props)
     {
         super(props);
         const {accessToken}=this.props;
         this.state={
             accessToken:accessToken,
-             //video:{path:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/A633F9E2-8CEA-4659-BAD0-2D9DA743FF62.mov',
-             //    thumbnail:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/video-thumbnail.png'},
             video:null,
-            //videoPath:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/A633F9E2-8CEA-4659-BAD0-2D9DA743FF62.mov',
             videoPath:'',
             cameraModalVisible:false,
             camera: {
@@ -185,9 +181,7 @@ class VideoChat extends Component{
                 flashMode: Camera.constants.FlashMode.auto,
             },
             portrait:null,
-           //thumbnail:'/var/mobile/Containers/Data/Application/B9DE20B1-CEDD-4E00-ADE9-627352050CEF/Documents/video-thumbnail.png',
             thumbnail:null,
-
             rate: 1,
             volume: 1,
             muted: false,
