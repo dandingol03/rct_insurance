@@ -11,8 +11,11 @@ import {
     UPDATE_PERSON_INFO,
     UPDATE_SCORE,
     SAVE_CONTACT_INFO,
-    UPDATE_CERTIFICATE
+    UPDATE_CERTIFICATE,
+    UPDATE_PORTRAIT,
 } from '../constants/UserConstants';
+import RNFetchBlob from 'react-native-fetch-blob'
+
 
 export let updatePersonInfo=(payload)=>{
     return {
@@ -36,7 +39,7 @@ export let updateCertificate=(payload)=>{
 }
 
 //修改密码
-export  let passwordModify=(payload)=>{
+export let passwordModify=(payload)=>{
     return (dispatch,getState)=>{
         return new Promise((resolve,reject)=>{
             var state=getState();
@@ -191,7 +194,8 @@ export let saveContactInfo=(payload)=>{
         }).then(function (json) {
 
             if(json.re==1) {
-                dispatch(updatePersonInfo({data:json.data}));
+                dispatch(updatePersonInfo({data:payload}));
+                alert('修改成功');
             }
 
         }).catch(function (err) {
@@ -201,6 +205,105 @@ export let saveContactInfo=(payload)=>{
     }
 }
 
+
+export let updatePortrait=(payload)=>{
+    return {
+        type:UPDATE_PORTRAIT,
+        payload:payload
+    }
+}
+
+//测试下载头像
+export let downloadPortrait=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+
+            var accessToken=state.user.accessToken;
+            var portrait='';
+
+            //检查头像是否存在
+            Proxy.post({
+
+                url:Config.server+'/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request:'checkPortrait',
+                }
+            },(json)=> {
+                for(var field in json) {
+                    console.log('field=' + field + '\r\n' + json[field]);
+                }
+                if(json.re==1)
+                {
+                    var portrait=json.data;
+
+                    var url =  Config.server+ '/svr/request?request=downloadPortrait&filePath='+portrait;
+                    var dirs = RNFetchBlob.fs.dirs
+
+                    RNFetchBlob.fs.exists(dirs.DocumentDir + '/portrait.png')
+                        .then((exist) => {
+                            console.log(`file ${exist ? '' : 'not'} exists`);
+                            if(exist==true){
+                                RNFetchBlob.fs.unlink(dirs.DocumentDir + '/portrait.png').then(() => {
+                                    RNFetchBlob
+                                        .config({
+                                            fileCache : true,
+                                            appendExt : 'png',
+                                            path : dirs.DocumentDir + '/portrait.png'
+                                        })
+                                        .fetch('POST',url, {
+                                                Authorization : 'Bearer '+accessToken,
+                                                "Content-Type":"application/json"
+                                            },
+
+                                        ).then((res)=>{
+                                        //alert('portrait filePath='+res.path());
+                                        resolve({re:1,data:'file://' + res.path()});
+                                    });
+                                })
+
+                            }else{
+
+                                RNFetchBlob
+                                    .config({
+                                        fileCache : true,
+                                        appendExt : 'png',
+                                        path : dirs.DocumentDir + '/portrait.png'
+                                    })
+                                    .fetch('POST',url, {
+                                            Authorization : 'Bearer '+accessToken,
+                                            "Content-Type":"application/json"
+                                        },
+                                    ).then((res)=>{
+                                    //alert('portrait filePath='+res.path());
+                                    resolve({re:1,data:'file://' + res.path()});
+                                });
+                            }
+
+
+                        })
+                        .catch(() => {console.log('判断文件是否存在出错');})
+
+
+                }
+                else{
+                    resolve({re:2,data:''});
+                }
+
+            }, (err) =>{
+                Alert.alert(
+                    'error',
+                    err
+                );
+            });
+
+        });
+    }
+}
 
 export let fetchAccessToken=()=>{
 

@@ -44,7 +44,6 @@ class AppendCustomPlace extends Component{
             {
                 var results=json.data;
 
-
                 this.setState({addresses:results});
 
             }else{

@@ -1,9 +1,6 @@
 /**
  * Created by dingyiming on 2017/3/31.
  */
-/**
- * Created by dingyiming on 2017/3/31.
- */
 
 import React,{Component} from 'react';
 

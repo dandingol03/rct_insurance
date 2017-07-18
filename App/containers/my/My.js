@@ -40,7 +40,12 @@ import Notification from '../Notification';
 var WeChat = require('react-native-wechat');
 var resolveAssetSource= require('resolveAssetSource');
 import PreferenceStore from '../../components/utils/PreferenceStore';
+var ImagePicker = require('react-native-image-picker');
 
+import {
+    downloadPortrait,
+    updatePortrait
+} from '../../action/UserActions';
 
 class My extends Component{
 
@@ -51,11 +56,58 @@ class My extends Component{
         }
     }
 
+    showImagePicker(perIdCard_img){
+
+        var options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            },
+            title:'请选择',
+            takePhotoButtonTitle:'拍照',
+            chooseFromLibraryButtonTitle:'图库',
+            cancelButtonTitle:'取消',
+
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+
+                switch(perIdCard_img)
+                {
+                    case 'perIdCard1_img':
+                        this.setState({perIdCard1_img: source});
+                        console.log('perIdCard1_img.uri = ', response.uri);
+                        break;
+                    case 'perIdCard2_img':
+                        this.setState({perIdCard2_img: source});
+                        console.log('perIdCard2_img.uri = ', response.uri);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        });
+    }
+
     wxShare(shareType)
     {
         var imageResource = require('../../img/logo.png');
         switch (shareType) {
             case '好友':
+               // WeChat.openWXApp();
                 WeChat.shareToSession({
                     type: 'news',
                     title: '我正在使用捷惠宝App,想与您一起分享',
@@ -64,6 +116,7 @@ class My extends Component{
                     messageAction: undefined,
                     messageExt: undefined,
                     webpageUrl:'http://139.129.96.231:3000/wx',
+                    //webpageUrl:'http://192.168.1.127:3000/wx',
                 });
                 break;
             case '朋友圈':
@@ -75,6 +128,7 @@ class My extends Component{
                     messageAction: undefined,
                     messageExt: undefined,
                     webpageUrl:'http://139.129.96.231:3000/wx',
+                    //webpageUrl:'http://192.168.1.127:3000/wx',
                 });
                 break;
             default:
@@ -82,7 +136,6 @@ class My extends Component{
         }
 
         this.setState({wxVisible:false});
-
     }
 
     navigate2Notification()
@@ -107,10 +160,30 @@ class My extends Component{
                 name: 'Portrait',
                 component: Portrait,
                 params: {
-
+                    getPortrait:this.getPortrait.bind(this),
+                    setPortrait:this.setPortrait.bind(this)
                 }
             })
         }
+    }
+
+    setPortrait(portrait){
+        this.setState({portrait:portrait});
+    }
+
+    getPortrait(){
+        this.props.dispatch(downloadPortrait())
+            .then((json)=>{
+                if(json.re==1){
+                    var portrait=json.data;
+                    this.setState({portrait:portrait});
+                    this.props.dispatch(updatePortrait(portrait));
+
+                }else{
+
+                }
+
+            });
     }
 
     navigate2HelpAndConfig()
@@ -315,18 +388,15 @@ class My extends Component{
         }
     }
 
+    componentWillMount(){
+
+        this.getPortrait();
+    }
+
     constructor(props) {
         super(props);
         this.state={
-            camera: {
-                aspect: Camera.constants.Aspect.fill,
-                captureTarget: Camera.constants.CaptureTarget.disk,
-                type: Camera.constants.Type.back,
-                orientation: Camera.constants.Orientation.auto,
-                flashMode: Camera.constants.FlashMode.auto
-            },
-            cameraModalVisible:false,
-            portrait:null,
+            portrait:props.portrait!==undefined&&props.portrait!==null?props.portrait:null,
             wxVisible:false,
         };
     }
@@ -341,27 +411,25 @@ class My extends Component{
             <View style={styles.container}>
 
                 {/*top half*/}
-               <View style={{height:210}}>
-                   <Image style={{flex:1,height:210,width:width,position:'relative'}} source={require('../../img/my_column.jpg')} >
+                   <Image style={{flex:2,width:width,position:'relative'}} source={require('../../img/my_column.jpg')} >
 
-                       <TouchableOpacity style={{position:'absolute',top:20,right:10,width:30,alignItems:'flex-end'}}
-                                         onPress={this.showPopover.bind(this, 'menu')}  ref="menu"
-                       >
-                           <Icon name="bars" size={22} color="#fff"></Icon>
-                       </TouchableOpacity>
+                       <View style={{flex:3,marginTop:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
 
+                           <TouchableOpacity style={{position:'absolute',top:20,right:10,flex:1,alignItems:'flex-end'}}
+                                             onPress={this.showPopover.bind(this, 'menu')}  ref="menu"
+                           >
+                               <Icon name="bars" size={25} color="#fff"></Icon>
+                           </TouchableOpacity>
 
-                       <View style={{height:90,marginTop:40,width:width,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
 
                            <TouchableOpacity   onPress={() => {
-                               //this.setState({cameraModalVisible:true});
                                this.navigate2Portrait();
                            }}>
                                {
                                    state.portrait!==undefined&&state.portrait!==null?
-                                       <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
                                               source={{uri:state.portrait}}/>:
-                                       <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
                                               source={require('../../img/zack.png')}/>
                                }
 
@@ -369,14 +437,14 @@ class My extends Component{
 
                        </View>
 
-                       <View style={{width:width,flexDirection:'row',justifyContent:'center'}}>
-                            <Text style={{color:'#fff'}}>{props.personInfo.perName}</Text>
+                       <View style={{flex:1,flexDirection:'row',justifyContent:'center'}}>
+                            <Text style={{color:'#fff',fontSize:24}}>{props.personInfo.perName}</Text>
                        </View>
 
-                       <View style={{width:width,height:50,position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center',
+                       <View style={{flex:1,position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center',
                             justifyContent:'flex-start'}}>
-                            <View style={{width:120,padding:8,flexDirection:'row',alignItems:'center'}}>
-                                <Text style={{color:'#eee',fontWeight:'bold',fontSize:12,marginRight:4}}>
+                            <View style={{flex:3,padding:8,flexDirection:'row',alignItems:'center'}}>
+                                <Text style={{color:'#eee',fontWeight:'bold',fontSize:15,marginRight:4}}>
                                     积分:
                                 </Text>
                                 <Text style={{color:'#961b1b',fontSize:20}}>
@@ -386,34 +454,30 @@ class My extends Component{
 
                             <View style={{flex:1}}></View>
 
-                            <TouchableOpacity style={{width:80,padding:8,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
+                            <TouchableOpacity style={{flex:1,padding:8,justifyContent:'center',alignItems:'center',flexDirection:'row'}}
                                               onPress={() => {
                                this.navigate2Notification();
                            }}>
                                 <Icon name="comments" size={20} color="#eee"></Icon>
-                                <Text style={{marginLeft:5,color:'#fff',fontSize:12}}>通知</Text>
+                                <Text style={{marginLeft:5,color:'#fff',fontSize:15}}>通知</Text>
                             </TouchableOpacity>
-
-
 
                        </View>
 
                    </Image>
-               </View>
 
                 {/*bottom half*/}
 
+                <View style={{flex:3,}}>
 
-                <View style={{height:height-210,backgroundColor:'rgba(238, 238, 238, 0.6)'}}>
-
-                    <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginLeft:3}}>
+                    <View style={{flex:2,borderBottomWidth:1,borderColor:'#ddd',width:width-6,flexDirection:'row',alignItems:'center',marginLeft:3}}>
                         {/*个人信息*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',
-                            marginRight:1}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2ContactInfo();
                                           }}>
-                                <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_info.png')}
+                                <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_info@2x.png')}
                                        onPress={()=>{
                                                    Alert.alert(
                                                 'error',
@@ -428,91 +492,98 @@ class My extends Component{
                         </TouchableOpacity>
 
                         {/*我的红包*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',
-                            marginRight:1}}>
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_redBag.png')}></Image>
+                        <View style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_redBag@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 我的红包
                             </Text>
                         </View>
 
                         {/*我的积分*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff'}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2Credit();
                                           }}
                         >
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_credit.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_credit@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 我的积分
                             </Text>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
+                    <View style={{flex:2,borderBottomWidth:1,borderColor:'#ddd',width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*车险订单*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2CarOrders();
                                           }}>
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_carInsurance.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_carInsurance@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 车险订单
                             </Text>
                         </TouchableOpacity>
 
                         {/*寿险订单*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2LifeOrders();
                                           }}
                         >
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_life.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_life@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 寿险订单
                             </Text>
                         </TouchableOpacity>
                         {/*服务订单*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff'}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2ServiceOrders();
                                           }}
                         >
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_serviceOrder.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_serviceOrder@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 服务订单
                             </Text>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{height:100,width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
+                    <View style={{flex:2,borderBottomWidth:1,borderColor:'#ddd',width:width-6,flexDirection:'row',alignItems:'center',marginTop:1,marginLeft:3}}>
                         {/*推荐有礼*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.setState({wxVisible:true});
                                           }}
                         >
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_gift.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_gift@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 推荐有礼
                             </Text>
                         </TouchableOpacity>
 
                         {/*关于我们*/}
-                        <View style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff',marginRight:1}}>
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_aboutUs.png')}></Image>
+                        <View style={{flex:1,alignItems:'center',height:height*130/736,borderLeftWidth:1,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_aboutUs@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 关于我们
                             </Text>
                         </View>
 
                         {/*车辆管理*/}
-                        <TouchableOpacity style={{flex:1,alignItems:'center',height:100,justifyContent:'center',backgroundColor:'#fff'}}
+                        <TouchableOpacity style={{flex:1,alignItems:'center',height:height*130/736,borderRightWidth:1,borderColor:'#ddd',
+                        justifyContent:'center',backgroundColor:'#fff'}}
                                           onPress={()=>{
                                               this.navigate2CarManage();
                                           }}
                         >
-                            <Image resizeMode="stretch" style={{width:22,height:22}} source={require('../../img/my_carManage.png')}></Image>
+                            <Image resizeMode="stretch" style={{width:height*35/736,height:height*35/736}} source={require('../../img/my_carManage@2x.png')}></Image>
                             <Text style={{color:'#666',fontWeight:'bold',marginTop:14}}>
                                 车辆管理
                             </Text>
@@ -521,8 +592,6 @@ class My extends Component{
 
 
                     {/*rest*/}
-
-                    <View style={{flex:1,width:width,backgroundColor:'#fff'}}></View>
 
                 </View>
 
@@ -574,91 +643,6 @@ class My extends Component{
                     </TouchableOpacity>
 
                 </Popover>
-
-
-                {/*camera part*/}
-                <Modal
-                    animationType={"slide"}
-                    transparent={false}
-                    visible={this.state.cameraModalVisible}
-                >
-                    <Camera
-                        ref={(cam) => {
-                            this.camera = cam;
-                          }}
-                        style={styles.preview}
-                        aspect={this.state.camera.aspect}
-                        captureTarget={this.state.camera.captureTarget}
-                        type={this.state.camera.type}
-                        flashMode={this.state.camera.flashMode}
-                        defaultTouchToFocus
-                        mirrorImage={false}
-                        onBarCodeRead={(barcode)=>{
-                            var {type,data,bounds}=barcode;
-
-                            //TODO:
-                            //this is your barcode
-                            console.log('barcode data='+data);
-                        }}
-                    />
-                    <View style={[styles.overlay, styles.topOverlay]}>
-                        <TouchableOpacity
-                            style={styles.typeButton}
-                            onPress={this.switchType}
-                        >
-                            <Image
-                                source={this.typeIcon}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.flashButton}
-                            onPress={this.switchFlash}
-                        >
-                            <Image
-                                source={this.flashIcon}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={[styles.overlay, styles.bottomOverlay]}>
-                        {
-                            !this.state.isRecording
-                            &&
-                            <TouchableOpacity
-                                style={styles.captureButton}
-                                onPress={this.takePicture}
-                            >
-                                <Image
-                                    source={require('../../../assets/ic_photo_camera_36pt.png')}
-                                />
-                            </TouchableOpacity>
-                            ||
-                            null
-                        }
-                        <View style={styles.buttonsSpace} />
-                        {
-                            !this.state.isRecording
-                            &&
-                            <TouchableOpacity
-                                style={styles.captureButton}
-                                onPress={this.startRecording}
-                            >
-                                <Image
-                                    source={require('../../../assets/ic_videocam_36pt.png')}
-                                />
-                            </TouchableOpacity>
-                            ||
-                            <TouchableOpacity
-                                style={styles.captureButton}
-                                onPress={this.stopRecording}
-                            >
-                                <Image
-                                    source={require('../../../assets/ic_stop_36pt.png')}
-                                />
-                            </TouchableOpacity>
-                        }
-                    </View>
-
-                </Modal>
 
                 {/*Wechat share*/}
                 <Modal
@@ -752,12 +736,12 @@ var styles = StyleSheet.create({
 
 const mapStateToProps = (state, ownProps) => {
 
-    var {personInfo,accessToken,score}=state.user;
-
+    var {personInfo,accessToken,score,portrait}=state.user;
     return {
         personInfo,
         score,
         accessToken,
+        portrait,
         ...ownProps,
     }
 }

@@ -112,28 +112,12 @@ class NewCarBind extends Component{
     bindCar()
     {
 
-        // if(this.props.onClose!==undefined&&this.props.onClose!==null)
-        // {
-        //     this.props.onClose();
-        // }
-
         //TODO:validate carNum
 
         if(this.state.city!==undefined&&this.state.city!==null&&this.state.city!='')
         {
             if(this.state.carNum.length==7||this.state.carNum.length==8)
             {
-                // var prefix=this.getCarNumPrefixByCity(this.state.city);
-                // if(prefix!=this.state.carNum.substring(0,2))
-                // {
-                //     Alert.alert(
-                //         '错误',
-                //         '您输入的车牌号前缀不对，请重新填入车牌号再点击绑定',
-                //         [
-                //             {text: 'OK', onPress: () => console.log('OK Pressed!')},
-                //         ]
-                //     );
-                // }else{
 
                     //TODO:invoke a request
                     if(this.props.bindNewCar!==undefined&&this.props.bindNewCar!==null)
@@ -276,32 +260,36 @@ class NewCarBind extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{backgroundColor:'rgba(17, 17, 17, 0.6)',padding: 10,height:54,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
-                    <View style={{flex:1}}>
-                        <TouchableOpacity onPress={()=>{
-                        this.close();
-                            }}>
-                            <Icon name="angle-left" size={40} color="#fff"/>
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={{fontSize:17,flex:10,textAlign:'center',color:'#fff'}}>
-                        绑定新车
-                    </Text>
-                    <View style={{flex:1,marginRight:5,flexDirection:'row',justifyContent:'center'}}>
-                        <TouchableOpacity onPress={
-                            ()=>{
-                                this.close();
-                            }
-                        }>
-                            <Icon name="times-circle" size={30} color="#fff" />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
 
                 <View style={{flex:2,padding:10}}>
 
-                    <View style={[styles.row,{alignItems:'center'}]}>
+
+                    {/*车牌*/}
+                    <View style={{height:30,flexDirection:'row',justifyContent:'center',alignItems: 'center',backgroundColor:'#fff',margin:5}}>
+                        <View style={{flex:1}}>
+                            <Icon name="address-card-o" size={24} color="#343434"/>
+                        </View>
+                        <View style={{flex:1}}>
+                            <Text>车牌：</Text>
+                        </View>
+                        <View style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems: 'center',backgroundColor:'#eee',
+                            borderRadius:10}}>
+                            <TextInputWrapper
+                                placeholderTextColor='#888'
+                                textInputStyle={{marginLeft:20,fontSize:13,color:'#222'}}
+                                placeholder="请输入车牌号"
+                                val={this.state.carNum}
+                                onChangeText={
+                                    (carNum)=>this.setState({carNum:carNum})
+                                }
+                                onCancel={
+                                    ()=>{this.setState({carNum:null})}
+                                }
+                            />
+                        </View>
+                    </View>
+
+                    <View style={[styles.row,{alignItems:'center',flex:1}]}>
 
                         <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
                             <Icon name="address-card-o" size={24} color="#343434"/>
@@ -313,7 +301,7 @@ class NewCarBind extends Component{
 
                         <View style={{flex:5,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
                             <TextInput
-                                style={{borderBottomWidth:0,fontSize:13,flex:1,textAlign:'center',color:'#343434'}}
+                                style={{borderBottomWidth:0,fontSize:16,flex:1,color:'#343434'}}
                                 editable = {true}
                                 height={40}
                                 onChangeText={
@@ -331,7 +319,7 @@ class NewCarBind extends Component{
                         <View style={{flex:1}}></View>
                     </View>
 
-                    <View style={styles.row}>
+                    <View style={[styles.row,{flex:1}]}>
 
                         <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
                             <Icon name="map-marker" size={24} color="#343434"/>
@@ -357,7 +345,7 @@ class NewCarBind extends Component{
                     </View>
 
 
-                    <View style={[styles.row,{borderBottomWidth:0,justifyContent:'center'}]}>
+                    <View style={[styles.row,{borderBottomWidth:0,justifyContent:'center',flex:2,marginTop:20}]}>
                         <View style={{width:width/3}}>
                             <Icon.Button name="hand-o-up" backgroundColor="#3b5998" onPress={
                             ()=>{
@@ -370,6 +358,10 @@ class NewCarBind extends Component{
                             </Icon.Button>
                         </View>
                     </View>
+
+                </View>
+
+                <View style={{flex:2,padding:10}}>
 
                 </View>
 

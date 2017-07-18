@@ -166,7 +166,8 @@ class CarOrderDetail extends Component{
             <View style={styles.container}>
 
 
-                <View style={[{width:width,height:40,padding:10,paddingTop:10,alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
                                       onPress={()=>{
                             this.goBack();
@@ -181,10 +182,9 @@ class CarOrderDetail extends Component{
                     </View>
 
                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
                     </View>
                 </View>
-
-
 
                 {/*body*/}
                 <ScrollView>
@@ -261,7 +261,7 @@ class CarOrderDetail extends Component{
 
                 {/*修改订单*/}
                 {
-                    state.car.carOrdermodify.flag!=true&&state.order.orderState!=3?
+                    state.car.carOrdermodify.flag!=true&&props.orderState!=3?
                         <View style={{ flex:3,width:width,alignItems:'center',marginTop:20}}>
 
                             <TouchableOpacity style={{width:width/2,borderRadius:8,

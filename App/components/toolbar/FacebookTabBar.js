@@ -87,7 +87,8 @@ const styles = StyleSheet.create({
         padding:5
     },
     tabs: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        height:height*50/736
     },
 });
 

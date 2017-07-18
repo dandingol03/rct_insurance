@@ -39,7 +39,8 @@ import {
 } from '../../action/MaintainActions';
 
 import {
-    generateVideoThumbnail
+    generateVideoThumbnail,
+    downloadVideoThumbnail
 } from '../../action/ServiceActions';
 
 import MaintainPlan from '../../components/modal/MaintainPlan';
@@ -250,6 +251,16 @@ class Maintain extends Component{
             this.setState({thumbnail:thumbnail});
         });
     }
+
+    //测试获取第一帧图像
+    getThumbnail(){
+        this.props.dispatch(downloadVideoThumbnail()).then((json)=>{
+            var thumbnail=json.data;
+            this.setState({thumbnail:thumbnail});
+        });
+
+    }
+
 
     //音频录制
     prepareRecordingPath(audioPath){
@@ -515,8 +526,8 @@ class Maintain extends Component{
                 <Image resizeMode="stretch" source={require('../../img/bkg_old@2x.png')} style={{width:width,height:height}}>
 
                     {/*head*/}
-                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:50,
-                    backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',
+                flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:parseInt(height*54/667),}}>
                         <TouchableOpacity style={{flex:1}} onPress={()=>{
                         this.goBack();
                              }}>
@@ -532,13 +543,14 @@ class Maintain extends Component{
                     {/*body*/}
                     <View style={{flex:1,width:width,position:'relative',marginTop:10}}>
                         <ScrollableTabView style={{flex:1}}
-                                           renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:30}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
+                                           renderTabBar={() => <DefaultTabBar style={{borderBottomWidth:0,backgroundColor:'#fff',height:height*40/736}} activeTextColor="#0A9DC7" inactiveTextColor="#323232" underlineStyle={{backgroundColor:'#0A9DC7'}}/>}
                         >
                             {/*日常保养*/}
                             <View tabLabel='日常保养' style={{flex:1,padding:5}}>
+                                <View style={{height:height*10/736}}></View>
 
                                 <ScrollView>
-                                    <View style={{flex:8}}>
+                                    <View style={{height:height-height*300/736}}>
                                         <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
                                             <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}}
                                                               onPress={()=>{
@@ -546,12 +558,14 @@ class Maintain extends Component{
                                                                   this.setState({dailyChecked:this.state.dailyChecked});
                                             }}>
 
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain1.png')} style={{flex:5}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>机油、机滤</Text>
+                                                    <View style={{flex:1,alignItems:'center',}}>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain1@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222',}}>机油、机滤</Text>
                                                         {
-                                                            this.state.dailyChecked[0]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                            this.state.dailyChecked[0]==true?
+                             <Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,
+                            marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00',justifyContent:'center'}}>选择</Text>:
+                             <Text style={{flex:1,fontSize:12,color:'#068E78',marginTop:5,padding:2,paddingLeft:8,paddingRight:8,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
                                                         }
                                                     </View>
                                             </TouchableOpacity>
@@ -561,8 +575,8 @@ class Maintain extends Component{
                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain2.png')} style={{flex:5}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换刹车片</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain2@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>更换刹车片</Text>
                                                         {
                                                             this.state.dailyChecked[1]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -575,8 +589,8 @@ class Maintain extends Component{
                                                      this.setState({dailyChecked:this.state.dailyChecked});
                                                  }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain3.png')} style={{flex:5}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>雨刷片更换</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain3@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>雨刷片更换</Text>
                                                         {
                                                             this.state.dailyChecked[2]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -591,8 +605,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain4.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>轮胎更换</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain4@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>轮胎更换</Text>
                                                         {
                                                             this.state.dailyChecked[3]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -605,8 +619,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain5.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>燃油添加剂</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain5@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>燃油添加剂</Text>
                                                         {
                                                             this.state.dailyChecked[4]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -619,8 +633,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain6.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>空气滤清器</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain6@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>空气滤清器</Text>
                                                         {
                                                             this.state.dailyChecked[5]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -635,8 +649,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                             <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain7.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查火花塞</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain7@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>检查火花塞</Text>
                                                         {
                                                             this.state.dailyChecked[6]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -649,8 +663,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain8.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>检查驱动片</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain8@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>检查驱动片</Text>
                                                         {
                                                             this.state.dailyChecked[7]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -663,8 +677,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain9.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>换空调滤芯</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain9@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>换空调滤芯</Text>
                                                         {
                                                             this.state.dailyChecked[8]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -679,8 +693,8 @@ class Maintain extends Component{
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
                                                     <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain10.png')} style={{flex:4}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',marginTop:5}}>更换蓄电池防冻液</Text>
+                                                        <Image resizeMode="contain" source={require('../../img/maintain10@2x.png')} style={{flex:3}}/>
+                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>更换蓄电池防冻液</Text>
                                                         {
                                                             this.state.dailyChecked[9]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
                                                                 <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
@@ -690,7 +704,7 @@ class Maintain extends Component{
                                         </View>
                                     </View>
 
-                                    <View style={{flex:1,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
+                                    <View style={{flex:2,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
                                         <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                             <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
                                             <TextInput
@@ -717,7 +731,7 @@ class Maintain extends Component{
                                         </View>
                                     </View>
 
-                                    <TouchableOpacity style={{flex:2,height:35,width:width*2/3,marginLeft:50,padding:8,paddingHorizontal:12,flexDirection:'row',
+                                    <TouchableOpacity style={{flex:2,height:height*50/736,width:width*2/3,marginLeft:width*66/414,padding:8,paddingHorizontal:12,flexDirection:'row',
                                        justifyContent:'center',alignItems:'center',marginTop:10,marginBottom:10,backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6}}
                                                       onPress={()=>{
                                                         this.updateMaintainBusiness(0);
@@ -757,11 +771,12 @@ class Maintain extends Component{
                             {/*故障维修*/}
                             <ScrollView tabLabel='故障维修' style={{flex:1,padding:10}}>
 
+                                <View style={{height:30}}></View>
                                 {/*文本描述*/}
                                 <View style={{flex:1,padding:4}}>
                                     <Text>文本描述</Text>
                                     <TextInput
-                                        style={{height:100,borderWidth:1,padding:8,fontSize:13,marginTop:5}}
+                                        style={{height:height*150/736,borderWidth:1,padding:8,fontSize:13,marginTop:5}}
                                         onChangeText={(text) =>
                                         {
 
@@ -776,7 +791,7 @@ class Maintain extends Component{
                                 </View>
 
                                 <View style={{flex:1,padding:2,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                        height:135,marginTop:10}}>
+                                        height:height*135/736,marginTop:10}}>
                                     {/*音频描述*/}
                                     <View style={{flex:1}}>
                                         <View style={{padding:2,margin:2,flexDirection:'row',justifyContent:'center',alignItems:'center',backgroundColor:'#f96666',borderRadius:8}}>
@@ -904,11 +919,12 @@ class Maintain extends Component{
 
                                 </View>
 
+                                <View style={{height:height*60/736}}></View>
 
                                 <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}}>
 
-                                    <TouchableOpacity style={{width:width*2/3,padding:8,paddingHorizontal:12,
-                                        backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center'}}
+                                    <TouchableOpacity style={{height:height*50/736,width:width*2/3,padding:8,paddingHorizontal:12,
+                                        backgroundColor:'rgba(14, 153, 193, 0.73)',borderRadius:6,alignItems:'center',justifyContent:'center',}}
                                                       onPress={() => {
                                                           this.updateMaintainBusiness(1);
                                                           this.navigate2BaiduHome()
@@ -918,11 +934,13 @@ class Maintain extends Component{
                                 </View>
 
 
+
                             </ScrollView>
 
                             {/*事故维修*/}
                             <View tabLabel='事故维修' style={{flex:1,padding:12}}>
 
+                                <View style={{height:30}}></View>
                                 {/*已报案*/}
                                 <TouchableOpacity style={[{flexDirection:'row',alignItems:'center',padding:5,paddingHorizontal:12,
                                         borderRadius:6},this.state.accidentType=='已报案'?selectedStyle:unSelectedStyle]}
@@ -998,9 +1016,10 @@ class Maintain extends Component{
                                 </TouchableOpacity>
 
 
+                                <View style={{height:height*50/736}}></View>
                                 {/*跳转按钮*/}
                                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:30}}>
-                                    <TouchableOpacity style={{width:width*2/3,padding:10,paddingHorizontal:12,borderRadius:5,
+                                    <TouchableOpacity style={{height:height*50/736,width:width*2/3,padding:10,paddingHorizontal:12,borderRadius:5,
                                         backgroundColor:'rgba(14, 153, 193, 0.73)',alignItems:'center',justifyContent:'center'}}
                                                       onPress={()=>{
                                                       this.updateMaintainBusiness(2);

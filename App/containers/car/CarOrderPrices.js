@@ -493,7 +493,7 @@ class CarOrderPrices extends Component{
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                     <View style={[{padding: 10,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
-                            height:40,backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
+                            height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}]}>
 
                         <TouchableOpacity style={{width:80}} onPress={()=>{
                             this.goBack();

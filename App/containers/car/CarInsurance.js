@@ -391,24 +391,6 @@ class CarInsurance extends Component{
                                         this.state.selectedTab=tabIndex;}}
                                    renderTabBar={() =>  <FacebookTabBar />}>
 
-                    <View tabLabel='基础套餐' style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
-                        {/*body*/}
-
-                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
-                            {listView}
-                        </View>
-
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                                padding:10,borderRadius:10,justifyContent:'center'}]}
-                                          onPress={()=>{
-                                          this.insuranceMealConfirm();
-                                      }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-
                     <View tabLabel="建议套餐"  style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
 
                         <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
@@ -436,6 +418,24 @@ class CarInsurance extends Component{
                                 padding:10,borderRadius:10,justifyContent:'center'}]}
                                           onPress={()=>{
                                          this.insuranceMealConfirm();
+                                      }}>
+                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View tabLabel='基础套餐' style={{flex:1,padding:12,paddingLeft:0,paddingRight:0}}>
+                        {/*body*/}
+
+                        <View style={{padding:15,paddingLeft:6,paddingRight:6,height:height-270}}>
+                            {listView}
+                        </View>
+
+                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
+                                padding:10,borderRadius:10,justifyContent:'center'}]}
+                                          onPress={()=>{
+                                          this.insuranceMealConfirm();
                                       }}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{color:'#fff',fontSize:16}}>确认套餐选择</Text>

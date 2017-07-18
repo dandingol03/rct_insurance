@@ -39,11 +39,16 @@ class AppendLifeInsurer extends Component{
 
     showImagePicker(perIdCard_img){
         var options = {
-            title: 'Select Avatar',
             storageOptions: {
                 skipBackup: true,
                 path: 'images'
-            }
+            },
+            title:'请选择',
+            takePhotoButtonTitle:'拍照',
+            chooseFromLibraryButtonTitle:'图库',
+            cancelButtonTitle:'取消',
+
+
         };
         ImagePicker.showImagePicker(options, (response) => {
 
@@ -114,7 +119,7 @@ class AppendLifeInsurer extends Component{
                     if(json.re==1) {
                         personId = json.data.personId;
                         insurer.personId = personId;
-                        alert('personId=' + personId);
+                        //alert('personId=' + personId);
                         var suffix = '';
                         var imageType = 'perIdCard';
                         if (perIdCard1_img.indexOf('.jpg') != -1)
@@ -130,7 +135,7 @@ class AppendLifeInsurer extends Component{
                         var data = new FormData();
                         data.append('file', {uri: perIdCard1_img, name: 'perIdAttachId1', type: 'multipart/form-data'});
 
-                        alert('data.append====='+data);
+                        //alert('data.append====='+data);
 
                         Proxy.post({
                             url: Config.server + '/svr/request?request=uploadPhoto' +
@@ -142,16 +147,16 @@ class AppendLifeInsurer extends Component{
                             },
                             body: data,
                         },(json)=> {
-                            alert('upload perIdCard1 success');
+                           // alert('upload perIdCard1 success');
                             for(var field in json) {
-                                alert('field=' + field + '\r\n' + json[field]);
+                               // alert('field=' + field + '\r\n' + json[field]);
                             }
                             var su=null
                             if(perIdCard1_img.indexOf('.jpg')!=-1)
                                 su='jpg';
                             else if(perIdCard1_img.indexOf('.png')!=-1)
                                 su='png';
-                            alert('suffix=' + su);
+                           // alert('suffix=' + su);
                             return Proxy.postes({
                                 url:Config.server+'/svr/request',
                                 headers: {
@@ -172,7 +177,7 @@ class AppendLifeInsurer extends Component{
                                 if(json.re==1)
                                 {
                                     perIdAttachId1=json.data;
-                                    alert('perIdAttachId1=' + perIdAttachId1);
+                                   // alert('perIdAttachId1=' + perIdAttachId1);
                                     var su=null;
                                     if(perIdCard2_img.indexOf('.jpg')!=-1)
                                         su='jpg';
@@ -193,9 +198,9 @@ class AppendLifeInsurer extends Component{
                                         body: data,
                                     },(json)=> {
                                         if(json.re==1) {
-                                            alert('upload perIdCard2 success');
+                                           // alert('upload perIdCard2 success');
                                             for(var field in json) {
-                                                alert('field=' + field + '\r\n' + json[field]);
+                                                //alert('field=' + field + '\r\n' + json[field]);
                                             }
                                             return Proxy.postes({
                                                 url:Config.server+'/svr/request',
@@ -234,7 +239,7 @@ class AppendLifeInsurer extends Component{
                                                     });
                                                 }
                                             }).then((json)=>{
-                                                alert('insuranceInfoPersonInfo create successfully');
+                                               // alert('insuranceInfoPersonInfo create successfully');
                                                 if(json.re==1) {
                                                     return Proxy.postes({
                                                         url:Config.server+'/svr/request',
@@ -470,7 +475,8 @@ class AppendLifeInsurer extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:50},styles.card]}>
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',
+                flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:parseInt(height*54/667),}}>
                     <TouchableOpacity style={{flex:1}}
                                       onPress={()=>{
                         this.goBack();
@@ -495,7 +501,7 @@ class AppendLifeInsurer extends Component{
                     }} renderTabBar={() =><FacebookTabBar/>}>
                     <View tabLabel='已有投保人' style={{flex:1}}>
                         {/*body*/}
-                        <View style={{padding:20,height:height-250}}>
+                        <View style={{padding:20,height:height-height*250/736}}>
                             {listView}
                         </View>
 
@@ -504,7 +510,7 @@ class AppendLifeInsurer extends Component{
                     <View tabLabel='新建投保人' style={{flex:1}}>
 
                         {/*输入投保人姓名*/}
-                        <View style={{flexDirection:'row', height: 50,borderBottomWidth:1,borderBottomColor:'#aaa',margin:10}}>
+                        <View style={{flexDirection:'row', height: height*50/736,borderBottomWidth:1,borderBottomColor:'#aaa',margin:10}}>
                             <View style={{flex:2,flexDirection:'row',justifyContent:'center',alignItems:'center',marginLeft:15}}>
                                 <Text style={{fontSize:15,flex:3,textAlign:'left',color:'#343434'}}>姓名:</Text>
                             </View>
@@ -524,11 +530,14 @@ class AppendLifeInsurer extends Component{
                             </View>
                         </View>
 
+                        <View style={{height:20}}>
+
+                        </View>
                         {/*身份证正面*/}
                         {
                             this.state.perIdCard1_img==null?
-                                <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,backgroundColor:'rgba(200,200,200,0.3)',
-                                    borderRadius:8,position:'relative'}}
+                                <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:height*150/736,backgroundColor:'rgba(200,200,200,0.3)',
+                                    borderRadius:8,position:'relative',margin:20}}
                                                   onPress={()=>{
                                     this.showImagePicker('perIdCard1_img')
                                 }}>
@@ -549,7 +558,7 @@ class AppendLifeInsurer extends Component{
                                 </TouchableOpacity> :
                             <View>
                                 <Image resizeMode="stretch" source={this.state.perIdCard1_img}
-                                       style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,
+                                       style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:height*150/736,
                                     borderRadius:8,position:'relative'}}>
                                 <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                     <View style={{width:70,height:70,borderWidth:2,borderColor:'#fff',borderRadius:35,
@@ -571,7 +580,7 @@ class AppendLifeInsurer extends Component{
                         {/*身份证反面*/}
                         {
                             this.state.perIdCard2_img==null?
-                                <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,backgroundColor:'rgba(200,200,200,0.3)',
+                                <TouchableOpacity style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:height*150/736,backgroundColor:'rgba(200,200,200,0.3)',
                                     borderRadius:8,position:'relative'}}
                                                   onPress={()=>{
                                     this.showImagePicker('perIdCard2_img')
@@ -593,7 +602,7 @@ class AppendLifeInsurer extends Component{
                                 </TouchableOpacity> :
                                 <View>
                                     <Image resizeMode="stretch" source={this.state.perIdCard2_img}
-                                           style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:110,
+                                           style={{width:width*2/3,marginLeft:width/6,marginTop:10,height:height*150/736,
                                     borderRadius:8,position:'relative'}}>
                                         <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                                             <View style={{width:70,height:70,borderWidth:2,borderColor:'#fff',borderRadius:35,
@@ -638,7 +647,7 @@ class AppendLifeInsurer extends Component{
                             />
                             <View style={{flexDirection:'row',justifyContent:'center',marginTop:45}}>
                                 <Text style={{color:'#fff',fontSize:13,fontWeight:'bold'}}>
-                                    保存关联人...
+                                    拉取关联人...
                                 </Text>
 
                             </View>

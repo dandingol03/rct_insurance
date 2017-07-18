@@ -1,9 +1,7 @@
 /**
  * Created by dingyiming on 2017/4/9.
  */
-/**
- * Created by dingyiming on 2017/2/15.
- */
+
 import React,{Component} from 'react';
 
 import  {
@@ -64,7 +62,7 @@ class HandPickedProduct extends Component{
                 str+=err[field];
             console.error('err=\r\n'+str);
         });
-}
+    }
 
 
     renderRow(rowData,sectionId,rowId){
@@ -89,7 +87,26 @@ class HandPickedProduct extends Component{
         return row;
     }
 
-
+    sendNotification(){
+        Proxy.post({
+            url:Config.server+'/svr/request',
+            headers: {
+                'Authorization': "Bearer " + this.props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                request:'sendNotification',
+            }
+        },(json)=> {
+            if(json.re==1){
+                console.log('发送成功');
+            }
+            else{
+                console.log('发送失败');
+            }
+        }, (err) =>{
+        });
+    }
 
     constructor(props) {
         super(props);
@@ -130,6 +147,15 @@ class HandPickedProduct extends Component{
                 <View style={{flex:1,backgroundColor:'rgba(17, 17, 17, 0.6)',justifyContent: 'center',alignItems: 'center',}}>
                     <Text style={{color:'#fff',fontSize:15,paddingTop:10}}>精选产品</Text>
                 </View>
+
+                {/*<TouchableOpacity style={{flex:1,backgroundColor:'rgba(17, 17, 17, 0.6)',justifyContent: 'center',alignItems: 'center',}}*/}
+                                  {/*onPress={()=>{*/}
+                                    {/*this.sendNotification();*/}
+                                  {/*}}>*/}
+                    {/*<Text>测推送:</Text>*/}
+                    {/*<Text>{this.state.userCounters}</Text>*/}
+                {/*</TouchableOpacity>*/}
+
 
                 <View style={{flex:12,justifyContent: 'center',alignItems: 'center'}}>
 

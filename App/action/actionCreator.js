@@ -33,9 +33,9 @@ export let loginAction=function(username,password,cb){
                 },
                 body: "grant_type=password&password=" + password + "&username=" + username
             }).then((json)=> {
-                if(json.code=401){
-                    errorReason='用户名或密码错误';
-                }
+                // if(json.code=401){
+                //     errorReason='用户名或密码错误';
+                // }
 
                 accessToken = json.access_token;
 

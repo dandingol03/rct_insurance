@@ -119,7 +119,7 @@ export let updateRegistrationId=function (payload) {
                     {
                         var {accessToken} =payload;
                         var registrationId=res;
-                        console.log('registrationId='+registrationId);
+                        console.log('jPush获得registrationId='+registrationId);
                         Proxy.postes({
                             url: Config.server + '/svr/request',
                             headers: {

@@ -45,8 +45,6 @@ import {
 import PreferenceStore from '../components/utils/PreferenceStore';
 var MessageBarAlert = require('react-native-message-bar').MessageBar;
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
-import Sound from 'react-native-sound';
-
 
 
 var  Login =React.createClass({
@@ -58,7 +56,7 @@ var  Login =React.createClass({
         {
             if(user.password!==undefined&&user.password!==null)
             {
-                this.setState({showProgress: true,modalVisible:true});
+                this.setState({showProgress: true});
                 const {dispatch} = this.props;
                 this.timer= setInterval(
 
@@ -75,7 +73,6 @@ var  Login =React.createClass({
                     600,
                 );
                 dispatch(setTimerAction(this.timer));
-
 
                 //make a test
 
@@ -129,7 +126,6 @@ var  Login =React.createClass({
     getInitialState:function(){
         return ({
             user:{},
-            modalVisible:false,
             showProgress:false,
             loginDot:'.'
         });
@@ -355,7 +351,7 @@ var  Login =React.createClass({
                     username:username,
                     password:password
                 }})
-                this.onLoginPressed();
+                ///this.onLoginPressed();
             }
        })
 

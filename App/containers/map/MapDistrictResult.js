@@ -194,37 +194,30 @@ class MapDistrictResult extends Component{
 
 
         return (
-            <View style={styles.container}>
+            <View style={{flex:1}}>
 
                 {/*need to finish*/}
-                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                    <TouchableOpacity onPress={()=>{
+                            this.goBack();
+                        }}>
 
-                    <View style={[styles.row,{marginTop:0}]}>
-
-                        <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
-                                          onPress={()=>{
-                                          this.goBack();
-                                      }}
-                        >
                             <Icon name="angle-left" size={40} color="#fff"></Icon>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
 
-                        <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:10}}>
-                            <Text style={{color:'#fff',fontWeight:'bold'}}>
-                                {
-                                    state.service=='administrator'?
-                                        '审车':state.service=='paper_validate'?
-                                        '审证':state.service=='airport'?
-                                        '接送机':state.service=='park_car'?
-                                        '接送站':null
-                                }
-                            </Text>
-                        </View>
+                    <Text style={{fontSize:17,flex:3,paddingLeft:70,textAlign:'center',color:'#fff'}}>
+                        {
+                            state.service=='administrator'?
+                                '审车':state.service=='paper_validate'?
+                                '审证':state.service=='airport'?
+                                '接送机':state.service=='park_car'?
+                                '接送站':null
+                        }
+                    </Text>
 
-                        <View style={{width:80,alignItems:'center',marginRight:10,
-                            padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-                            <Icon name="refresh" size={20} color="#fff"></Icon>
-                        </View>
+                    <View style={{width:80,alignItems:'center',marginRight:10,
+                           padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
 
                     </View>
                 </View>

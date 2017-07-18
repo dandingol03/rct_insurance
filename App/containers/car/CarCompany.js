@@ -60,7 +60,6 @@ class CarCompany extends Component{
                 companys.push(company);
         });
 
-
         var subCompanys = [];
 
         var carNumPrefix =this.state.carInfo.carNum.substring(0,2);

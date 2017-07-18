@@ -30,7 +30,7 @@ let car = (state = initialState, action) => {
         case SET_CAR_ORDERS_REFRESH:
 
             return Object.assign({}, state, {
-                refresh:true
+                onFresh:true
             })
             break;
         case SET_CAR_MANAGE_REFRESH:

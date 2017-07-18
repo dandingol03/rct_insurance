@@ -12,7 +12,10 @@ import  {
     ListView,
     TouchableOpacity,
     Modal,
-    ActivityIndicator
+    ActivityIndicator,
+    RefreshControl,
+    Animated,
+    Easing
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -39,6 +42,27 @@ class ServiceOrders extends Component{
         }
     }
 
+
+    _onRefresh() {
+        this.setState({ isRefreshing: true, fadeAnim: new Animated.Value(0) });
+        setTimeout(function () {
+            this.setState({
+                isRefreshing: false,
+            });
+            Animated.timing(          // Uses easing functions
+                this.state.fadeAnim,    // The value to drive
+                {
+                    toValue: 1,
+                    duration: 600,
+                    easing: Easing.bounce
+                },           // Configuration
+            ).start();
+        }.bind(this), 500);
+
+        this.props.dispatch(fetchServiceOrders())
+    }
+
+
     navigate2ServiceOrderDetail(order)
     {
 
@@ -58,13 +82,13 @@ class ServiceOrders extends Component{
     fetchData()
     {
         setTimeout(()=>{
-            this.setState({doingFetch:true})
+            this.setState({doingFetch:true,isRefreshing:true})
             this.props.dispatch(fetchServiceOrders()).then((json) =>{
                 if(json.re==1)
                 {
-                    this.setState({selectedTab:0,doingFetch:false});
+                    this.setState({selectedTab:0,doingFetch:false,isRefreshing:false});
                 }else{
-                    this.setState({doingFetch:false})
+                    this.setState({doingFetch:false,isRefreshing:false})
                 }
             });
         },400)
@@ -252,7 +276,10 @@ class ServiceOrders extends Component{
             personInfo:props.personInfo,
             selectedTab:0,
             feePayInfo : null,
-            doingFetch:false
+            doingFetch:false,
+            doingFetchOld:false,
+            isRefreshing:false,
+            fadeAnim: new Animated.Value(1),
         }
 
     }
@@ -310,31 +337,28 @@ class ServiceOrders extends Component{
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
             appliedList=(
-                <ScrollView>
+
                     <ListView
                         automaticallyAdjustContentInsets={false}
                         dataSource={ds.cloneWithRows(orders1)}
                         renderRow={this.appliedRender.bind(this)}
-                    />
-                </ScrollView>);
+                    />);
 
             handlingList=(
-                <ScrollView>
+
                     <ListView
                         automaticallyAdjustContentInsets={false}
                         dataSource={ds.cloneWithRows(orders2)}
                         renderRow={this.handlingRender.bind(this)}
-                    />
-                </ScrollView>);
+                    />);
 
             finishedList=(
-                <ScrollView>
+
                     <ListView
                         automaticallyAdjustContentInsets={false}
                         dataSource={ds.cloneWithRows(orders3)}
                         renderRow={this.finishedRender.bind(this)}
-                    />
-                </ScrollView>);
+                    />);
 
 
 
@@ -346,41 +370,36 @@ class ServiceOrders extends Component{
 
 
         return (
-            <View style={styles.container}>
+            <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
                     {/*need to finish*/}
-                    <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
+                                          onPress={()=>{
+                            this.goBack();
+                        }}>
+                            <Icon name="angle-left" size={40} color="#fff"></Icon>
+                        </TouchableOpacity>
 
-                        <View style={[styles.row,{marginTop:0}]}>
-
-                            <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
-                                              onPress={()=>{
-                                              this.goBack();
-                                          }}
-                            >
-                                <Icon name="angle-left" size={40} color="#fff"></Icon>
-                            </TouchableOpacity>
-
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                                <Text style={{color:'#fff',fontSize:17}}>服务订单</Text>
-                            </View>
-
-                            <TouchableOpacity style={{width:80,alignItems:'center',padding:10,justifyContent:'center',
-                                borderRadius:8,marginBottom:1}}
-                                              onPress={()=>{
-                                                  if(this.state.doingFetch==false)
-                                                    this.fetchData();
-                                          }}>
-                                <Icon name="refresh" size={20} color="#fff" style={{marginLeft:8}}></Icon>
-                            </TouchableOpacity>
-
+                        <View style={{flex:4,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:17,color:'#fff',marginLeft:4}}>服务订单</Text>
                         </View>
+
+                        <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}
+                                          onPress={()=>{
+                                                 if(this.state.doingFetch==false)
+                                                   this.fetchData();
+                                          }}>
+                            <Icon name="repeat" size={22} color="#fff" ></Icon>
+                        </TouchableOpacity>
+
                     </View>
 
                     {/*scroll tab pages*/}
                     <ScrollableTabView
-                        style={{marginTop: 10, }}
+                        style={{flex:13,padding:0,marginTop: 10}}
                         initialPage={1}
                         renderTabBar={() =>  <FacebookTabBar />}>
                         <View tabLabel="已下单">
@@ -403,9 +422,23 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
-                                {appliedList}
-                            </View>
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,borderTopWidth:1,borderColor:'#ddd'}}>
+                                <ScrollView
+                                    refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isRefreshing}
+                                        onRefresh={this._onRefresh.bind(this)}
+                                        tintColor="#9c0c13"
+                                        title="刷新..."
+                                        titleColor="#9c0c13"
+                                        colors={['#ff0000', '#00ff00', '#0000ff']}
+                                        progressBackgroundColor="#ffff00"
+                                    />
+                                    }
+                                >
+                                    {appliedList}
+                                </ScrollView>
+                            </Animated.View>
 
                         </View>
                         <View tabLabel="服务中">
@@ -428,9 +461,23 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,borderTopWidth:1,borderColor:'#ddd'}}>
+                                <ScrollView
+                                    refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isRefreshing}
+                                        onRefresh={this._onRefresh.bind(this)}
+                                        tintColor="#9c0c13"
+                                        title="刷新..."
+                                        titleColor="#9c0c13"
+                                        colors={['#ff0000', '#00ff00', '#0000ff']}
+                                        progressBackgroundColor="#ffff00"
+                                    />
+                                    }
+                                >
                                 {handlingList}
-                            </View>
+                                </ScrollView>
+                            </Animated.View>
                         </View>
 
 
@@ -450,15 +497,34 @@ class ServiceOrders extends Component{
                                 </View>
                             </View>
 
-                            <View style={{paddingBottom:10,height:height-250,borderTopWidth:1,borderColor:'#ddd'}}>
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,borderTopWidth:1,borderColor:'#ddd'}}>
+                                <ScrollView
+                                    refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isRefreshing}
+                                        onRefresh={this._onRefresh.bind(this)}
+                                        tintColor="#9c0c13"
+                                        title="刷新..."
+                                        titleColor="#9c0c13"
+                                        colors={['#ff0000', '#00ff00', '#0000ff']}
+                                        progressBackgroundColor="#ffff00"
+                                    />
+                                    }
+                                >
                                 {finishedList}
-                            </View>
+                                </ScrollView>
+                            </Animated.View>
 
                         </View>
                     </ScrollableTabView>
 
+                    {/*底部留白*/}
+                    <View style={{flex:2}}>
+
+                    </View>
+
                     {/*loading模态框*/}
-                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+                    <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetchOld}>
 
                         <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
                                           onPress={()=>{
@@ -512,18 +578,6 @@ var styles = StyleSheet.create({
     row:{
         flexDirection:'row',
         alignItems:'center'
-    },
-    card: {
-        borderWidth: 1,
-        backgroundColor: '#fff',
-        borderColor: 'rgba(0,0,0,0.1)',
-        margin: 5,
-        height: 150,
-        padding: 15,
-        shadowColor: '#ccc',
-        shadowOffset: { width: 2, height: 2, },
-        shadowOpacity: 0.5,
-        shadowRadius: 3,
     },
     rotate:{
         transform:[{rotate:'12deg'}]

@@ -218,9 +218,10 @@ class Credit extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:60,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:parseInt(height*54/667),width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',
+                padding: 10,borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:20}]}>
+                    <View style={[styles.row,{marginTop:10}]}>
 
                         <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                           onPress={()=>{
@@ -231,12 +232,12 @@ class Credit extends Component{
                         </TouchableOpacity>
 
                         <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>
-                            <Text style={{color:'#888'}}>我的积分</Text>
+                            <Text style={{color:'#fff'}}>我的积分</Text>
                         </View>
 
-                        <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#aaa',
+                        <View style={{width:80,alignItems:'center',marginRight:20,backgroundColor:'#ef473a',
                             padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-                            <Text style={{fontSize:12}}>积分提现</Text>
+                            <Text style={{fontSize:12,color:'#fff'}}>积分提现</Text>
                         </View>
 
                     </View>

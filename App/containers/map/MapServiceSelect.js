@@ -75,9 +75,10 @@ class MapServiceSelect extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:50,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:parseInt(height*54/667),padding: 10,paddingTop:20,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',
+                borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
-                    <View style={[styles.row,{marginTop:10}]}>
+                    <View style={[styles.row,{marginTop:0}]}>
 
                         <TouchableOpacity style={{width:80,alignItems:'flex-start',justifyContent:'center',paddingLeft:10}}
                                           onPress={()=>{
@@ -87,8 +88,8 @@ class MapServiceSelect extends Component{
                             <Icon name="angle-left" size={40} color="#fff"></Icon>
                         </TouchableOpacity>
 
-                        <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:10}}>
-                            <Text style={{color:'#fff',fontWeight:'bold'}}>服务选择</Text>
+                        <View>
+                            <Text style={{fontSize:17,flex:3,paddingLeft:65,textAlign:'center',color:'#fff'}}>服务选择</Text>
                         </View>
 
                         <View style={{width:80,alignItems:'center',marginRight:20,

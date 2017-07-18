@@ -5,14 +5,13 @@ import * as types from '../action/types';
 import {
     UPDATE_PERSON_INFO,
     UPDATE_SCORE,
-    UPDATE_CERTIFICATE
+    UPDATE_CERTIFICATE,
+    UPDATE_PORTRAIT
 } from '../constants/UserConstants';
 
 import {
     UPDATE_TTS_TOKEN
 } from '../constants/TTSConstants';
-
-
 
 const initialState = {
     accessToken: null,
@@ -60,6 +59,14 @@ let user = (state = initialState, action) => {
                 ttsToken:ttsToken
             })
             break;
+
+        case UPDATE_PORTRAIT:
+            var data=action.payload;
+            return Object.assign({}, state, {
+                portrait:data
+            })
+            break;
+
         default:
             return state;
     }

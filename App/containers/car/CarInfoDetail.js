@@ -45,32 +45,6 @@ class CarInfoDetail extends Component{
         this[actionSheet].show();
     }
 
-    setLifeInsurer(insurer){
-        var lifeInsurer = insurer;
-        this.setState({insurer:lifeInsurer});
-
-    }
-
-    setLifeInsuranceder(insuranceder){
-        var lifeInsuranceder = insuranceder;
-        this.setState({insuranceder:lifeInsuranceder});
-
-
-    }
-
-    setLifeBenefiter(benefiter){
-
-        var lifeBenefiter = benefiter;
-        if(lifeBenefiter.perName!=='法定'){
-            this.setState({benefiter:lifeBenefiter,isLegalBenefiter:0});
-        }
-        else{
-
-            this.setState({benefiter:lifeBenefiter,isLegalBenefiter:1});
-        }
-
-    }
-
 
     constructor(props)
     {
@@ -142,8 +116,8 @@ class CarInfoDetail extends Component{
                             <View style={{flex:4,padding:5,justifyContent:'center'}}>
                                 <Text style={{fontSize:15}}>
                                     {
-                                        carInfo.issueDate!==undefined&&carInfo.issueDate!==null?
-                                            DateFilter.filter(carInfo.issueDate,'yyyy-mm-dd'):null
+                                        carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
+                                            DateFilter.filter(carInfo.firstRegisterDate,'yyyy-mm-dd'):null
                                     }
                                 </Text>
                             </View>
@@ -274,7 +248,7 @@ var styles = StyleSheet.create({
     },
     row:{
         flexDirection:'row',
-        height: 45,
+        height:height*65/736,
         borderBottomWidth:1,
         borderBottomColor:'#222'
     },

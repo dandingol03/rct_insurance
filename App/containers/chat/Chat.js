@@ -188,7 +188,6 @@ class Chat extends Component{
         this.onLoadEarlier = this.onLoadEarlier.bind(this);
 
         this.renderSend=this.renderSend.bind(this);
-        //this.onInputTextChanged=this.onInputTextChanged.bind(this);
 
         this._isAlright = null;
     }
@@ -217,7 +216,7 @@ class Chat extends Component{
             if (this._isMounted === true) {
                 this.setState((previousState) => {
                     return {
-                        messages: GiftedChat.prepend(previousState.messages, require('./data/old_messages.js')),
+                        messages: GiftedChat.prepend(previousState.messages,this.state.storeMessages),
                         loadEarlier: false,
                         isLoadingEarlier: false,
                     };
@@ -233,14 +232,7 @@ class Chat extends Component{
             this.state.txt=text;
             this.sendTxt(this.state.txt);
         }
-        // this.setState((previousState) => {
-        //     return {
-        //         messages: GiftedChat.append(previousState.messages, messages),
-        //     };
-        // });
 
-        // for demo purpose
-        // this.answerDemo(messages);
     }
 
     answerDemo(messages) {
@@ -279,8 +271,6 @@ class Chat extends Component{
     }
 
 
-
-
     onReceive(text) {
 
         this.setState((previousState) => {
@@ -310,19 +300,26 @@ class Chat extends Component{
                 />
             );
         }
-        const options = {
-            'Action 1': (props) => {
-                alert('option 1');
-            },
-            'Action 2': (props) => {
-                alert('option 2');
-            },
-            'Cancel': () => {},
-        };
+        // const options = {
+        //     'Action 1': (props) => {
+        //         alert('option 1');
+        //     },
+        //     'Action 2': (props) => {
+        //         alert('option 2');
+        //     },
+        //     'Cancel': () => {},
+        // };
+        // return (
+        //     <Actions
+        //         {...props}
+        //         options={options}
+        //     />
+        // );
         return (
-            <Actions
+            <ChatActions
                 {...props}
-                options={options}
+                uploadAudio={(audio)=>{this. uploadAudio(audio);}}
+                uploadVideo={(video)=>{this. uploadVideo(video);}}
             />
         );
     }
@@ -360,6 +357,21 @@ class Chat extends Component{
         }
         return null;
     }
+
+    renderLoadEarlier(props){
+        if(this.state.loadEarlier==true){
+         return(
+             <View>
+                 <Text>
+                     查看更早的消息
+                 </Text>
+             </View>
+         )
+        }
+
+    }
+
+
 
     renderSend(){
 
@@ -463,7 +475,7 @@ class Chat extends Component{
               <GiftedChat
                   messages={this.state.messages}
                   onSend={this.onSend}
-                  loadEarlier={this.state.loadEarlier}
+                  //loadEarlier={this.state.loadEarlier}
                   onLoadEarlier={this.onLoadEarlier}
                   isLoadingEarlier={this.state.isLoadingEarlier}
 
@@ -475,6 +487,8 @@ class Chat extends Component{
                   renderBubble={this.renderBubble}
                   renderCustomView={this.renderChatView}
                   renderFooter={this.renderFooter}
+                  //renderLoadEarlier={this.renderLoadEarlier}
+                  placeholder='请输入...'
 
               />
 
@@ -483,12 +497,7 @@ class Chat extends Component{
 
     componentDidMount()
     {
-        // this.sendTxt('hi,my name is danding');
 
-        // //收到监听
-        // this.listener = DeviceEventEmitter.addListener('通知名称',(e)=> {
-        //     alert(e);
-        // })
     }
 
 }

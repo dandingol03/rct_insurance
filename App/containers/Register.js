@@ -49,82 +49,6 @@ class Register extends Component{
     }
 
 
-    applyLifeInsuranceIntend(){
-
-        var order = {
-            insurer:this.state.insurer,
-            insuranceder:this.state.insuranceder,
-            benefiter:this.state.benefiter,
-            isLegalBenefiter:this.state.isLegalBenefiter,
-            insuranceType:this.state.insuranceType,
-            insuranceTypeCode:this.state.insuranceTypeCode,
-            hasSocietyInsurance:this.state.hasSocietyInsurance,
-            hasCommerceInsurance:this.state.hasCommerceInsurance,
-            planInsuranceFee:this.state.planInsuranceFee,
-        }
-
-        Proxy.post({
-            url:Config.server+'/svr/request',
-            headers: {
-                'Authorization': "Bearer " + this.state.accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: {
-                request:'generateLifeInsuranceOrder',
-                info:order,
-            }
-        }, (res)=> {
-            var json = res;
-            if(json.re==1)
-            {
-                var orderId=json.data.orderId;
-                if(orderId!==undefined&&orderId!==null)
-                {
-                    Alert.alert(
-                        '您的订单',
-                        '您的寿险意向已提交,请等待工作人员配置方案后在"我的寿险订单"中进行查询',
-                        [
-                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                            {text: 'OK', onPress: () => this.navigate2LifeOrders()},
-                        ]
-                    )
-
-                }
-            }
-        }, (err) =>{
-            var str='';
-            for(var field in err)
-                str += field + ':' + err[field];
-            alert('error=\r\n' + str);
-        });
-    }
-
-    setLifeInsurer(insurer){
-        var lifeInsurer = insurer;
-        this.setState({insurer:lifeInsurer});
-
-
-    }
-
-    setLifeInsuranceder(insuranceder){
-        var lifeInsuranceder = insuranceder;
-        this.setState({insuranceder:lifeInsuranceder});
-
-
-    }
-
-    setLifeBenefiter(benefiter){
-
-        var lifeBenefiter = benefiter;
-        if(lifeBenefiter.perName!=='法定'){
-            this.setState({benefiter:lifeBenefiter,isLegalBenefiter:0});
-        }
-        else{
-
-            this.setState({benefiter:lifeBenefiter,isLegalBenefiter:1});
-        }
-
-    }
 
     //转向登录界面
     navigate2Login(){
@@ -242,17 +166,6 @@ class Register extends Component{
         var props=this.props;
         var state=this.state;
 
-        var insuranceType = this.state.insuranceType;
-        var hasSocietyInsurance= this.state.hasSocietyInsurance;
-        var hasCommerceInsurance= this.state.hasCommerceInsurance;
-        var insurer = this.state.insurer;
-        var insuranceder = this.state.insuranceder;
-        var benefiter = this.state.benefiter;
-
-        const CANCEL_INDEX = 0;
-        const DESTRUCTIVE_INDEX = 1;
-
-        const insuranceTypeButtons=['取消','重疾险','意外险','养老险','理财险','医疗险'];
         return (
 
             <View style={{flex:1}}>
@@ -269,110 +182,72 @@ class Register extends Component{
 
                 {/*body*/}
                 <Image resizeMode="stretch" source={require('../img/bkg@2x.png')} style={{flex:20,width:width}}>
-                    <View style={{flex:10,padding:10}}>
+                    <View style={{flex:5,padding:10}}>
 
 
                         {/*用户名*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="user-o" size={24} color="#bf530c" />
-                            </View>
+                        {/*<View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5}]}>*/}
+                            {/*<View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',*/}
+                                {/*backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>*/}
+                                {/*<Icon name="user-o" size={24} color="#bf530c" />*/}
+                            {/*</View>*/}
 
-                            <View style={{flex:5,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(username) =>
-                                    {
+                            {/*<View style={{flex:5,padding:5,justifyContent:'center'}}>*/}
+                                {/*<TextInput*/}
+                                    {/*style={{height: 35,fontSize:14,paddingLeft:20}}*/}
+                                    {/*onChangeText={(username) =>*/}
+                                    {/*{*/}
 
-                                       this.setState({info:Object.assign(state.info,{username:username})});
-                                    }}
-                                    value={state.info.username}
-                                    placeholder='请输入用户名'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-                        </View>
+                                       {/*this.setState({info:Object.assign(state.info,{username:username})});*/}
+                                    {/*}}*/}
+                                    {/*value={state.info.username}*/}
+                                    {/*placeholder='请输入用户名'*/}
+                                    {/*placeholderTextColor="#aaa"*/}
+                                    {/*underlineColorAndroid="transparent"*/}
+                                {/*/>*/}
+                            {/*</View>*/}
+                        {/*</View>*/}
 
-
-                        {/*密码*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="lock" size={24} color="#bf530c" />
-                            </View>
-
-                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(password) =>
-                                    {
-                                       var reg=/\W/;
-                                       var info=_.cloneDeep(state.info);
-                                       info.password=password;
-                                       if(reg.exec(password)!=null)
-                                       {
-                                           info.password_error=true
-                                       }
-                                       this.setState({info:info});
-                                    }}
-                                    password={true}
-                                    value={state.info.password}
-                                    placeholder='请输入密码'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
-
-                            {
-                                state.info.password_error==true?
-                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
-                                        <Text style={{color:'#222'}}>密码不能含中文</Text>
-                                    </View>:null
-                            }
-
-                        </View>
 
                         {/*邮箱*/}
-                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
-                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
-                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
-                                <Icon name="envelope-o" size={22} color="#bf530c" />
-                            </View>
+                        {/*<View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>*/}
+                            {/*<View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',*/}
+                                {/*backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>*/}
+                                {/*<Icon name="envelope-o" size={22} color="#bf530c" />*/}
+                            {/*</View>*/}
 
-                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
-                                <TextInput
-                                    style={{height: 35,fontSize:14,paddingLeft:20}}
-                                    onChangeText={(mail) =>
-                                    {
-                                       var reg=/@.*?\./;
-                                       var info=_.cloneDeep(state.info);
-                                       info.mail=mail;
-                                       if(reg.exec(mail)!=null)
-                                       {
-                                       }else{
-                                           info.mail_error=true
-                                       }
-                                       this.setState({info:info});
-                                    }}
+                            {/*<View style={{flex:2,padding:5,justifyContent:'center'}}>*/}
+                                {/*<TextInput*/}
+                                    {/*style={{height: 35,fontSize:14,paddingLeft:20}}*/}
+                                    {/*onChangeText={(mail) =>*/}
+                                    {/*{*/}
+                                       {/*var reg=/@.*?\./;*/}
+                                       {/*var info=_.cloneDeep(state.info);*/}
+                                       {/*info.mail=mail;*/}
+                                       {/*if(reg.exec(mail)!=null)*/}
+                                       {/*{*/}
+                                       {/*}else{*/}
+                                           {/*info.mail_error=true*/}
+                                       {/*}*/}
+                                       {/*this.setState({info:info});*/}
+                                    {/*}}*/}
 
-                                    value={state.info.mail}
-                                    placeholder='请输入邮箱地址，本项选填'
-                                    placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
-                                />
-                            </View>
+                                    {/*value={state.info.mail}*/}
+                                    {/*placeholder='请输入邮箱地址，本项选填'*/}
+                                    {/*placeholderTextColor="#aaa"*/}
+                                    {/*underlineColorAndroid="transparent"*/}
+                                {/*/>*/}
+                            {/*</View>*/}
 
-                            {
+                            {/*{*/}
 
-                                state.info.mail_error==true?
-                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
-                                        <Text style={{color:'#222'}}>输入的邮箱格式不正确</Text>
-                                    </View>:null
-                            }
+                                {/*state.info.mail_error==true?*/}
+                                    {/*<View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>*/}
+                                        {/*<Text style={{color:'#222'}}>输入的邮箱格式不正确</Text>*/}
+                                    {/*</View>:null*/}
+                            {/*}*/}
 
-                        </View>
+                        {/*</View>*/}
 
 
                         {/*手机验证*/}
@@ -387,11 +262,11 @@ class Register extends Component{
                                     style={{height: 35,fontSize:14,paddingLeft:20}}
                                     onChangeText={(mobilePhone) =>
                                     {
-
                                        var info=_.cloneDeep(state.info);
                                        info.mobilePhone=mobilePhone;
-
+                                       info.username=mobilePhone;
                                        this.setState({info:info});
+
                                     }}
 
                                     value={state.info.mobilePhone}
@@ -434,8 +309,43 @@ class Register extends Component{
                             </View>
                         </View>
 
+                        {/*密码*/}
+                        <View style={[styles.row,{height:40,borderWidth:1,borderColor:'#ccc',borderBottomColor:'#ccc',padding:5,marginTop:10}]}>
+                            <View style={{width:35,flexDirection:'row',justifyContent:'center',alignItems:'center',
+                                backgroundColor:'transparent',borderRightWidth:1,borderColor:'#bf530c'}}>
+                                <Icon name="lock" size={24} color="#bf530c" />
+                            </View>
 
+                            <View style={{flex:2,padding:5,justifyContent:'center'}}>
+                                <TextInput
+                                    style={{height: 35,fontSize:14,paddingLeft:20}}
+                                    onChangeText={(password) =>
+                                    {
+                                       var reg=/\W/;
+                                       var info=_.cloneDeep(state.info);
+                                       info.password=password;
+                                       if(reg.exec(password)!=null)
+                                       {
+                                           info.password_error=true
+                                       }
+                                       this.setState({info:info});
+                                    }}
+                                    password={true}
+                                    value={state.info.password}
+                                    placeholder='请输入密码'
+                                    placeholderTextColor="#aaa"
+                                    underlineColorAndroid="transparent"
+                                />
+                            </View>
 
+                            {
+                                state.info.password_error==true?
+                                    <View style={{flex:2,padding:5,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}}>
+                                        <Text style={{color:'#222'}}>密码不能含中文</Text>
+                                    </View>:null
+                            }
+
+                        </View>
 
 
                     </View>
@@ -450,6 +360,8 @@ class Register extends Component{
                         </View>
 
                     </TouchableOpacity>
+
+                    <View style={{flex:5}}></View>
                 </Image>
 
             </View>

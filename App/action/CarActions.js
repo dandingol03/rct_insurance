@@ -2,10 +2,8 @@ import Config from '../../config';
 var Proxy = require('../proxy/Proxy');
 import {
     SET_CAR_ORDERS_REFRESH,
-    SET_CAR_HISTORY_ORDERS,
-    SET_CAR_PRICED_ORDERS,
-    SET_CAR_APPLYED_ORDERS,
-    ENABLE_CARORDERS_ONFRESH,
+    UPDATE_CAR_HISTORY_ORDERS,
+    UPDATE_APPLIED_CAR_ORDERS,
     DISABLE_CARORDERS_ONFRESH,
     UPDATE_CAR_ORDER_MODIFY
 } from '../constants/OrderConstants';
@@ -21,17 +19,84 @@ export let enableCarManageRefresh=()=>{
     }
 }
 
-export let enableCarOrderRefresh=()=>{
+export let enableCarOrdersOnFresh=()=>{
     return {
         type:SET_CAR_ORDERS_REFRESH,
         data:true
     }
 }
-let disableCarOrdersOnFresh=()=>{
+
+export let disableCarOrdersOnFresh=()=>{
     return {
         type:DISABLE_CARORDERS_ONFRESH
     }
 }
+
+export let fetchCarOrdersInHistory=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getCarOrdersInHistory'
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+        });
+    }
+}
+
+export let fetchApplyedCarOrders=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            Proxy.postes({
+                url: Config.server + '/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request: 'getApplyedCarOrders'
+                }
+            }).then((json)=>{
+                resolve(json)
+            }).catch((e)=>{
+                reject(e)
+            })
+
+        });
+    }
+}
+
+export let updateCarOrdersInHistory=(payload)=>{
+    return {
+        type:UPDATE_CAR_HISTORY_ORDERS,
+        payload:payload
+    }
+}
+
+export let updateAppliedCarOrders=(payload)=>{
+    return {
+        type:UPDATE_APPLIED_CAR_ORDERS,
+        payload:payload
+    }
+}
+
+
 
 let setCarOrdersInHistory=(orders)=>{
     return {
@@ -163,7 +228,6 @@ export let getCarValidateState=(payload)=>{
         });
     }
 }
-
 
 export let getOrderStateByOrderId=(payload)=>{
     return (dispatch,getState)=> {
@@ -394,6 +458,21 @@ export let fetchCarOrders=function (accessToken,cb) {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //创建车辆
 export let createCarInfo=(payload)=>{

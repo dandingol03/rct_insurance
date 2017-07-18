@@ -176,7 +176,7 @@ class ChatActions extends Component{
     }
 
     onActionsPress() {
-        const options = ['发送音频','发送视频','发送位置','Cancel'];
+        const options = ['发送音频','发送视频','取消'];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions({
                 options,
@@ -190,20 +190,20 @@ class ChatActions extends Component{
                     case 1:
                         this.setVideoChatVisible(true);
                         break;
-                    case 2:
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                this.props.onSend({
-                                    location: {
-                                        latitude: position.coords.latitude,
-                                        longitude: position.coords.longitude,
-                                    },
-                                });
-                            },
-                            (error) => alert(error.message),
-                            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-                        );
-                        break;
+                    // case 2:
+                    //     navigator.geolocation.getCurrentPosition(
+                    //         (position) => {
+                    //             this.props.onSend({
+                    //                 location: {
+                    //                     latitude: position.coords.latitude,
+                    //                     longitude: position.coords.longitude,
+                    //                 },
+                    //             });
+                    //         },
+                    //         (error) => alert(error.message),
+                    //         {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+                    //     );
+                    //     break;
                     default:
                 }
             });

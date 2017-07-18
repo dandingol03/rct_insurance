@@ -373,7 +373,6 @@ let fetchRelativeInfo=function (payload) {
 
             }else{
                 //范围派送
-
                 Proxy.postes({
                     url: Config.server + '/svr/request',
                     headers: {
@@ -478,6 +477,10 @@ let getDataDistribution=(payload)=>{
                 Geolocation.getMetersBetweenTowPoints(
                     {lng:place.longitude,lat:place.latitude},
                     {lng:center.longitude,lat:center.latitude}).then(function (json) {
+                        if(json.distance==null||json.distance==undefined){
+                            var dis = json;
+                            json = {distance:dis};
+                        }
 
                     var distance=parseFloat(parseFloat(json.distance).toFixed(2));
 
@@ -728,6 +731,11 @@ let isPointBiaedOrNot=(payload)=>{
                         {lng:population.center.lng,lat:population.center.lat}).then(function (json) {
 
                         recurseC++;
+                        if(json.distance==null||json.distance==undefined){
+                            var dis = json;
+                            json = {distance:dis};
+                        }
+
                         var bias=parseFloat(json.distance.toFixed(2));
                         if(population.plots.length>1)
                         {
@@ -941,7 +949,10 @@ let doPopulationCompute=(payload)=>{
                 Geolocation.getMetersBetweenTowPoints(
                     {lng:place.longitude,lat:place.latitude},
                     {lng:center.longitude,lat:center.latitude}).then(function (json) {
-
+                    if(json.distance==null||json.distance==undefined){
+                        var dis = json;
+                        json = {distance:dis};
+                    }
                     var distance=json.distance;
                     recurseCount++;
                     //25公里为搜索范围,群体的最大距离为12公里，半径为6公里
@@ -1304,8 +1315,8 @@ export let generateVideoThumbnail=(payload)=>{
                                 thumbnail:thumbnail,
                             })
                         ).then((res)=>{
-
-                        resolve({re:1,data:res.path()});
+                            alert('video thumbnail='+res.path());
+                            resolve({re:1,data:'file://' + res.path()});
                     });
 
                     }
@@ -1323,6 +1334,112 @@ export let generateVideoThumbnail=(payload)=>{
         });
     }
 }
+
+//测试下载第一帧缩略图
+export let downloadVideoThumbnail=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+            var accessToken=state.user.accessToken;
+
+            var thumbnail='';
+
+            //TODO:make this to thumbnail download
+            var url =  Config.server+ '/svr/request';
+            var dirs = RNFetchBlob.fs.dirs;
+
+            console.log('The dirs.DocumentDir  ='+ dirs.DocumentDir);
+
+
+            RNFetchBlob
+                .config({
+                    fileCache : true,
+                    appendExt : 'png',
+                    path : dirs.DocumentDir + '/video-thumbnail.png'
+                })
+                .fetch('POST',url, {
+                        Authorization : 'Bearer '+accessToken,
+                        "Content-Type":"application/json"
+                    },
+                    JSON.stringify({
+                        request:'downloadGeneratedThumbnail',
+                        thumbnail:thumbnail,
+                    })
+                ).then((res)=>{
+                alert('video thumbnail='+res.path());
+                console.log('The video thumbnail saved to='+res.path());
+                resolve({re:1,data:'file://' + res.path()});
+            });
+
+        });
+    }
+}
+
+
+//测试下载头像
+export let downloadPortrait=()=>{
+    return (dispatch,getState)=> {
+        return new Promise((resolve, reject) => {
+            var state=getState();
+
+            var accessToken=state.user.accessToken;
+            var portrait='';
+
+            //检查头像是否存在
+            Proxy.post({
+
+                url:Config.server+'/svr/request',
+                headers: {
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    request:'checkPortrait',
+                }
+            },(json)=> {
+                for(var field in json) {
+                    console.log('field=' + field + '\r\n' + json[field]);
+                }
+                if(json.re==1)
+                {
+                    var portrait=json.data;
+
+                    var url =  Config.server+ '/svr/request?request=downloadPortrait&filePath='+portrait;
+                    var dirs = RNFetchBlob.fs.dirs
+
+                    RNFetchBlob
+                        .config({
+                            fileCache : true,
+                            appendExt : 'png',
+                            path : dirs.DocumentDir + '/portrait.png'
+                        })
+                        .fetch('POST',url, {
+                                Authorization : 'Bearer '+accessToken,
+                                "Content-Type":"application/json"
+                            },
+
+                        ).then((res)=>{
+                        //alert('portrait filePath='+res.path());
+                        resolve({re:1,data:'file://' + res.path()});
+                    });
+
+                }
+                else{
+                    resolve({re:2,data:''});
+                }
+
+            }, (err) =>{
+                Alert.alert(
+                    'error',
+                    err
+                );
+            });
+
+        });
+    }
+}
+
+
 
 
 //上传普通音频

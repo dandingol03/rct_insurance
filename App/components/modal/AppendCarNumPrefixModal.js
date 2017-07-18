@@ -92,21 +92,20 @@ class AppendCarNumPrefixModal extends Component{
         return (
             <View style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                <View style={[{backgroundColor:'rgba(17, 17, 17, 0.6)',padding:4,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
-                    <View style={{flex:1,paddingLeft:5}}>
-                        <TouchableOpacity onPress={
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+                        <TouchableOpacity style={{flex:1,paddingLeft:5}} onPress={
                             ()=>{
                                 this.close();
                             }
                         }>
                             <Icon name="times-circle" size={30} color="#fff" />
                         </TouchableOpacity>
-                    </View>
-                    <Text style={{fontSize:17,flex:8,paddingLeft:12,textAlign:'center',color:'#fff'}}>
+                        <Text style={{fontSize:17,flex:8,paddingLeft:12,textAlign:'center',color:'#fff'}}>
                         选择城市
-                    </Text>
-                    <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}>
-                    </View>
+                        </Text>
+                        <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}>
+                        </View>
                 </View>
                 <View style={{backgroundColor:'#fff',flexDirection:'row',padding:8}}>
                     <View style={{flex:4,padding:10}}>

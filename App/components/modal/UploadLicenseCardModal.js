@@ -25,6 +25,18 @@ var ImagePicker = require('react-native-image-picker');
 
 class UploadLicenseCardModal extends Component{
 
+
+    close(){
+
+        if(this.props.onClose!==undefined&&this.props.onClose!==null)
+        {
+            this.props.onClose();
+        }
+        //TODO:关闭时同步数据
+
+    }
+
+
     showImagePicker(assetId){
         this.setState({assetId:assetId});
         var options = {
@@ -70,25 +82,6 @@ class UploadLicenseCardModal extends Component{
     }
 
 
-
-    useCamera(assetId)
-    {
-        this.setState({cameraModalVisible:true,assetId:assetId});
-    }
-
-    closeCamera(path)
-    {
-        this.setState({cameraModalVisible:false,assetsBundle:Object.assign(this.state.assetsBundle,{[this.state.assetId]:path})});
-    }
-
-    close(){
-        this.props.setLicenseCard(this.state.licenseCard1_img,this.state.licenseCard2_img,this.state.licenseCard3_img);
-        if(this.props.onClose!==undefined&&this.props.onClose!==null)
-        {
-            this.props.onClose(this.state.assetsBundle);
-        }
-    }
-
     constructor(props)
     {
         super(props);
@@ -111,21 +104,30 @@ class UploadLicenseCardModal extends Component{
             <View style={{flex:1,backgroundColor:'#f0f0f0'}}>
 
                 {/*header bar*/}
-                <View style={[{backgroundColor:'#11c1f3',padding:4,justifyContent: 'center',alignItems: 'center',flexDirection:'row'},styles.card]}>
-                    <View style={{flex:1}}>
-                        <TouchableOpacity onPress={
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
+
+                    <TouchableOpacity style={{flex:1}} onPress={
                             ()=>{
                                 this.close();
                             }
-                        }>
-                            <Icon name="times-circle" size={30} color="#fff" />
-                        </TouchableOpacity>
-                    </View>
+                    }>
+                        <Icon name="times-circle" size={30} color="#fff" />
+                    </TouchableOpacity>
+
                     <Text style={{fontSize:17,flex:3,textAlign:'center',color:'#fff'}}>
                         上传行驶证照片
                     </Text>
-                    <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}>
-                    </View>
+                    <TouchableOpacity style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}
+                                      onPress={
+                            ()=>{
+                                this.props.setLicenseCard(this.state.licenseCard1_img,this.state.licenseCard2_img,this.state.licenseCard3_img);
+                                this.close();
+                            }
+                    }>
+
+                        <Icon name="check" size={30} color="#fff" />
+                    </TouchableOpacity>
                 </View>
 
                 <ScrollView>

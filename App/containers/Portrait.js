@@ -18,60 +18,72 @@ import  {
 
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
-import _ from 'lodash';
+
 import Config from '../../config';
 import Proxy from '../proxy/Proxy';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Camera from 'react-native-camera';
-import PreferenceStore from '../components/utils/PreferenceStore';
+var ImagePicker = require('react-native-image-picker');
 import {
-    verifyMobilePhoneRedundancy,
-    generateSecurityCode,
-    registerUser
+    downloadPortrait,
+    updatePortrait
 } from '../action/UserActions';
-
-import {
-    PAGE_LOGIN
-} from '../constants/PageStateConstants';
-
-import {
-    updatePageState
-} from '../action/PageStateActions';
 
 class Portrait extends Component{
 
     goBack(){
-        this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
+        const { navigator } = this.props;
+        if(navigator) {
+            navigator.pop();
+        }
+    }
+
+    showImagePicker(){
+
+        var options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            },
+            title:'请选择',
+            takePhotoButtonTitle:'拍照',
+            chooseFromLibraryButtonTitle:'图库',
+            cancelButtonTitle:'取消',
+
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+                this.setState({portrait: source.uri});
+                console.log('portrait.uri = ', response.uri);
+            }
+        });
     }
 
     show(actionSheet) {
         this[actionSheet].show();
     }
 
-    takePicture = () => {
-        if (this.camera) {
-            this.camera.capture()
-                .then((json) => {
-                    var data=json.data;
-                    var path=json.path;
-                    this.setState({cameraModalVisible:false,portrait:{path:path}});
-                    //TODO:make a dispatch
-                    this.storePicture(path);
-                })
-                .catch(err => console.error(err));
-        }
-    }
-
     storePicture(){
-
 
         var {accessToken}=this.props;
         var {portrait}=this.state;
 
-        if (portrait&&portrait.path) {
+        if (portrait) {
             // Create the form data object
             var data = new FormData();
-            data.append('file', {uri: portrait.path, name: 'portrait.jpg', type: 'multipart/form-data'});
+            data.append('file', {uri: portrait, name: 'portrait.jpg', type: 'multipart/form-data'});
 
             //限定为jpg后缀
             Proxy.post({
@@ -83,10 +95,10 @@ class Portrait extends Component{
                 body: data,
             },(json)=> {
                 if(json.re==1) {
-                    if(json.data!==undefined&&json.data!==null)
-                    {
-                        console.log('...');
-                    }
+
+                    this.goBack();
+                    this.props.setPortrait(this.state.portrait);
+
                 }
 
             }, (err) =>{
@@ -104,34 +116,6 @@ class Portrait extends Component{
         }
     }
 
-
-
-    startRecording = () => {
-        if (this.camera) {
-            this.camera.capture({mode: Camera.constants.CaptureMode.video})
-                .then((data) => console.log(data))
-                .catch(err => console.error(err));
-            this.setState({
-                isRecording: true
-            });
-        }
-    }
-
-    stopRecording = () => {
-        if (this.camera) {
-            this.camera.stopCapture();
-            this.setState({
-                isRecording: false
-            });
-        }
-    }
-
-
-    //转向登录界面
-    navigate2Login(){
-
-        this.props.dispatch(updatePageState({state:PAGE_LOGIN}));
-    }
 
     constructor(props)
     {
@@ -156,9 +140,6 @@ class Portrait extends Component{
 
         var props=this.props;
         var state=this.state;
-
-
-
 
         return (
 
@@ -196,7 +177,7 @@ class Portrait extends Component{
                         {
                             state.portrait!==undefined&&state.portrait!==null?
                                 <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
-                                       source={require('../img/person.jpg')}/>:
+                                       source={{uri:state.portrait}}/>:
                                 <Image resizeMode="stretch" style={{height:76,width:76,borderWidth:1,borderColor:'#888',borderRadius:38}}
                                        source={require('../img/person.jpg')}/>
 
@@ -205,7 +186,8 @@ class Portrait extends Component{
 
                     <TouchableOpacity style={{flex:1,padding:5,justifyContent:'center',alignItems:'center'}}
                                       onPress={()=>{
-                        this.setState({cameraModalVisible:true});
+                        //this.setState({cameraModalVisible:true});
+                         this.showImagePicker()
                     }}
                     >
                         <Text style={{color:'#ff5026',fontSize:16,fontWeight:'bold'}}>更换头像</Text>

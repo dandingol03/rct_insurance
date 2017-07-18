@@ -245,8 +245,6 @@ class Home extends Component{
 
     render(){
 
-        var props=this.props;
-        var state=this.state;
         if(this.state.userCounters==null){
             this.getUserCounters();
         }
@@ -258,8 +256,8 @@ class Home extends Component{
             <View style={{flex:1}}>
 
                 {/* header bar */}
-                <Image style={styles.logo} source={require('../../img/newBanner@2x.png')} />
-                <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:195,
+                <Image style={{ width:width,flex:2}} source={require('../../img/newBanner@3x.png')} />
+                <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:parseInt(height*215/667),
                 backgroundColor:'rgba(255, 255, 255, 0.5)',margin:5,padding:5}}>
                     <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',paddingRight:10,}}>
                         <Text>注册人数:</Text>
@@ -272,57 +270,55 @@ class Home extends Component{
                 </View>
 
                 {/* body*/}
-                <Image style={{width:width,height:height-230}} source={require('../../img/bkg1@2x.png')}>
-                    <View style={{padding:20}}>
-                        <View  style={[styles.row]}>
-                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                <Image style={{width:width,flex:3,padding:15}} source={require('../../img/bkg1@3x.png')}>
+
+                        <View  style={{flexDirection:'row',flex:1}}>
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',padding:8}}
                                               onPress={ ()=>{
                                                        this.navigate2CarManage();
 
                                               }}>
-                                <Image style={[styles.module]} source={require('../../img/car@2x.png')}/>
+                                <Image style={{ width:height*100/736,height:height*100/736}} source={require('../../img/car@3x.png')}/>
                                 <View style={{marginTop:0,padding:12}}>
                                     <Text style={{fontSize:18,color:'#222'}}>车险</Text>
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',padding:8}}
                                               onPress={ ()=>{
                                                    this.navigate2Life();
                                                 }}>
-                                <Image style={[styles.module]} source={require('../../img/life@2x.png')}/>
+                                <Image style={{ width:height*100/736,height:height*100/736}} source={require('../../img/life@3x.png')}/>
                                 <View style={{marginTop:0,padding:12}}>
                                     <Text style={{fontSize:18,color:'#222'}}>寿险</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>
 
-                        <View  style={[styles.row]}>
+                        <View  style={{flexDirection:'row',flex:1}}>
 
-                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',padding:8}}
                                               onPress={ ()=>{
                                                     this.navigate2Maintain();
                                                 }}>
-                                <Image style={[styles.module]} source={require('../../img/maintain@2x.png')}/>
+                                <Image style={{ width:height*100/736,height:height*100/736}} source={require('../../img/maintain@3x.png')}/>
                                 <View style={{marginTop:0,padding:12}}>
                                     <Text style={{fontSize:18,color:'#222'}}>维修</Text>
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',padding:8}}
                                               onPress={ ()=>{
                                                     this.navigate2BaiduHome();
-                                                }}
-                            >
-                                <Image style={[styles.module]} source={require('../../img/drivingService@2x.png')}/>
+                                                }}>
+                                <Image style={{ width:height*100/736,height:height*100/736}} source={require('../../img/drivingService.png')}/>
                                 <View style={{marginTop:0,padding:12}}>
                                     <Text style={{fontSize:18,color:'#222'}}>增值服务</Text>
                                 </View>
                             </TouchableOpacity>
+
                         </View>
 
-
-                    </View>
                 </Image>
 
             </View>);
@@ -345,11 +341,11 @@ var styles = StyleSheet.create({
     },
     logo:{
         width:width,
-        height:230
+        flex:2
     },
     module:{
-        width:75,
-        height:75
+       width:width*1/2,
+        height:height*3/10
     },
     separator: {
         height: 1,
@@ -359,7 +355,8 @@ var styles = StyleSheet.create({
         padding:10
     },
     row:{
-        flexDirection:'row'
+        flexDirection:'row',
+        flex:1
     }
 });
 

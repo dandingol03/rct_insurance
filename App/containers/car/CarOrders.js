@@ -16,14 +16,17 @@ import  {
     TextInput,
     ScrollView,
     Alert,
-    Modal
+    Modal,
+    RefreshControl,
+    Animated,
+    Easing
 } from 'react-native';
 
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
-import _ from 'lodash';
+
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 
@@ -33,8 +36,14 @@ import {
     fetchApplyedCarOrders,
     updateCarOrdersInHistory,
     updateAppliedCarOrders,
-    disableCarOrdersOnFresh
-} from '../../action/actionCreator';
+    disableCarOrdersOnFresh,
+
+} from '../../action/CarActions';
+
+
+
+
+
 import DateFilter from '../../filter/DateFilter';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import CarOrderPrices from '../../containers/car/CarOrderPrices';
@@ -49,7 +58,27 @@ class CarOrders extends Component{
         }
     }
 
-    navigate2CarOrderDetail(orderId)
+    _onRefresh() {
+        this.setState({ isRefreshing: true, fadeAnim: new Animated.Value(0) });
+        setTimeout(function () {
+            this.setState({
+                isRefreshing: false,
+            });
+            Animated.timing(          // Uses easing functions
+                this.state.fadeAnim,    // The value to drive
+                {
+                    toValue: 1,
+                    duration: 600,
+                    easing: Easing.bounce
+                },           // Configuration
+            ).start();
+        }.bind(this), 500);
+
+        const {dispatch} = this.props;
+        dispatch(enableCarOrdersOnFresh());
+    }
+
+    navigate2CarOrderDetail(orderId,orderState)
     {
         const {navigator} =this.props;
         if(navigator) {
@@ -57,7 +86,8 @@ class CarOrders extends Component{
                 name: 'CarOrderDetail',
                 component: CarOrderDetail,
                 params: {
-                    orderId: orderId
+                    orderId: orderId,
+                    orderState:orderState
                 }
             })
         }
@@ -89,7 +119,7 @@ class CarOrders extends Component{
                         if(rowData.pricedCount&&rowData.pricedCount>0)
                             this.navigate2CarOrderPrices(rowData)
                         else
-                            this.navigate2CarOrderDetail(rowData.orderId)
+                            this.navigate2CarOrderDetail(rowData.orderId,rowData.orderState)
                   }}>
                 <View style={{flex:3,justifyContent:'flex-start',alignItems:'flex-start',padding:6,paddingTop:10,borderRightWidth:1,borderColor:'#ddd'}}>
                     <Text style={{fontSize:13,justifyContent:'flex-start',alignItems:'flex-start',color:'#222'}}>{DateFilter.filter(rowData.applyTime,'yyyy-mm-dd')}</Text>
@@ -138,7 +168,7 @@ class CarOrders extends Component{
     //拉取订单数据
     fetchData(){
         this.state.doingFetch=true;
-
+        this.state.isRefreshing=true;
         var historyOrders=null;
         var appliedOrders=null;
 
@@ -189,10 +219,10 @@ class CarOrders extends Component{
             this.props.dispatch(updateCarOrdersInHistory({historyOrders:historyOrders}));
             this.props.dispatch(updateAppliedCarOrders({appliedOrders:appliedOrders}))
             this.props.dispatch(disableCarOrdersOnFresh());
-            this.setState({doingFetch:false});
+            this.setState({doingFetch:false,isRefreshing:false});
         }).catch((e)=>{
             this.props.dispatch(disableCarOrdersOnFresh());
-            this.setState({doingFetch:false});
+            this.setState({doingFetch:false,isRefreshing:false});
             alert(e)
         });
 
@@ -204,7 +234,10 @@ class CarOrders extends Component{
         super(props);
         this.state = {
             selectedTab:0,
-            doingFetch:false
+            doingFetch:false,
+            doingFetchOld:false,
+            isRefreshing: false,
+            fadeAnim: new Animated.Value(1),
         };
     }
 
@@ -224,26 +257,23 @@ class CarOrders extends Component{
             if(historyOrders!==undefined&&historyOrders!==null&&historyOrders.length>0)
             {
                 historyListView=(
-                    <ScrollView>
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(historyOrders)}
                             renderRow={this.renderRow.bind(this)}
                         />
-                    </ScrollView>
                 );
             }
 
             if(appliedOrders!==undefined&&appliedOrders!==null&&appliedOrders.length>0)
             {
                 appliedListView=(
-                    <ScrollView>
+
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(appliedOrders)}
                             renderRow={this.renderRow.bind(this)}
                         />
-                    </ScrollView>
                 );
             }
 
@@ -254,7 +284,9 @@ class CarOrders extends Component{
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-                <View style={[{width:width,height:40,padding:10,paddingTop:10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                {/*标题*/}
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
                                       onPress={()=>{
                             this.goBack();
@@ -277,9 +309,8 @@ class CarOrders extends Component{
                     </TouchableOpacity>
                 </View>
 
-
-
-                <ScrollableTabView   style={{flex:1,padding:0,marginTop: 10}}
+                {/*列表*/}
+                <ScrollableTabView   style={{flex:13,padding:0,marginTop: 10}}
                                      onChangeTab={(data)=>{
                                         var tabIndex=data.i;
                                         this.state.selectedTab=tabIndex;
@@ -289,18 +320,46 @@ class CarOrders extends Component{
 
                     <View tabLabel='已申请' style={{flex:1}}>
                         {/*body*/}
-                        <View style={{padding:20,paddingHorizontal:0,height:height-240}}>
+                        <Animated.View style={{opacity: this.state.fadeAnim,padding:20,paddingHorizontal:0}}>
+                            <ScrollView
+                                refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.isRefreshing}
+                                    onRefresh={this._onRefresh.bind(this)}
+                                    tintColor="#9c0c13"
+                                    title="刷新..."
+                                    titleColor="#9c0c13"
+                                    colors={['#ff0000', '#00ff00', '#0000ff']}
+                                    progressBackgroundColor="#ffff00"
+                                />
+                                }
+                            >
                             {appliedListView}
-                        </View>
+                            </ScrollView>
+                        </Animated.View>
 
                     </View>
 
 
                     <View tabLabel='已完成' style={{flex:1}}>
 
-                        <View style={{padding:20,height:height-264}}>
+                        <Animated.View style={{opacity: this.state.fadeAnim,padding:20,}}>
+                            <ScrollView
+                                refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.isRefreshing}
+                                    onRefresh={this._onRefresh.bind(this)}
+                                    tintColor="#9c0c13"
+                                    title="刷新..."
+                                    titleColor="#9c0c13"
+                                    colors={['#ff0000', '#00ff00', '#0000ff']}
+                                    progressBackgroundColor="#ffff00"
+                                />
+                                }
+                            >
                             {historyListView}
-                        </View>
+                            </ScrollView>
+                        </Animated.View>
 
 
                     </View>
@@ -308,8 +367,13 @@ class CarOrders extends Component{
 
                 </ScrollableTabView>
 
+                {/*底部留白*/}
+                <View style={{flex:2}}>
+
+                </View>
+
                 {/*loading模态框*/}
-                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetchOld}>
 
                     <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
                                       onPress={()=>{
@@ -345,13 +409,6 @@ var styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    card: {
-        borderBottomWidth: 0,
-        shadowColor: '#eee',
-        shadowOffset: { width: 2, height: 2, },
-        shadowOpacity: 0.5,
-        shadowRadius: 3,
     },
     logo:{
         width:width,

@@ -1,6 +1,4 @@
-/**
- * Created by dingyiming on 2017/2/20.
- */
+
 import React,{Component} from 'react';
 import {
     ActivityIndicator,
@@ -15,7 +13,10 @@ import {
     TextInput,
     ScrollView,
     Alert,
-    Modal
+    Modal,
+    RefreshControl,
+    Animated,
+    Easing
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -24,7 +25,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
-import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans} from '../../action/LifeActions';
+import {fetchLifeOrders,enableLifeOrdersOnFresh,setLifePlans,disableLifeOrdersOnFresh} from '../../action/LifeActions';
 import DateFilter from '../../filter/DateFilter';
 import FacebookTabBar from '../../components/toolbar/FacebookTabBar';
 import ApplyedLifeOrderDetails from './ApplyedLifeOrderDetails'
@@ -36,6 +37,25 @@ class LifeOrders extends Component{
         if(navigator) {
             navigator.pop();
         }
+    }
+
+    _onRefresh() {
+        this.setState({ isRefreshing: true, fadeAnim: new Animated.Value(0) });
+        setTimeout(function () {
+            this.setState({
+                isRefreshing: false,
+            });
+            Animated.timing(          // Uses easing functions
+                this.state.fadeAnim,    // The value to drive
+                {
+                    toValue: 1,
+                    duration: 600,
+                    easing: Easing.bounce
+                },           // Configuration
+            ).start();
+        }.bind(this), 500);
+
+        this.props.dispatch(fetchLifeOrders());
     }
 
     navigate2ApplyedLifeOrderDetail(order){
@@ -181,15 +201,16 @@ class LifeOrders extends Component{
 
     fetchData(){
 
-
-        setTimeout(()=>{
-
-            this.setState({doingFetch:true})
-            this.props.dispatch(fetchLifeOrders()).then(()=> {
-
-                this.setState({doingFetch:false})
-            });
-        },200)
+        this.state.doingFetch=true;
+        this.state.isRefreshing=true;
+        this.props.dispatch(fetchLifeOrders()).then(()=> {
+            this.props.dispatch(disableLifeOrdersOnFresh());
+            this.setState({doingFetch:false,isRefreshing:false})
+        }).catch((e)=>{
+            this.props.dispatch(disableLifeOrdersOnFresh());
+            this.setState({doingFetch:false,isRefreshing:false});
+            alert(e)
+        });
 
     }
 
@@ -201,6 +222,9 @@ class LifeOrders extends Component{
             selectedTab:0,
             accessToken: accessToken,
             doingFetch:false,
+            doingFetchOld:false,
+            isRefreshing: false,
+            fadeAnim: new Animated.Value(1),
         };
     }
 
@@ -212,45 +236,45 @@ class LifeOrders extends Component{
 
         if(onFresh==true)
         {
-            if(this.state.doingFetch==false)
-                this.fetchData();
+             if(this.state.doingFetch==false)
+                 this.fetchData();
         }else{
             var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
             if(pricedOrders!==undefined&&pricedOrders!==null&&pricedOrders.length>0)
             {
                 pricedListView=(
-                    <ScrollView>
+
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(pricedOrders)}
                             renderRow={this.renderPricedRow.bind(this)}
                         />
-                    </ScrollView>);
+                   );
             }
 
             if(historyOrders!==undefined&&historyOrders!==null&&historyOrders.length>0)
             {
                 historyListView=(
-                    <ScrollView>
+
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(historyOrders)}
                             renderRow={this.renderRow.bind(this)}
                         />
-                    </ScrollView>
+
                 );
             }
 
             if(applyedOrders!==undefined&&applyedOrders!==null&&applyedOrders.length>0)
             {
                 applyedListView=(
-                    <ScrollView>
+
                         <ListView
                             automaticallyAdjustContentInsets={false}
                             dataSource={ds.cloneWithRows(applyedOrders)}
                             renderRow={this.renderRow.bind(this)}
                         />
-                    </ScrollView>
+
                 );
             }
         }
@@ -258,7 +282,8 @@ class LifeOrders extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                    <View style={[{flex:1,height:60,padding:10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                         <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start'}}
                                           onPress={()=>{
                             this.goBack();
@@ -291,25 +316,70 @@ class LifeOrders extends Component{
 
                         <View tabLabel='已申请' style={{flex:1,margin:10}}>
                             {/*body*/}
-                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
-                                {applyedListView}
-                            </View>
+
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+
+                                <ScrollView
+                                    refreshControl={
+                                     <RefreshControl
+                                         refreshing={this.state.isRefreshing}
+                                         onRefresh={this._onRefresh.bind(this)}
+                                         tintColor="#9c0c13"
+                                         title="刷新..."
+                                         titleColor="#9c0c13"
+                                         colors={['#ff0000', '#00ff00', '#0000ff']}
+                                         progressBackgroundColor="#ffff00"
+                                     />
+                                    }
+                                >
+                                    {applyedListView}
+                                </ScrollView>
+                            </Animated.View>
 
                         </View>
 
                         <View tabLabel='寿险方案' style={{flex:1,margin:10}}>
 
-                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+
+                                <ScrollView
+                                    refreshControl={
+                                     <RefreshControl
+                                         refreshing={this.state.isRefreshing}
+                                         onRefresh={this._onRefresh.bind(this)}
+                                         tintColor="#9c0c13"
+                                         title="刷新..."
+                                         titleColor="#9c0c13"
+                                         colors={['#ff0000', '#00ff00', '#0000ff']}
+                                         progressBackgroundColor="#ffff00"
+                                     />
+                                    }
+                                >
                                 {pricedListView}
-                            </View>
+                                </ScrollView>
+                            </Animated.View>
 
                         </View>
 
                         <View tabLabel='已完成' style={{flex:1,margin:10}}>
 
-                            <View style={{paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                            <Animated.View style={{opacity: this.state.fadeAnim,paddingBottom:10,height:height-240,borderTopWidth:1,borderColor:'#ddd'}}>
+                                <ScrollView
+                                    refreshControl={
+                                     <RefreshControl
+                                         refreshing={this.state.isRefreshing}
+                                         onRefresh={this._onRefresh.bind(this)}
+                                         tintColor="#9c0c13"
+                                         title="刷新..."
+                                         titleColor="#9c0c13"
+                                         colors={['#ff0000', '#00ff00', '#0000ff']}
+                                         progressBackgroundColor="#ffff00"
+                                     />
+                                    }
+                                >
                                 {historyListView}
-                            </View>
+                                </ScrollView>
+                            </Animated.View>
 
                         </View>
 
@@ -319,7 +389,7 @@ class LifeOrders extends Component{
 
 
                 {/*loading模态框*/}
-                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetch}>
+                <Modal animationType={"fade"} transparent={true} visible={this.state.doingFetchOld}>
 
                     <TouchableOpacity style={[styles.modalContainer,styles.modalBackgroundStyle,{alignItems:'center'}]}
                                       onPress={()=>{
@@ -393,7 +463,7 @@ var styles = StyleSheet.create({
 
 module.exports = connect(state=>({
         accessToken:state.user.accessToken,
-        historyOrders:state.life.historyOrders,
+        groupList:state.life.historyOrders,
         pricedOrders:state.life.pricedOrders,
         applyedOrders:state.life.applyedOrders,//已申请和正在报价
         onFresh:state.life.onFresh

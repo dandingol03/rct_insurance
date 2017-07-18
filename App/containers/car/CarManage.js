@@ -41,29 +41,6 @@ class CarManage extends Component{
     }
 
 
-    toggleAll(){
-        if(this.state.relatedGoods!==undefined&&this.state.relatedGoods!==null)
-        {
-            var relatedGoods=_.cloneDeep(this.state.relatedGoods);
-            if(this.state.selectAll!=true)
-            {
-                relatedGoods.map(function (good, i){
-                    good.checked=true;
-                });
-            }else{
-                relatedGoods.map(function (good, i){
-                    good.checked=false;
-                });
-            }
-            var dataSource = this.state.dataSource.cloneWithRows(relatedGoods);
-            this.setState({
-                relatedGoods: relatedGoods,
-                selectAll:!this.state.selectAll,
-                dataSource:dataSource
-            });
-        }
-    }
-
     navigate2CarInfoDetail(carInfo)
     {
         const {navigator} =this.props;
@@ -146,56 +123,9 @@ class CarManage extends Component{
         lineStyle={flex:1,flexDirection:'row',padding:4,borderBottomWidth:1,
             borderColor:'#ddd',justifyContent:'flex-start',backgroundColor:'transparent'}
 
-        var prefer=null;
-
-        if(rowData.idle==true)
-        {
-            if(rowData.checked==true)
-            {
-                prefer=<CheckBox
-                    style={{padding: 2,flex:1,justifyContent:'center',flexDirection:'row',alignItems:'center'}}
-                    onClick={()=>{
-                      var bindedCars=_.cloneDeep(this.state.bindedCars);
-                      bindedCars.map(function(car,i) {
-                        if(car.carId==rowData.carId)
-                            car.checked=false;
-                      });
-                       this.setState({bindedCars: bindedCars,dataSource:this.state.dataSource.cloneWithRows(bindedCars)});
-                }}
-                    isChecked={false}
-                    leftText={null}
-                />;
-            }else{
-                prefer=<CheckBox
-                    style={{ padding: 2,flex:1,justifyContent:'center',flexDirection:'row',alignItems:'center'}}
-                    onClick={()=>{
-
-                        this.navigate2CarInsurance(rowData);
-                      {/*var bindedCars=_.cloneDeep(this.state.bindedCars);*/}
-                      {/*bindedCars.map(function(car,i) {*/}
-                        {/*if(car.carId==rowData.carId)*/}
-                            {/*car.checked=true;*/}
-                      {/*});*/}
-                       {/*this.setState({bindedCars: bindedCars,dataSource:this.state.dataSource.cloneWithRows(bindedCars)});*/}
-
-                }}
-                    isChecked={false}
-                    leftText={null}
-                />;
-            }
-        }else{
-            prefer=
-                <View style={{flex:1,padding:8,justifyContent:'center',flexDirection:'row'}}>
-                    <Text style={{color:'#ff5c3c',fontSize:16}}>已申请</Text>
-                </View>;
-
-        }
-
         var row=
             <View>
-
                 <View style={lineStyle}>
-
                     {
                         rowData.idle==true?
                             <TouchableOpacity style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',padding:8}}
@@ -265,11 +195,17 @@ class CarManage extends Component{
                     this.setState({doingFetch:false});
                 }else{
                     var bindedCars=res.data;
-                    bindedCars.map(function (car, i) {
-                        car.checked = false;
-                    });
-                    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-                    this.setState({dataSource: ds.cloneWithRows(bindedCars),bindedCars:bindedCars,doingFetch:false});
+                    if(bindedCars!==null){
+                        bindedCars.map(function (car, i) {
+                            car.checked = false;
+                        });
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        this.setState({dataSource: ds.cloneWithRows(bindedCars),bindedCars:bindedCars,doingFetch:false});
+                    }else{
+                        bindedCars=[];
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        this.setState({dataSource: ds.cloneWithRows(bindedCars),bindedCars:bindedCars,doingFetch:false});
+                    }
                 }
 
             }, (err) =>{
@@ -298,10 +234,6 @@ class CarManage extends Component{
 
     render(){
 
-
-        var username='danding';
-        var {goodInfo}=this.state;
-
         var listView=null;
 
         if(this.state.dataSource!==undefined&&this.state.dataSource!==null)
@@ -324,7 +256,8 @@ class CarManage extends Component{
         return (
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
-                    <View style={[{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:54,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                         <TouchableOpacity onPress={()=>{
                             this.goBack();
                         }}>

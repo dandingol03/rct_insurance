@@ -710,7 +710,8 @@ class MapParkCarConfirm extends Component{
                         backgroundColor: '#F5FCFF',position:'relative',}}>
 
                     {/*header part*/}
-                    <View style={{height:40,width:width,backgroundColor:'rgba(120,120,120,0.2)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                    <View style={{height:parseInt(height*54/667),padding: 10,paddingTop:20,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',
+                borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
                         <View style={[styles.row,{marginTop:0}]}>
 
@@ -719,16 +720,15 @@ class MapParkCarConfirm extends Component{
                                           this.goBack();
                                       }}
                             >
-                                <Icon name="angle-left" size={40} color="#bf530c"></Icon>
+                                <Icon name="angle-left" size={40} color="#fff"></Icon>
                             </TouchableOpacity>
 
-                            <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:12}}>
-                                <Text style={{color:'#bf530c',fontWeight:'bold'}}>生成接站订单</Text>
+                            <View>
+                                <Text style={{fontSize:17,flex:3,paddingLeft:40,textAlign:'center',color:'#fff'}}>生成接站订单</Text>
                             </View>
 
                             <View style={{width:80,alignItems:'center',marginRight:20,
                             padding:10,justifyContent:'center',borderRadius:8,marginBottom:1}}>
-
                             </View>
 
                         </View>
@@ -765,8 +765,8 @@ class MapParkCarConfirm extends Component{
                                     style={{width:100,marginLeft:10,fontSize:12}}
                                     customStyles={{
                                         placeholderText:{color:'#fff',fontSize:12},
-                                        dateInput:{height:20},
-                                        dateTouchBody:{height:24}
+                                        dateInput:{height:24},
+                                        dateTouchBody:{marginLeft:10,marginRight:10,height:22,borderWidth:0,backgroundColor:'#f79916'}
                                     }}
                                     date={this.state.issueDate}
                                     mode="datetime"
@@ -775,7 +775,7 @@ class MapParkCarConfirm extends Component{
                                     minDate={new Date()}
                                     confirmBtnText="确认"
                                     cancelBtnText="Cancel"
-                                    iconSource={null}
+                                    showIcon={false}
                                     onDateChange={(date) => {
 
                                         if(state.selectTime==false)

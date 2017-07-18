@@ -56,6 +56,7 @@ var ob={
                 {
                     if(json.reason=='no waiter online')
                     {
+                        alert('现在没有可进行咨询的工作人员');
                         // var myPopup = $ionicPopup.alert({
                         //     template: '现在没有可进行咨询的工作人员',
                         //     title: '错误'

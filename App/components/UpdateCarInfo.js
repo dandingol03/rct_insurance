@@ -113,7 +113,6 @@ class UpdateCarInfo extends Component{
         })
     }
 
-
     //上传行驶证
     licenseCardPhotoUpload(){
         var {carInfo,assetsBundle}=this.state;
@@ -526,17 +525,17 @@ class UpdateCarInfo extends Component{
             <View style={{flex:1}}>
                 <Image resizeMode="stretch" source={require('../img/flowAndMoutain@2x.png')} style={{flex:20,width:width}}>
 
-                <View style={[{height:36,backgroundColor:'rgba(17, 17, 17, 0.6)',padding:0,paddingHorizontal:10
-                            ,alignItems:'center',flexDirection:'row'}]}>
+                    <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
 
-                    <View style={{width:70}}>
-                        <TouchableOpacity onPress={()=>{
-                        this.goBack();
-                            }}>
-                            <Icon name="angle-left" size={34} color="#fff"/>
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={{fontSize:15,flex:1,textAlign:'center',color:'#fff'}}>
+
+                    <TouchableOpacity style={{width:70}} onPress={()=>{
+                       this.goBack();
+                    }}>
+                        <Icon name="angle-left" size={40} color="#fff"/>
+                    </TouchableOpacity>
+
+                    <Text style={{fontSize:17,flex:1,textAlign:'center',color:'#fff'}}>
                         创建新车
                     </Text>
                     <TouchableOpacity style={{width:100,flexDirection:'row',justifyContent:'center',backgroundColor:'#ef473a',
@@ -546,7 +545,7 @@ class UpdateCarInfo extends Component{
                                               var carInfo=this.state.carInfo;
                                               this.postCarInfo(carInfo);
                                           }}>
-                        <Text style={{color:'#fff',fontSize:12}}>保存车辆信息</Text>
+                        <Text style={{color:'#fff',fontSize:14}}>保存车辆信息</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -862,7 +861,8 @@ var styles = StyleSheet.create({
     row:{
         flexDirection:'row',
         borderBottomWidth:1,
-        borderBottomColor:'#222'
+        borderBottomColor:'#222',
+        height:50
     }
 
 

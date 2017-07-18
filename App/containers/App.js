@@ -28,10 +28,11 @@ import Sound from 'react-native-sound';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import JPush , {JpushEventReceiveMessage, JpushEventOpenMessage} from 'react-native-jpush'
 import ScrollableTabView, {DefaultTabBar, ScrollableTabBar} from 'react-native-scrollable-tab-view';
-import Home from './home/index';
+import Home from './home/Home';
 import My from './my/My';
 import Chat from './chat/Chat';
 import HandPickedProduct from './HandPickedProduct';
+import UpdateAndroid from '../components/native/UpdateAndroid';
 
 var RNFS = require('react-native-fs');
 
@@ -67,6 +68,10 @@ class App extends React.Component {
 
     onNotificationRecv(payload)
     {
+        if (Platform.OS === 'android') {
+           var extra = payload["cn.jpush.android.EXTRA"];
+            payload = JSON.parse(extra);
+        }
 
         var {type}=payload;
         console.log('type='+type);
@@ -236,15 +241,15 @@ class App extends React.Component {
 
         var component=Home;
         switch (route) {
-            case 'home':
+            case '主页':
                 break;
-            case 'my':
+            case '我':
                 component=My;
                 break;
-            case 'chat':
+            case '联系客服':
                 component=Chat;
                 break;
-            case 'product':
+            case '精选产品':
                 component=HandPickedProduct;
                 break;
             default:
@@ -291,14 +296,14 @@ class App extends React.Component {
                 title={route}
                 titleStyle={{color:'#fff'}}
                 selectedTitleStyle={{color:'#00c9ff'}}
-                renderIcon={() => <Icon name={icon} size={25} color="#fff"/>}
-                renderSelectedIcon={() => <Icon name={icon} size={25} color='#00c9ff' />}
+                renderIcon={() => <Icon name={icon} size={30} color="#fff"/>}
+                renderSelectedIcon={() => <Icon name={icon} size={30} color='#00c9ff' />}
                 onPress={() => {
                     this.setState({ selectedTab: route });
                     this.props.dispatch(updateRootTab({tab:route}));
                 }}
-                tabStyle={{backgroundColor:'transparent'}}
-                onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6);'}}
+                tabStyle={{backgroundColor:'transparent',}}
+                onSelectedStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)',}}
             >
 
                 <View style={{flex:1,}}>
@@ -356,11 +361,11 @@ class App extends React.Component {
         if(auth==true)
         {
             return (
-                <TabNavigator  tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
-                    {this._createNavigatorItem('home','home')}
-                    {this._createNavigatorItem('product','thumbs-o-up')}
-                    {this._createNavigatorItem('my','user-circle')}
-                    {this._createNavigatorItem('chat','car')}
+                <TabNavigator  tabBarStyle={{backgroundColor:'rgba(17, 17, 17, 0.6)',}}>
+                    {this._createNavigatorItem('主页','home')}
+                    {this._createNavigatorItem('精选产品','thumbs-o-up')}
+                    {this._createNavigatorItem('我','user-circle')}
+                    {this._createNavigatorItem('联系客服','car')}
 
                 </TabNavigator>
             );
@@ -413,7 +418,10 @@ class App extends React.Component {
             JPush.addEventListener(JpushEventReceiveMessage, this.onReceiveMessage.bind(this)),
             JPush.addEventListener(JpushEventOpenMessage, this.onOpenMessage.bind(this)),
         ]
-        WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
+        //WeChat.registerApp('wx47ac1051332cb08a').then(function (res) {
+
+        WeChat.registerApp('wxd9ec3fad60f0fd2a').then(function (res) {
+            console.log("微信分享注册成功！！！！！");
 
         })
 
@@ -424,10 +432,25 @@ class App extends React.Component {
         ws.connect();
 
 
+        console.log('屏幕的宽度：'+width+'屏幕的高度：'+height);
         // setTimeout(()=>{
         //     this.setState({recved:true});
         // },12000)
 
+
+        //TODO:fetch username and password in cache
+
+
+        console.log('(Platform.OS='+Platform.OS);
+
+        if(Platform.OS=='android')
+        {
+            //ToastAndroid.show('Awesome', ToastAndroid.SHORT);
+            //NotificationAndroid.notify('你有新的apk版本等待更新')
+
+            console.log('(Platform.OS='+Platform.OS);
+            UpdateAndroid.check();
+        }
 
     }
 

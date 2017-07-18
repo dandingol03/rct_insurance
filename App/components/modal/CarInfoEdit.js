@@ -22,6 +22,8 @@ import  {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DatePicker from 'react-native-datepicker';
 var {height, width} = Dimensions.get('window');
+import DateFilter from '../../filter/DateFilter';
+
 import {
     postCarInfo
 } from '../../action/CarActions';
@@ -128,23 +130,23 @@ class CarInfoEdit extends Component{
         return (
             <View style={{flex:1}}>
 
-                <View style={[{backgroundColor:'#fff',padding: 4,paddingHorizontal:10,height:40,marginTop:20,justifyContent: 'center',
-                        alignItems: 'center',flexDirection:'row'},styles.card]}>
+                <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',flexDirection:'row',
+                    height:parseInt(height*54/667),backgroundColor:'rgba(17, 17, 17, 0.6)'}}>
                     <TouchableOpacity style={{width:50,justifyContent:'center'}}
                                       onPress={()=>{
                                     this.close();
                             }}>
-                            <Icon name="angle-down" size={35} color="#222"/>
+                            <Icon name="angle-down" size={35} color="#fff"/>
                     </TouchableOpacity>
 
                     <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                        <Text style={{fontSize:14,color:'#222'}}>
+                        <Text style={{fontSize:14,color:'#fff'}}>
                             填写车辆信息
                         </Text>
                     </View>
 
                     <TouchableOpacity style={{width:60,marginRight:5,padding:6,flexDirection:'row',justifyContent:'center',
-                        backgroundColor:'#737373',borderRadius:6}}
+                        backgroundColor:'#ef473a',borderRadius:6}}
                                       onPress={()=>{
                                           if(this.props.postCarInfo)
                                           {
@@ -291,36 +293,37 @@ class CarInfoEdit extends Component{
 
 
                         {/*注册日期*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}]}>
+                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,
+                        backgroundColor:'#fff',marginTop:1}]}>
 
-                            <View style={{width:80,flexDirection:'row',alignItems:'center'}}>
+                            <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>注册日期:</Text>
                             </View>
 
 
-                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                            <View style={{flex:3,justifyContent:'center',alignItems:'center',marginRight:20}}>
                                 {
                                     carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
-                                        <Text>{carInfo.firstRegisterDate}</Text>:null
+                                        <Text>{DateFilter.filter(carInfo.firstRegisterDate,'yyyy-mm-dd')}</Text>:null
                                 }
                             </View>
 
-                            <View style={{width:120,justifyContent:'center',alignItems:'center',padding:0,
-                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}>
+                            <View style={{flex:2,justifyContent:'center',alignItems:'center',
+                            padding:0,marginLeft:30,paddingHorizontal:12}}>
 
                                 <DatePicker
-                                    style={{width:120,marginLeft:0}}
+                                    style={{width:100,marginLeft:0,borderRadius:6,borderWidth:0,}}
                                     customStyles={{
-                                        placeholderText:{color:'#fff',fontSize:12,marginLeft:20},
+                                        placeholderText:{color:'#fff',fontSize:12},
                                         dateInput:{height:24},
-                                        dateTouchBody:{height:22}
+                                        dateTouchBody:{marginLeft:10,marginRight:10,height:22,borderWidth:0,backgroundColor:'#f79916'}
                                     }}
                                     mode="date"
                                     placeholder="注册日期"
                                     format="YYYY-MM-DD"
-                                    confirmBtnText="Confirm"
-                                    cancelBtnText="Cancel"
-                                    iconSource={null}
+                                    confirmBtnText="确定"
+                                    cancelBtnText="取消"
+                                    showIcon={false}
                                     onDateChange={(date) => {
                                          this.setState({carInfo:Object.assign(carInfo,{firstRegisterDate:date})});
                                     }}
@@ -333,34 +336,34 @@ class CarInfoEdit extends Component{
                         {/*发证日期*/}
                         <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}]}>
 
-                            <View style={{width:80,flexDirection:'row',alignItems:'center'}}>
+                            <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>发证日期:</Text>
                             </View>
 
 
-                            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                            <View style={{flex:3,justifyContent:'center',alignItems:'center',marginRight:20}}>
                                 {
                                     carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
-                                        <Text>{carInfo.issueDate}</Text>:null
+                                        <Text>{DateFilter.filter(carInfo.issueDate,'yyyy-mm-dd')}</Text>:null
                                 }
                             </View>
 
-                            <View style={{width:120,justifyContent:'center',alignItems:'center',padding:2,
-                                    paddingHorizontal:12,backgroundColor:'#f79916',borderRadius:6}}>
+                            <View style={{flex:2,justifyContent:'center',alignItems:'center',
+                            padding:0,marginLeft:30,paddingHorizontal:12}}>
 
                                 <DatePicker
-                                    style={{width:120,marginLeft:0}}
+                                    style={{width:100,marginLeft:0,borderRadius:6,borderWidth:0,}}
                                     customStyles={{
-                                        placeholderText:{color:'#fff',fontSize:12,marginLeft:20},
+                                        placeholderText:{color:'#fff',fontSize:12},
                                         dateInput:{height:24},
-                                        dateTouchBody:{height:22}
+                                        dateTouchBody:{marginLeft:10,marginRight:10,height:22,borderWidth:0,backgroundColor:'#f79916'}
                                     }}
                                     mode="date"
                                     placeholder="发证日期"
                                     format="YYYY-MM-DD"
                                     confirmBtnText="Confirm"
                                     cancelBtnText="Cancel"
-                                    iconSource={null}
+                                    showIcon={false}
                                     onDateChange={(date) => {
                                          this.setState({carInfo:Object.assign(carInfo,{issueDate:date})});
                                     }}

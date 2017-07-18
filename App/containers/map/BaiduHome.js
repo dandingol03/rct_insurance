@@ -99,7 +99,8 @@ class BaiduHome extends Component{
             <View style={styles.container}>
 
                 {/*need to finish*/}
-                <View style={{height:40,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',borderBottomWidth:1,borderBottomColor:'#aaa'}}>
+                <View style={{height:parseInt(height*54/667),padding: 10,paddingTop:20,width:width,backgroundColor:'rgba(17, 17, 17, 0.6)',
+                borderBottomWidth:1,borderBottomColor:'#aaa'}}>
 
                     <View style={[styles.row,{marginTop:0}]}>
 
@@ -111,8 +112,8 @@ class BaiduHome extends Component{
                             <Icon name="angle-left" size={40} color="#fff"></Icon>
                         </TouchableOpacity>
 
-                        <View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12,marginLeft:10}}>
-                            <Text style={{color:'#fff',fontWeight:'bold'}}>百度地图定位....</Text>
+                        <View>
+                            <Text style={{fontSize:17,flex:3,paddingLeft:40,textAlign:'center',color:'#fff'}}>百度地图定位....</Text>
                         </View>
 
                         <View style={{width:80,alignItems:'center',marginRight:20,

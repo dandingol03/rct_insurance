@@ -9,7 +9,7 @@ import {
 
 
 const initialState = {
-    rootTab:'home',
+    rootTab:'主页',
 };
 
 let car = (state = initialState, action) => {
