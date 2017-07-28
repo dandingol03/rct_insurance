@@ -780,12 +780,12 @@ class AppendCarInsuranceder extends Component{
                             {listView}
                         </View>
 
-                        <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/6,marginLeft:width/4,
-                                    padding:8,borderRadius:10,justifyContent:'center'}]}
+                        <TouchableOpacity style={{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/6,marginLeft:width/4,
+                                    padding:8,marginTop:0,borderRadius:10,justifyContent:'center'}}
                                           onPress={()=>{
                                         this.applyCarInsurance();
                                       }}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <View style={{paddingBottom:15,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{color:'#fff',fontSize:15}}>提交车险意向</Text>
                             </View>
                         </TouchableOpacity>
