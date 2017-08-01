@@ -265,30 +265,6 @@ class NewCarBind extends Component{
 
 
                     {/*车牌*/}
-                    <View style={{height:30,flexDirection:'row',justifyContent:'center',alignItems: 'center',backgroundColor:'#fff',margin:5}}>
-                        <View style={{flex:1}}>
-                            <Icon name="address-card-o" size={24} color="#343434"/>
-                        </View>
-                        <View style={{flex:1}}>
-                            <Text>车牌：</Text>
-                        </View>
-                        <View style={{flex:3,flexDirection:'row',justifyContent:'flex-start',alignItems: 'center',backgroundColor:'#eee',
-                            borderRadius:10}}>
-                            <TextInputWrapper
-                                placeholderTextColor='#888'
-                                textInputStyle={{marginLeft:20,fontSize:13,color:'#222'}}
-                                placeholder="请输入车牌号"
-                                val={this.state.carNum}
-                                onChangeText={
-                                    (carNum)=>this.setState({carNum:carNum})
-                                }
-                                onCancel={
-                                    ()=>{this.setState({carNum:null})}
-                                }
-                            />
-                        </View>
-                    </View>
-
                     <View style={[styles.row,{alignItems:'center',flex:1}]}>
 
                         <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
