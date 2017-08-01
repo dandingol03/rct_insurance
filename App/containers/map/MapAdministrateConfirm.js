@@ -880,7 +880,7 @@ class MapAdministrateConfirm extends Component{
                         </View>
 
                         <View style={{width:120,}}>
-                            <Switch
+                             <Switch
                                 width={42}
                                 height={25}
                                 value={this.state.carManage.isAgent}
@@ -888,7 +888,7 @@ class MapAdministrateConfirm extends Component{
                                 backgroundInactive="#666"
                                 onSyncPress={value =>{
                                    this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
-                                }}/>
+                                }}/> 
                         </View>
 
                     </View>

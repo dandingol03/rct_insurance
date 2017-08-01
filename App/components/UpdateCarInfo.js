@@ -121,7 +121,7 @@ class UpdateCarInfo extends Component{
         {
 
             //var carInfo = null;
-            //
+
             // var licenseAttachId1 = null;
             // var licenseAttachId2 = null;
             // var licenseAttachId3 = null;
@@ -582,9 +582,9 @@ class UpdateCarInfo extends Component{
                         <View style={{flex:3,justifyContent:'center'}}>
                             <Text style={{'fontSize':14,color:'#222',fontWeight:'bold'}}>车牌:</Text>
                         </View>
-                        <View style={{flex:6}}>
+                        <View style={{flex:6,justifyContent:'center'}}>
                             <TextInput
-                                style={{height: 30,fontSize:13,color:'#222'}}
+                                style={{height: 30,fontSize:14,color:'#222',paddingTop:0,marginTop:10}}
                                 onChangeText={(carNum) => {
                                     this.setState({carInfo:Object.assign(carInfo,{carNum:carNum})});
                                 }}
@@ -607,7 +607,7 @@ class UpdateCarInfo extends Component{
                         </View>
                         <View style={{flex:6}}>
                             <TextInput
-                                style={{height: 30,fontSize:13,color:'#222'}}
+                                style={{height: 30,fontSize:14,color:'#222',paddingTop:0,marginTop:10}}
                                 onChangeText={(ownerName) => {
                                     this.setState({carInfo:Object.assign(carInfo,{ownerName:ownerName})})
                                 }}
