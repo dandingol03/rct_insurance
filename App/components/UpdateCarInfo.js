@@ -684,7 +684,14 @@ class UpdateCarInfo extends Component{
                         <TouchableOpacity style={{flex:1,marginRight:20}}
                                           onPress={
                                     ()=>{
-                                        this.setState({carTransferred:!carInfo.carTransferred});
+
+                                        this.setState({carTransferred:carInfo.carTransferred},()=>{
+                                              this.setState({
+                                                  carTransferred:!this.state.carInfo.carTransferred
+                                              });
+                                        });
+
+
                                     }}>
                             {
                                 carInfo.carTransferred==true?

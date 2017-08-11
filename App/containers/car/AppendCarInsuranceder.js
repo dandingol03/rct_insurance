@@ -444,7 +444,7 @@ class AppendCarInsuranceder extends Component{
                             carId: carInfo.carId
                         }
                     }
-                }).then(function (json) {
+                }).then((json)=>{
                     if(json.re==1) {
                         if(json.data==true)
                         {
@@ -463,7 +463,7 @@ class AppendCarInsuranceder extends Component{
                                         insurancederId:this.state.insuranceder.personId
                                     }
                                 }
-                            }).then(function (json) {
+                            }).then((json)=>{
                                 var orderId=json.data;
                                 if (orderId !== undefined && orderId !== null) {
 
@@ -810,7 +810,7 @@ class AppendCarInsuranceder extends Component{
                                     value={this.state.insuranceder.perName}
                                     placeholder='输入被保险人姓名'
                                     placeholderTextColor="#aaa"
-                                    underlineColorAndroid="transparent"
+                                    underlineColorAndroid="transparen`t"
                                 />
                             </View>
                         </View>
