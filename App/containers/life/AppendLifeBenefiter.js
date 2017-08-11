@@ -443,7 +443,7 @@ class AppendLifeBenefiter extends Component{
                         }
                     });
 
-                    var legalBenefiter = {perName:'法定',personId:'',checked:false};
+                    var legalBenefiter = {perName:'法定',personId:0,checked:false};//
                     var relativePersons= [];
                     relativePersons.push(legalBenefiter);
                     var relativePersonss=json.data;
@@ -452,6 +452,8 @@ class AppendLifeBenefiter extends Component{
                     });
                     this.setState({benefiter: benefiter, relativePersons: relativePersons,doingFetch:false});
                 }
+            }else{
+                this.state.doingFetch = false;
             }
 
         }, (err) =>{

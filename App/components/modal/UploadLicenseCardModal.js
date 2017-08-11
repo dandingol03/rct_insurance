@@ -151,7 +151,7 @@ class UploadLicenseCardModal extends Component{
 
                                 <View style={{position:'absolute',left:width/3,top:60}}>
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
-                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
+                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative',backgroundColor:'transparent'}}
                                                       onPress={()=>{
                                                       this.showImagePicker('licenseCard1_img');
                                                   }}>
@@ -183,12 +183,12 @@ class UploadLicenseCardModal extends Component{
 
                                 <View style={{position:'absolute',left:width/3,top:60}}>
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
-                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
+                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative',backgroundColor:'transparent'}}
                                                       onPress={()=>{
                                                       this.showImagePicker('licenseCard2_img');
                                                   }}>
-                                        <Icon name="id-card-o" size={40} color="#fff"></Icon>
-                                        <View style={{position:'absolute',bottom:10,right:6}}>
+                                        <Icon name="id-card-o" size={40} color="#fff" ></Icon>
+                                        <View style={{position:'absolute',bottom:10,right:6,backgroundColor:'transparent'}}>
                                             <Icon name="camera" size={20} color="#fff"></Icon>
                                         </View>
                                     </TouchableOpacity>
@@ -215,7 +215,7 @@ class UploadLicenseCardModal extends Component{
 
                                 <View style={{position:'absolute',left:width/3,top:60}}>
                                     <TouchableOpacity style={{width:80,height:80,borderRadius:80,borderWidth:3,borderColor:'#fff',
-                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative'}}
+                                        justifyContent:'center',alignItems:'center',borderStyle:'dashed',position:'relative',backgroundColor:'transparent'}}
                                                       onPress={()=>{
                                                       this.showImagePicker('licenseCard3_img');
                                                   }}>

@@ -662,6 +662,8 @@ class AppendCarInsuranceder extends Component{
 
                     var relativePersons=json.data;
                     this.setState({insuranceder: insuranceder, relativePersons: relativePersons,doingFetch:false});
+                }else{
+                    this.state.doingFetch = false;
                 }
             }
 
