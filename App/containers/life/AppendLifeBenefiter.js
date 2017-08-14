@@ -451,9 +451,15 @@ class AppendLifeBenefiter extends Component{
                         relativePersons.push(person);
                     });
                     this.setState({benefiter: benefiter, relativePersons: relativePersons,doingFetch:false});
+                }else{
+
+                    var legalBenefiter = {perName:'法定',personId:0,checked:false};
+                    var relativePersons= [];
+                    relativePersons.push(legalBenefiter);
+                    this.setState({relativePersons:relativePersons,doingFetch:false});
                 }
             }else{
-                this.state.doingFetch = false;
+                this.setState({doingFetch:false});
             }
 
         }, (err) =>{

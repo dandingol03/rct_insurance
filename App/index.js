@@ -12,7 +12,6 @@ export default class Root extends Component {
         return (
             <Provider store = {store} >
                 <App />
-
             </Provider>
         )
     }

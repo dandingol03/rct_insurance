@@ -96,8 +96,6 @@ export let updateAppliedCarOrders=(payload)=>{
     }
 }
 
-
-
 let setCarOrdersInHistory=(orders)=>{
     return {
         type:SET_CAR_HISTORY_ORDERS,
@@ -257,8 +255,6 @@ export let getOrderStateByOrderId=(payload)=>{
         })
     }
 }
-
-
 
 //修改车险订单状态
 export let updateCarOrderState=(payload)=>{
