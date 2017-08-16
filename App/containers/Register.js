@@ -81,7 +81,7 @@ class Register extends Component{
                     }else{
                         Alert.alert(
                             '错误',
-                            '注册失败'
+                            '注册失败,用户名已存在'
                         )
                     }
             }).catch((e)=>{

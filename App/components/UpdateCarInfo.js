@@ -682,6 +682,7 @@ class UpdateCarInfo extends Component{
                             <Text style={{'fontSize':14,color:'#222',fontWeight:'bold'}}>是一年内过户的二手车吗:</Text>
                         </View>
                         <TouchableOpacity style={{flex:1,marginRight:20}}
+
                                           onPress={
                                     ()=>{
 
