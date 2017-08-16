@@ -141,7 +141,7 @@ class NewCarBind extends Component{
                                         '数据库中未保存此车,是否要创建新车',
                                         [
                                             {
-                                                text: 'OK', onPress: () => {
+                                                text: '确定', onPress: () => {
 
                                                 if(this.props.navigate2NewCarCreate!==undefined&&this.props.navigate2NewCarCreate!==null)
                                                 {
@@ -151,7 +151,7 @@ class NewCarBind extends Component{
                                                 }
                                             }
                                             },
-                                            {text: 'Cancel', onPress: () => console.log('OK Pressed!')},
+                                            {text: '取消', onPress: () => console.log('OK Pressed!')},
                                         ]
                                     )
                                     break;
@@ -324,8 +324,12 @@ class NewCarBind extends Component{
 
                         </View>
 
-                        <View style={{padding: 0,paddingTop:10,justifyContent: 'flex-start',alignItems:'center',flexDirection:'row',
-                     height:parseInt(height*54/667),borderBottomWidth:1}}>
+                        <TouchableOpacity style={{padding: 0,paddingTop:10,justifyContent: 'flex-start',alignItems:'center',flexDirection:'row',
+                     height:parseInt(height*54/667),borderBottomWidth:1}}
+                                          onPress={
+                                    ()=>{
+                                        this.appendCarNumPrefixByCity(true);
+                                    }}>
 
                             <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
                                 <Icon name="map-marker" size={24} color="#343434"/>
@@ -340,15 +344,10 @@ class NewCarBind extends Component{
                             </View>
 
                             <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
-                                <TouchableOpacity onPress={
-                                    ()=>{
-                                        this.appendCarNumPrefixByCity(true);
-                                    }}>
-                                    <Icon name="angle-right" size={30} color="#343434"/>
-                                </TouchableOpacity>
+                                <Icon name="angle-right" size={30} color="#343434"/>
                             </View>
 
-                        </View>
+                        </TouchableOpacity>
 
 
                         <View style={{padding:10,alignItems:'center',flexDirection:'row',

@@ -15,7 +15,6 @@ import  {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
-import GridView from 'react-native-grid-view'
 import { connect } from 'react-redux';
 var {height, width} = Dimensions.get('window');
 
@@ -121,11 +120,13 @@ class AppendCarNumPrefixModal extends Component{
                 </View>
 
                 <View style={[styles.body]}>
-                    <GridView
-                        items={this.state.dataSource}
-                        itemsPerRow={3}
-                        renderItem={this.renderRow.bind(this)}
-                        style={styles.listView}
+                    <ListView
+                        automaticallyAdjustContentInsets={false}
+                        contentContainerStyle={styles.listViewStyle}
+                        dataSource={this.state.dataSource}
+                        renderRow={this.renderRow.bind(this)}
+                        pageSize={3}
+
                     />
                 </View
                 >
@@ -201,10 +202,15 @@ var styles = StyleSheet.create({
         marginBottom:10,
         marginRight:10
     },
-    listView: {
-        paddingTop: 20,
-        backgroundColor: 'transparent',
-    }
+    listViewStyle:{
+        // 主轴方向
+        flexDirection:'row',
+        // 一行显示不下,换一行
+        flexWrap:'wrap',
+        // 侧轴方向
+        alignItems:'center', // 必须设置,否则换行不起作用
+        justifyContent:'center',
+    },
 });
 
 
