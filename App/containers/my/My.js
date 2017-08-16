@@ -430,9 +430,9 @@ class My extends Component{
                            }}>
                                {
                                    state.portrait!==undefined&&state.portrait!==null?
-                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderRadius:height*75/736}}
                                               source={{uri:state.portrait}}/>:
-                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderRadius:height*75/736}}
                                               source={require('../../img/zack.png')}/>
                                }
 
