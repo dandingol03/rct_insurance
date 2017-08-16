@@ -171,7 +171,6 @@ class CarManage extends Component{
 
     fetchData(){
 
-        setTimeout(()=>{
             this.setState({doingFetch:true});
 
             Proxy.post({
@@ -212,7 +211,7 @@ class CarManage extends Component{
                 this.setState({doingFetch:false});
                 alert(err)
             });
-        },400)
+
     }
 
 

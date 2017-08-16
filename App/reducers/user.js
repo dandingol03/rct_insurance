@@ -23,6 +23,7 @@ const initialState = {
     ttsToken:null,
     portrait:null,
     username:null
+
 };
 
 let user = (state = initialState, action) => {

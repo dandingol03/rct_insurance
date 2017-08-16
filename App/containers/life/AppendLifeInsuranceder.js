@@ -443,9 +443,12 @@ class AppendLifeInsuranceder extends Component{
                     });
                     var  relativePersons=json.data;
                     this.setState({insuranceder: insuranceder, relativePersons: relativePersons,doingFetch:false});
+                }else{
+                    var relativePersons=[];
+                    this.setState({relativePersons:relativePersons,doingFetch:false});
                 }
             }else{
-                this.state.doingFetch = false;
+                this.setState({doingFetch:false});
             }
 
         }, (err) =>{
