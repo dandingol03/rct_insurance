@@ -6,7 +6,8 @@ import {
     UPDATE_PERSON_INFO,
     UPDATE_SCORE,
     UPDATE_CERTIFICATE,
-    UPDATE_PORTRAIT
+    UPDATE_PORTRAIT,
+    UPDATE_USERNAME
 } from '../constants/UserConstants';
 
 import {
@@ -17,10 +18,12 @@ const initialState = {
     accessToken: null,
     auth:false,
     personInfo:null,
-    contactInfo:null,
+    contactInfo:{temp:null},
     score:null,
     ttsToken:null,
     portrait:null,
+    username:null
+
 };
 
 let user = (state = initialState, action) => {
@@ -37,9 +40,17 @@ let user = (state = initialState, action) => {
         case UPDATE_PERSON_INFO:
             var  {data}=action.payload;
             return Object.assign({}, state, {
-                personInfo:data
+                personInfo:data,
             })
             break;
+
+        case UPDATE_USERNAME:
+            var  {data}=action.payload;
+            return Object.assign({}, state, {
+                username:data,
+            })
+            break;
+
         case UPDATE_SCORE:
             var {data}=action.payload;
             return Object.assign({}, state, {
@@ -49,7 +60,7 @@ let user = (state = initialState, action) => {
         case UPDATE_CERTIFICATE:
             var {username,password}=action.payload;
             return Object.assign({}, state, {
-                username:username,
+                username :username,
                 password:password
             })
             break;
@@ -66,6 +77,7 @@ let user = (state = initialState, action) => {
                 portrait:data
             })
             break;
+
 
         default:
             return state;
