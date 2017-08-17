@@ -141,7 +141,7 @@ class NewCarBind extends Component{
                                         '数据库中未保存此车,是否要创建新车',
                                         [
                                             {
-                                                text: 'OK', onPress: () => {
+                                                text: '确认', onPress: () => {
 
                                                 if(this.props.navigate2NewCarCreate!==undefined&&this.props.navigate2NewCarCreate!==null)
                                                 {
@@ -151,7 +151,7 @@ class NewCarBind extends Component{
                                                 }
                                             }
                                             },
-                                            {text: 'Cancel', onPress: () => console.log('OK Pressed!')},
+                                            {text: '取消', onPress: () => console.log('OK Pressed!')},
                                         ]
                                     )
                                     break;
@@ -161,8 +161,8 @@ class NewCarBind extends Component{
                                         '信息',
                                         '是否要创建新车',
                                         [
-                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                                            {text: 'OK', onPress: () =>{
+                                            {text: '取消', onPress: () => console.log('Cancel Pressed!')},
+                                            {text: '确认', onPress: () =>{
 
                                                 if(this.props.navigate2NewCarCreate!==undefined&&this.props.navigate2NewCarCreate!==null)
                                                 {
@@ -178,7 +178,7 @@ class NewCarBind extends Component{
                                     Alert.alert(
                                         '信息',
                                         '该车还在保险期内,是否要创建新车',
-                                        [{text:'Cancel'},{text:'OK',onPress:()=>{
+                                        [{text:'取消'},{text:'确认',onPress:()=>{
                                             if(this.props.navigate2NewCarCreate!==undefined&&this.props.navigate2NewCarCreate!==null)
                                             {
                                                 if(this.props.onClose!==undefined&&this.props.onClose!==null)
@@ -190,7 +190,7 @@ class NewCarBind extends Component{
                                     break;
                                 case 1:
 
-                                    Alert.alert('信息','车辆绑定成功',[{text:'OK',onPress:()=>{
+                                    Alert.alert('信息','车辆绑定成功',[{text:'确认',onPress:()=>{
                                         if(this.props.onClose!==undefined&&this.props.onClose!==null)
                                             this.props.onClose();
                                         if(this.props.onRefresh!==undefined&&this.props.onRefresh!==null)
@@ -209,7 +209,7 @@ class NewCarBind extends Component{
                     '错误',
                     '您填入的车牌号位数不对,请重新填入车牌后点击绑定',
                     [
-                        {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                        {text: '确认', onPress: () => console.log('OK Pressed!')},
                     ]
                 );
                 return;
@@ -220,7 +220,7 @@ class NewCarBind extends Component{
                 '错误',
                 '请选择用车城市后再点击绑定',
                 [
-                    {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                    {text: '确认', onPress: () => console.log('OK Pressed!')},
                 ]
             )
         }
