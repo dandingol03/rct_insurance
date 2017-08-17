@@ -325,7 +325,7 @@ class NewCarBind extends Component{
                         </View>
 
                         <View style={{padding: 0,paddingTop:10,justifyContent: 'flex-start',alignItems:'center',flexDirection:'row',
-                     height:parseInt(height*54/667),borderBottomWidth:1}}>
+                            height:parseInt(height*54/667),borderBottomWidth:1}}>
 
                             <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
                                 <Icon name="map-marker" size={24} color="#343434"/>
@@ -352,7 +352,7 @@ class NewCarBind extends Component{
 
 
                         <View style={{padding:10,alignItems:'center',flexDirection:'row',
-                     height:parseInt(height*54/667),justifyContent:'center',marginTop:20,borderBottomWitdth:1,borderBottomColor:'#fff'}}>
+                            height:parseInt(height*54/667),justifyContent:'center',marginTop:20,borderBottomWidth:1,borderBottomColor:'#fff'}}>
                             <View style={{width:width/3}}>
                                 <Icon.Button name="hand-o-up" backgroundColor="#3b5998" onPress={
                             ()=>{

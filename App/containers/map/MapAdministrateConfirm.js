@@ -53,8 +53,6 @@ import Switch from 'react-native-switch-pro'
 import AppendCustomPlace from '../../components/modal/AppendCustomPlace';
 
 
-
-
 const wholeHeight=Dimensions.get('window').height-80;
 
 
@@ -888,7 +886,7 @@ class MapAdministrateConfirm extends Component{
                                 backgroundInactive="#666"
                                 onSyncPress={value =>{
                                    this.setState({carManage:Object.assign(this.state.carManage,{isAgent:value})})
-                                }}/> 
+                                }}/>
                         </View>
 
                     </View>

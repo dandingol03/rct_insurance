@@ -180,7 +180,7 @@ class CarInfoEdit extends Component{
                     <View style={{padding:0}}>
 
                         {/*厂牌型号*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff'}]}>
+                        <View style={{flexDirection:'row',paddingTop:2,paddingBottom:2,alignItems:'center',paddingHorizontal:10,backgroundColor:'#fff'}}>
 
                             <View style={{width:80,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>厂牌型号:</Text>
@@ -188,7 +188,7 @@ class CarInfoEdit extends Component{
 
                             <View style={{width:120,flexDirection:'row',alignItems:'center',justifyContent:'flex-start',backgroundColor:'transparent'}}>
                                 <TextInput
-                                    style={{borderBottomWidth:0,fontSize:13,flex:1,color:'#343434'}}
+                                    style={{borderBottomWidth:0,fontSize:14,flex:1,color:'#343434'}}
                                     editable = {true}
                                     height={40}
                                     onChangeText={
@@ -207,7 +207,7 @@ class CarInfoEdit extends Component{
                         </View>
 
                         {/*发动机号*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}]}>
+                        <View style={{flexDirection:'row',paddingTop:2,paddingBottom:2,alignItems:'center',paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}}>
 
                             <View style={{width:80,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>发动机号:</Text>
@@ -252,7 +252,7 @@ class CarInfoEdit extends Component{
                         </View>
 
                         {/*车架号*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}]}>
+                        <View style={{flexDirection:'row',paddingTop:2,paddingBottom:2,alignItems:'center',paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}}>
 
                             <View style={{width:80,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>车架号:</Text>
@@ -293,8 +293,8 @@ class CarInfoEdit extends Component{
 
 
                         {/*注册日期*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,
-                        backgroundColor:'#fff',marginTop:1}]}>
+                        <View style={{flexDirection:'row',paddingTop:8,paddingBottom:8,alignItems:'center',paddingHorizontal:10,
+                        backgroundColor:'#fff',marginTop:1}}>
 
                             <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>注册日期:</Text>
@@ -309,7 +309,7 @@ class CarInfoEdit extends Component{
                             </View>
 
                             <View style={{flex:2,justifyContent:'center',alignItems:'center',
-                            padding:0,marginLeft:30,paddingHorizontal:12}}>
+                                padding:0,marginLeft:30,paddingHorizontal:12}}>
 
                                 <DatePicker
                                     style={{width:100,marginLeft:0,borderRadius:6,borderWidth:0,}}
@@ -334,7 +334,7 @@ class CarInfoEdit extends Component{
                         </View>
 
                         {/*发证日期*/}
-                        <View style={[styles.row,{alignItems:'center',height:35,paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}]}>
+                        <View style={{flexDirection:'row',paddingTop:8,paddingBottom:8,alignItems:'center',paddingHorizontal:10,backgroundColor:'#fff',marginTop:1}}>
 
                             <View style={{flex:2,flexDirection:'row',alignItems:'center'}}>
                                 <Text style={{fontSize:14,color:'#343434'}}>发证日期:</Text>
