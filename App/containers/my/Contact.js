@@ -18,7 +18,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 var Dimensions = require('Dimensions');
 var {height, width} = Dimensions.get('window');
 import Prompt from 'react-native-prompt';
-import {saveContactInfo} from '../../action/UserActions';
+import {
+         saveContactInfo,
+          saveUsername
+
+        } from '../../action/UserActions';
 
 
 
@@ -35,7 +39,7 @@ class Contact extends Component{
 
     onSubmit(val)
     {
-        var {field,personInfo}=this.state;
+        var {field,personInfo,username}=this.state;
         //TODO:make a check of val
         switch(field)
         {
@@ -53,27 +57,62 @@ class Contact extends Component{
                     },300);
                     return ;
                 }
+                personInfo[field]=val;
+                this.setState({promptVisible: false, personInfo: personInfo});
+               break;
+
+            case 'username':
+                username=val;
+                this.setState({promptVisible: false, username: username});
+                break;
+
+            default:
+                personInfo[field]=val;
+                this.setState({promptVisible: false, personInfo: personInfo});
                 break;
         }
-        personInfo[field]=val;
-        this.setState({promptVisible: false, personInfo: personInfo});
+
+
     }
 
     onApply()
     {
         var {dispatch}=this.props;
-        dispatch(saveContactInfo(this.state.personInfo));
+        dispatch(saveContactInfo(this.state.personInfo,this.state.username));
+
     }
 
 
-    constructor(props) {
+/*
+    onApply()
+    {
+        var {dispatch}=this.props;
+        dispatch(saveUsername(this.state.username).then(json)=>{
+        if(json.re==1) {
+            dispatch(updateUsername({data:payload}));
+            dispatch(saveContactInfo(this.state.personInfo));
+            alert('修改成功');
+        }
+        else if(json.re==3) {
+            alert("用户名已存在。");
+        }
+
+    }
+    })
+}*/
+
+constructor(props) {
         super(props);
         this.state={
             promptVisible:false,
             prompt:null,
-            personInfo:props.personInfo
+            personInfo:props.personInfo,
+            username:props.username
+
         };
     }
+
+
 
     render() {
 
@@ -136,9 +175,33 @@ class Contact extends Component{
 
                                 <TouchableOpacity style={{flex:1,alignItems:'flex-end',paddingRight:12}}
                                                   onPress={()=>{
-                                              this.setState({field:'perName',prompt:'编辑您的用户名',promptVisible:true});
+                                              this.setState({field:'username',prompt:'编辑您的用户名',promptVisible:true});
                                           }}
                                 >
+                                    {
+                                        props.username!==undefined&&props.username!==null?
+                                            <Text style={{color:'#bf530c',fontSize:16}}>{state.username}</Text>:
+                                            <Text style={{color:'#888',fontSize:16}}>编辑</Text>
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/*真实姓名*/}
+                        <View style={[{height:40,width:width,paddingLeft:20,paddingRight:20}]}>
+                            <View style={[styles.row,{flex:1,borderBottomWidth:1,borderColor:'#ccc'}]}>
+
+                                <View style={{flex:1,alignItems:'flex-start',paddingLeft:8}}>
+                                    <Text style={{color:'#444',fontSize:16}}>真实姓名:</Text>
+                                </View>
+
+                                <TouchableOpacity style={{flex:1,alignItems:'flex-end',paddingRight:12}}
+                                                  onPress={()=>{
+                                              this.setState({field:'perName',prompt:'编辑您的真实姓名',promptVisible:true});
+
+                                          }}>
+
+
                                     {
                                         props.personInfo.perName!==undefined&&props.personInfo.perName!==null?
                                             <Text style={{color:'#bf530c',fontSize:16}}>{state.personInfo.perName}</Text>:
@@ -303,9 +366,11 @@ const mapStateToProps = (state, ownProps) => {
 
     var personInfo=state.user.personInfo;
     var score=state.user.score;
+    var username=state.user.username;
     return {
         personInfo,
         score,
+        username,
         ...ownProps,
     }
 }

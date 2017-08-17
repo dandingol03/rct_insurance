@@ -46,6 +46,7 @@ import {
     downloadPortrait,
     updatePortrait
 } from '../../action/UserActions';
+var {height, width} = Dimensions.get('window');
 
 class My extends Component{
 
@@ -405,7 +406,9 @@ class My extends Component{
 
         var props=this.props;
         var state=this.state;
-        var displayArea = {x: 5, y: 20, width:width, height: height - 25};
+        var x=5*width/360;
+        var y=20*(height)/615;
+        var displayArea = {x: x ,y: y, width:width-10, height: width-10};
 
         return (
             <View style={styles.container}>
@@ -427,9 +430,9 @@ class My extends Component{
                            }}>
                                {
                                    state.portrait!==undefined&&state.portrait!==null?
-                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderRadius:height*75/736}}
                                               source={{uri:state.portrait}}/>:
-                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderWidth:1,borderColor:'#888',borderRadius:height*75/736}}
+                                       <Image resizeMode="stretch" style={{height:height*150/736,width:height*150/736,borderRadius:height*75/736}}
                                               source={require('../../img/zack.png')}/>
                                }
 

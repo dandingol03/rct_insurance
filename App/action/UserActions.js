@@ -10,9 +10,11 @@ var Proxy = require('../proxy/Proxy');
 import {
     UPDATE_PERSON_INFO,
     UPDATE_SCORE,
-    SAVE_CONTACT_INFO,
+    UPDATE_USERNAME,
     UPDATE_CERTIFICATE,
     UPDATE_PORTRAIT,
+
+
 } from '../constants/UserConstants';
 import RNFetchBlob from 'react-native-fetch-blob'
 
@@ -20,7 +22,15 @@ import RNFetchBlob from 'react-native-fetch-blob'
 export let updatePersonInfo=(payload)=>{
     return {
         type:UPDATE_PERSON_INFO,
-        payload:payload
+        payload:payload,
+
+    }
+}
+export let updateUsername=(payload)=>{
+    return {
+        type:UPDATE_USERNAME,
+        payload:payload,
+
     }
 }
 
@@ -172,7 +182,7 @@ export let fetchScoreBalance=()=>{
     }
 }
 
-export let saveContactInfo=(payload)=>{
+export let saveContactInfo=(payload,username)=>{
 
     return (dispatch,getState)=> {
 
@@ -188,15 +198,21 @@ export let saveContactInfo=(payload)=>{
             body: {
                 request: 'saveContactInfo',
                 info:{
-                    info:payload
+                    personInfo:payload,
+                    username:username
+
                 }
             }
         }).then(function (json) {
 
-            if(json.re==1) {
-                dispatch(updatePersonInfo({data:payload}));
-                alert('修改成功');
-            }
+              if(json.re==1) {
+                  dispatch(updateUsername({data:payload}));
+                  dispatch(updatePersonInfo({data:payload}));
+                  alert('修改成功');
+              }
+              else if(json.re==3) {
+                  alert("用户名已存在。");
+              }
 
         }).catch(function (err) {
             alert(err);
@@ -206,12 +222,18 @@ export let saveContactInfo=(payload)=>{
 }
 
 
+
+
+
+
 export let updatePortrait=(payload)=>{
     return {
         type:UPDATE_PORTRAIT,
         payload:payload
     }
 }
+
+
 
 //测试下载头像
 export let downloadPortrait=()=>{

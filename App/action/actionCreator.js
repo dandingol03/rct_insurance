@@ -4,7 +4,7 @@
 import * as types from './types';
 var Proxy = require('../proxy/Proxy');
 import Config from '../../config';
-import {updatePersonInfo,updateScore,updateCertificate} from './UserActions';
+import {updatePersonInfo,updateScore,updateCertificate,updateUsername} from './UserActions';
 import {updateRegistrationId} from './JpushActions';
 import {activeTTSToken} from './TTSActions';
 import WS from '../components/utils/WebSocket';
