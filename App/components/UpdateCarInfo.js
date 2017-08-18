@@ -580,7 +580,7 @@ class UpdateCarInfo extends Component{
                         </View>
 
                         <View style={{flex:3,justifyContent:'center'}}>
-                            <Text style={{'fontSize':14,color:'#222',fontWeight:'bold'}}>车牌:</Text>
+                            <Text style={{'fontSize':14,color:'#222',fontWeight:'bold'}}>车牌:zzzz</Text>
                         </View>
                         <View style={{flex:6,justifyContent:'center'}}>
                             <TextInput
@@ -659,7 +659,7 @@ class UpdateCarInfo extends Component{
                                 </View>
                                 <View style={{flex:6}}>
                                     <TextInput
-                                        style={{height: 30,fontSize:13,color:'#222'}}
+                                        style={{height:36,fontSize:13,color:'#222'}}
                                         onChangeText={(ownerIdCard) => {
                                     this.setState({carInfo:Object.assign(carInfo,{ownerIdCard:ownerIdCard})})
                                 }}
