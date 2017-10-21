@@ -39,7 +39,7 @@ class Contact extends Component{
 
     onSubmit(val)
     {
-        var {field,personInfo,username}=this.state;
+        var {field,personInfo,username,EMAIL}=this.state;
         //TODO:make a check of val
         switch(field)
         {
@@ -66,6 +66,24 @@ class Contact extends Component{
                 this.setState({promptVisible: false, username: username});
                 break;
 
+            case 'EMAIL':
+                //符合格式@xx.com
+                var reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+                if(!reg.test(val))
+                {
+                    this.setState({promptVisible:false});
+                    setTimeout(function () {
+                        Alert.alert(
+                            '错误',
+                            ' 邮箱格式不正确'
+                        );
+                    },300);
+                    return ;
+                }
+                personInfo[field]=val;
+                this.setState({promptVisible: false, personInfo: personInfo});
+                break;
+
             default:
                 personInfo[field]=val;
                 this.setState({promptVisible: false, personInfo: personInfo});
@@ -82,24 +100,6 @@ class Contact extends Component{
 
     }
 
-
-/*
-    onApply()
-    {
-        var {dispatch}=this.props;
-        dispatch(saveUsername(this.state.username).then(json)=>{
-        if(json.re==1) {
-            dispatch(updateUsername({data:payload}));
-            dispatch(saveContactInfo(this.state.personInfo));
-            alert('修改成功');
-        }
-        else if(json.re==3) {
-            alert("用户名已存在。");
-        }
-
-    }
-    })
-}*/
 
 constructor(props) {
         super(props);

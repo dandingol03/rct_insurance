@@ -113,10 +113,13 @@ export let fetchLifeOrders=function () {
                         if(applyedOrders !== undefined && applyedOrders !== null &&applyedOrders.length > 0)
                             dispatch(setLifeOrdersInApplyed(applyedOrders));
                         dispatch(disableLifeOrdersOnFresh());
-
-
                         resolve({re:1});
                     }
+                    else{
+                        resolve({re:1,data:null});
+                    }
+                }else{
+                    resolve({re:2,data:null});
                 }
 
             }).catch((err)=>{

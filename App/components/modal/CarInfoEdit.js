@@ -41,75 +41,6 @@ class CarInfoEdit extends Component{
 
     }
 
-    getCarNumPrefixByCity(city)
-    {
-        var carNum=null;
-        switch (city) {
-            case '济南':
-                carNum='鲁A';
-                break;
-            case '青岛':
-                carNum='鲁B';
-                break;
-            case '淄博':
-                carNum='鲁C';
-                break;
-            case '枣庄':
-                carNum='鲁D';
-                break;
-            case '东营':
-                carNum='鲁E';
-                break;
-            case '烟台':
-                carNum='鲁F';
-                break;
-            case '潍坊':
-                carNum='鲁G';
-                break;
-            case '济宁':
-                carNum='鲁H';
-                break;
-            case '泰安':
-                carNum='鲁J';
-                break;
-            case '威海':
-                carNum='鲁K';
-                break;
-            case '日照':
-                carNum='鲁L';
-                break;
-            case '滨州':
-                carNum='鲁M';
-                break;
-            case '德州':
-                carNum='鲁N';
-                break;
-            case '聊城':
-                carNum='鲁P';
-                break;
-            case '临沂':
-                carNum='鲁Q';
-                break;
-            case '菏泽':
-                carNum='鲁R';
-                break;
-            case '莱芜':
-                carNum='鲁S';
-                break;
-            default:
-                break;
-        }
-        return carNum;
-    }
-
-
-    cityConfirm(city){
-        //TODO:filter the city prefix
-        var prefix=this.getCarNumPrefixByCity(city);
-        this.setState({carNumPrefixModal: false,city:city,carNum:prefix});
-    }
-
-
     constructor(props)
     {
         super(props);
@@ -343,7 +274,7 @@ class CarInfoEdit extends Component{
 
                             <View style={{flex:3,justifyContent:'center',alignItems:'center',marginRight:20}}>
                                 {
-                                    carInfo.firstRegisterDate!==undefined&&carInfo.firstRegisterDate!==null?
+                                    carInfo.issueDate!==undefined&&carInfo.issueDate!==null?
                                         <Text>{DateFilter.filter(carInfo.issueDate,'yyyy-mm-dd')}</Text>:null
                                 }
                             </View>

@@ -659,7 +659,7 @@ class UpdateCarInfo extends Component{
                                 </View>
                                 <View style={{flex:6}}>
                                     <TextInput
-                                        style={{height: 30,fontSize:13,color:'#222'}}
+                                        style={{height:45,fontSize:13,color:'#222'}}
                                         onChangeText={(ownerIdCard) => {
                                     this.setState({carInfo:Object.assign(carInfo,{ownerIdCard:ownerIdCard})})
                                 }}
@@ -682,16 +682,12 @@ class UpdateCarInfo extends Component{
                             <Text style={{'fontSize':14,color:'#222',fontWeight:'bold'}}>是一年内过户的二手车吗:</Text>
                         </View>
                         <TouchableOpacity style={{flex:1,marginRight:20}}
-
                                           onPress={
                                     ()=>{
 
-                                        this.setState({carTransferred:carInfo.carTransferred},()=>{
-                                              this.setState({
-                                                  carTransferred:!this.state.carInfo.carTransferred
-                                              });
-                                        });
-
+                                        var carInfo = this.state.carInfo;
+                                        carInfo.carTransferred = !this.state.carInfo.carTransferred
+                                        this.setState({carInfo:carInfo});
 
                                     }}>
                             {

@@ -324,8 +324,12 @@ class NewCarBind extends Component{
 
                         </View>
 
-                        <View style={{padding: 0,paddingTop:10,justifyContent: 'flex-start',alignItems:'center',flexDirection:'row',
-                            height:parseInt(height*54/667),borderBottomWidth:1}}>
+                        <TouchableOpacity style={{padding: 0,paddingTop:10,justifyContent: 'flex-start',alignItems:'center',flexDirection:'row',
+                            height:parseInt(height*54/667),borderBottomWidth:1}}
+                                          onPress={
+                                    ()=>{
+                                        this.appendCarNumPrefixByCity(true);
+                                    }}>
 
                             <View style={{marginRight:20,width:40,flexDirection:'row',alignItems:'center',paddingLeft:10}}>
                                 <Icon name="map-marker" size={24} color="#343434"/>
@@ -340,15 +344,10 @@ class NewCarBind extends Component{
                             </View>
 
                             <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:'transparent'}}>
-                                <TouchableOpacity onPress={
-                                    ()=>{
-                                        this.appendCarNumPrefixByCity(true);
-                                    }}>
-                                    <Icon name="angle-right" size={30} color="#343434"/>
-                                </TouchableOpacity>
+                                <Icon name="angle-right" size={30} color="#343434"/>
                             </View>
 
-                        </View>
+                        </TouchableOpacity>
 
 
                         <View style={{padding:10,alignItems:'center',flexDirection:'row',

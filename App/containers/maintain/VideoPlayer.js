@@ -133,12 +133,12 @@ class VideoPlayer extends Component{
         return (
             <View style={styles.container}>
                 <View style={{flex:1}}>
-                    <View style={[{padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:60,backgroundColor:'rgba(17, 17, 17, 0.6)'},styles.card]}>
+                    <View style={[{padding: 10,justifyContent: 'center',alignItems: 'center',flexDirection:'row',height:60,backgroundColor:'#fff'},styles.card]}>
                         <TouchableOpacity style={{flex:1,justifyContent: 'center',alignItems: 'center',}}
                                           onPress={()=>{
                                             this.goBack();
                                           }}>
-                            <Icon size={26} name="chevron-left" color="#fff" ></Icon>
+                            <Icon size={26} name="chevron-left" color="#343434" ></Icon>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{flex:1,justifyContent: 'center',alignItems: 'center',}}
@@ -148,10 +148,11 @@ class VideoPlayer extends Component{
                             }
 
                         }}>
-                            <Icon size={26} name="times-circle" color="#fff" ></Icon>
+                            <Icon size={26} name="times-circle" color="#343434" ></Icon>
                         </TouchableOpacity>
                     </View>
                 </View>
+
                 <TouchableOpacity style={styles.fullScreen} onPress={() => {this.setState({paused: !this.state.paused})}}>
                     <Video
                         source={{uri:this.props.videoPath}}
@@ -305,7 +306,7 @@ var styles = StyleSheet.create({
     },
     fullScreen: {
         position: 'absolute',
-        top: 60,
+        top: 100,
         left: 0,
         bottom: 0,
         right: 0,

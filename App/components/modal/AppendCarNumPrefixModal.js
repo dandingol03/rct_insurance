@@ -101,41 +101,44 @@ class AppendCarNumPrefixModal extends Component{
                             <Icon name="times-circle" size={30} color="#fff" />
                         </TouchableOpacity>
                         <Text style={{fontSize:17,flex:8,paddingLeft:12,textAlign:'center',color:'#fff'}}>
-                        选择城市
+                            选择城市
                         </Text>
                         <View style={{flex:1,marginRight:10,flexDirection:'row',justifyContent:'center'}}>
                         </View>
-                </View>
-                <View style={{backgroundColor:'#fff',flexDirection:'row',padding:8}}>
-                    <View style={{flex:4,padding:10}}>
-                        <Text>当前选择城市</Text>
                     </View>
-                    <View style={{flex:2,justifyContent:'center',backgroundColor:'#f0f0f0',padding:5}}>
-                        <Text style={{color:'#222',textAlign:'center'}}>{this.state.city}</Text>
-                    </View>
-                    <View style={{flex:1}}>
+
+                    <View style={{flex:1,backgroundColor:'#fff',flexDirection:'row',padding:8}}>
+                        <View style={{flex:4,padding:10}}>
+                            <Text>当前选择城市</Text>
+                        </View>
+                        <View style={{flex:2,justifyContent:'center',backgroundColor:'#f0f0f0',padding:5}}>
+                            <Text style={{color:'#222',textAlign:'center'}}>{this.state.city}</Text>
+                        </View>
+                        <View style={{flex:1}}>
+
+                        </View>
 
                     </View>
 
-                </View>
+                    <View style={{flex:9,padding:10}}>
+                        <ListView
+                            automaticallyAdjustContentInsets={false}
+                            contentContainerStyle={styles.listViewStyle}
+                            dataSource={this.state.dataSource}
+                            renderRow={this.renderRow.bind(this)}
+                            pageSize={3}
 
-                <View style={[styles.body]}>
-                    <ListView
-                        automaticallyAdjustContentInsets={false}
-                        contentContainerStyle={styles.listViewStyle}
-                        dataSource={this.state.dataSource}
-                        renderRow={this.renderRow.bind(this)}
-                        pageSize={3}
+                        />
+                    </View
+                    >
 
-                    />
-                </View
-                >
-                <TouchableOpacity onPress={this.confirm.bind(this)}>
-                    <View style={{padding:8,width:width*0.6,marginLeft:width*0.2,backgroundColor:'#ff591a',
-                                flexDirection:'row',justifyContent:'center',borderRadius:8}}>
-                        <Text style={{color:'#fff'}}>确认</Text>
-                    </View>
-                </TouchableOpacity>
+                    <TouchableOpacity style={{flex:1,margin:8,width:width*0.6,marginLeft:width*0.2,backgroundColor:'#ff591a',
+                                flexDirection:'row',justifyContent:'center',borderRadius:8}}
+                                      onPress={this.confirm.bind(this)}>
+                        <View style={{flexDirection:'row',justifyContent:'center',alignItems: 'center',}}>
+                            <Text style={{color:'#fff'}}>确认</Text>
+                        </View>
+                    </TouchableOpacity>
                 </Image>
             </View>
         );
@@ -162,9 +165,6 @@ var styles = StyleSheet.create({
     separator: {
         height: 1,
         backgroundColor: '#E8E8E8',
-    },
-    body:{
-        padding:10
     },
     row:{
         flexDirection:'row',

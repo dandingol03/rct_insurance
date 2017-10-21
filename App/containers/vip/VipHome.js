@@ -83,7 +83,7 @@ class VipHome extends Component{
         var row=
             <TouchableOpacity style={{flex:1,flexDirection:'row',padding:8,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderColor:'#ddd'}}
                               onPress={()=>{
-                                      this.navigate2ExchangeDetail(rowData);
+                                      //this.navigate2ExchangeDetail(rowData);
                                      }
                 }>
                 <View style={{flex:1,margin:5}}>

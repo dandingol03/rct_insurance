@@ -23,6 +23,7 @@ var {height, width} = Dimensions.get('window');
 import Config from '../../../config';
 import Proxy from '../../proxy/Proxy';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import DateFilter from '../../filter/DateFilter';
 
 class ApplyedLifeOrderDetails extends Component{
 
@@ -107,7 +108,8 @@ class ApplyedLifeOrderDetails extends Component{
                 <View style={{flex:3,marginTop:15,paddingTop:5,paddingBottom:25,borderWidth:0,alignItems:'flex-start',justifyContent: 'center'}}>
                     <View style={{flex:1,width:width,flexDirection:'row',borderWidth:1,borderColor:'#ddd',alignItems:'center',justifyContent: 'flex-start'}}>
                         <Text style={{flex:3,color:'rgba(228, 93, 46, 0.87)'}}>申请日期：</Text>
-                        <Text style={{flex:7,color:'rgba(228, 93, 46, 0.87)'}}>{order.applyTime}</Text>
+                        {/*<Text style={{flex:7,color:'rgba(228, 93, 46, 0.87)'}}>{order.applyTime}</Text>*/}
+                        <Text style={{flex:7,color:'rgba(228, 93, 46, 0.87)'}}> {DateFilter.filter(order.applyTime,'yyyy-mm-dd hh:mm')}</Text>
                     </View>
                     <View style={{flex:1,width:width,flexDirection:'row'}}>
                     </View>

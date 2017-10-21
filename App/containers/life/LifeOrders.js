@@ -203,9 +203,13 @@ class LifeOrders extends Component{
 
         this.state.doingFetch=true;
         this.state.isRefreshing=true;
-        this.props.dispatch(fetchLifeOrders()).then(()=> {
-            this.props.dispatch(disableLifeOrdersOnFresh());
-            this.setState({doingFetch:false,isRefreshing:false})
+        this.props.dispatch(fetchLifeOrders()).then((json)=> {
+            if(json.re==1){
+                this.props.dispatch(disableLifeOrdersOnFresh());
+                this.setState({doingFetch:false,isRefreshing:false})
+            }else if(json.re==2){
+                console.log("服务器未正常返回");
+            }
         }).catch((e)=>{
             this.props.dispatch(disableLifeOrdersOnFresh());
             this.setState({doingFetch:false,isRefreshing:false});
