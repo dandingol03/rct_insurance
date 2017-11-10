@@ -507,14 +507,6 @@ class Maintain extends Component{
 
     render(){
 
-        var dailyChecked = [];
-
-        var miles = this.state.miles;
-
-        var props=this.props;
-        var state=this.state;
-        var displayArea = {x: 5, y: 20, width:width, height: height - 25};
-
         var selectedStyle={backgroundColor:'#ccc'};
         var unSelectedStyle={backgroundColor:'transparent'};
         var blackStyle={color:'#222'};
@@ -527,7 +519,7 @@ class Maintain extends Component{
 
                     {/*head*/}
                     <View style={{padding: 10,paddingTop:20,justifyContent: 'center',alignItems: 'center',
-                flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:parseInt(height*54/667),}}>
+                flexDirection:'row',backgroundColor:'rgba(17, 17, 17, 0.6)',height:parseInt(height*44/667),}}>
                         <TouchableOpacity style={{flex:1}} onPress={()=>{
                         this.goBack();
                              }}>
@@ -547,168 +539,166 @@ class Maintain extends Component{
                         >
                             {/*日常保养*/}
                             <View tabLabel='日常保养' style={{flex:1,padding:5}}>
-                                <View style={{height:height*10/736}}></View>
 
-                                <ScrollView>
-                                    <View style={{height:height-height*300/736}}>
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}}
-                                                              onPress={()=>{
+                                <ScrollView style={{height:height-height*300/736}}>
+
+                                    <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}}
+                                                          onPress={()=>{
                                                                   this.state.dailyChecked[0] = !this.state.dailyChecked[0];
                                                                   this.setState({dailyChecked:this.state.dailyChecked});
                                             }}>
 
-                                                    <View style={{flex:1,alignItems:'center',}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain1@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222',}}>机油、机滤</Text>
-                                                        {
-                                                            this.state.dailyChecked[0]==true?
-                             <Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,
+                                            <View style={{flex:1,alignItems:'center',}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain1@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222',}}>机油、机滤</Text>
+                                                {
+                                                    this.state.dailyChecked[0]==true?
+                                                        <Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,
                             marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00',justifyContent:'center'}}>选择</Text>:
-                             <Text style={{flex:1,fontSize:12,color:'#068E78',marginTop:5,padding:2,paddingLeft:8,paddingRight:8,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',marginTop:5,padding:2,paddingLeft:8,paddingRight:8,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[1] = !this.state.dailyChecked[1];
                                                 this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain2@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>更换刹车片</Text>
-                                                        {
-                                                            this.state.dailyChecked[1]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain2@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>更换刹车片</Text>
+                                                {
+                                                    this.state.dailyChecked[1]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                      this.state.dailyChecked[2] = !this.state.dailyChecked[2];
                                                      this.setState({dailyChecked:this.state.dailyChecked});
                                                  }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain3@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>雨刷片更换</Text>
-                                                        {
-                                                            this.state.dailyChecked[2]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                </View>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain3@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>雨刷片更换</Text>
+                                                {
+                                                    this.state.dailyChecked[2]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                    <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[3] = !this.state.dailyChecked[3];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain4@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>轮胎更换</Text>
-                                                        {
-                                                            this.state.dailyChecked[3]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain4@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>轮胎更换</Text>
+                                                {
+                                                    this.state.dailyChecked[3]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[4] = !this.state.dailyChecked[4];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain5@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>燃油添加剂</Text>
-                                                        {
-                                                            this.state.dailyChecked[4]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain5@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>燃油添加剂</Text>
+                                                {
+                                                    this.state.dailyChecked[4]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[5] = !this.state.dailyChecked[5];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain6@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>空气滤清器</Text>
-                                                        {
-                                                            this.state.dailyChecked[5]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain6@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>空气滤清器</Text>
+                                                {
+                                                    this.state.dailyChecked[5]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                    <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'center',marginBottom:5}}>
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[6] = !this.state.dailyChecked[6];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                            <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain7@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>检查火花塞</Text>
-                                                        {
-                                                            this.state.dailyChecked[6]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain7@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>检查火花塞</Text>
+                                                {
+                                                    this.state.dailyChecked[6]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[7] = !this.state.dailyChecked[7];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain8@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>检查驱动片</Text>
-                                                        {
-                                                            this.state.dailyChecked[7]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain8@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>检查驱动片</Text>
+                                                {
+                                                    this.state.dailyChecked[7]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
 
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[8] = !this.state.dailyChecked[8];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain9@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>换空调滤芯</Text>
-                                                        {
-                                                            this.state.dailyChecked[8]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain9@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>换空调滤芯</Text>
+                                                {
+                                                    this.state.dailyChecked[8]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
 
-                                        <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5}}>
-                                            <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
+                                    <View style={{flex:1,padding:0,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5}}>
+                                        <TouchableOpacity style={{flex:1,justifyContent:'center',padding:5}} onPress={()=>{
                                                  this.state.dailyChecked[9] = !this.state.dailyChecked[9];
                                                  this.setState({dailyChecked:this.state.dailyChecked});
                                              }}>
-                                                    <View style={{flex:1,alignItems:'center'}}>
-                                                        <Image resizeMode="contain" source={require('../../img/maintain10@2x.png')} style={{flex:3}}/>
-                                                        <Text style={{flex:1,fontSize:12,color:'#222'}}>更换蓄电池防冻液</Text>
-                                                        {
-                                                            this.state.dailyChecked[9]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
-                                                                <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
-                                                        }
-                                                    </View>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{flex:1,alignItems:'center'}}>
+                                                <Image resizeMode="contain" source={require('../../img/maintain10@2x.png')} style={{flex:3}}/>
+                                                <Text style={{flex:1,fontSize:12,color:'#222'}}>更换蓄电池防冻液</Text>
+                                                {
+                                                    this.state.dailyChecked[9]==true?<Text style={{flex:1,fontSize:12,color:'#fff',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#F56C00',borderRadius:2,backgroundColor:'#F56C00'}}>选择</Text>:
+                                                        <Text style={{flex:1,fontSize:12,color:'#068E78',padding:2,paddingLeft:8,paddingRight:8,marginTop:5,borderWidth:1,borderColor:'#068E78',borderRadius:2}}>选择</Text>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
                                     </View>
 
-                                    <View style={{flex:2,marginBottom:5,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
+                                    <View style={{flex:1,borderBottomWidth:1,borderColor:'#aaa',justifyContent:'center',alignItems:'center',}}>
                                         <View style={{flex:1,padding:5,borderBottomWidth:1,borderColor:'#aaa',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}>
                                             <Text style={{flex:1,fontSize:12,paddingLeft:5,color:'#343434'}}>里程：</Text>
                                             <TextInput
-                                                style={{flex:2,fontSize:12,color:'#343434'}}
+                                                style={{flex:2,fontSize:12,color:'#343434',height:35}}
                                                 onChangeText={(miles) =>
                                                     {
                                                       this.setState({miles:miles});

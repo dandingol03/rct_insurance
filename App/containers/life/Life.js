@@ -303,7 +303,7 @@ class Life extends Component{
                     <View style={{flex:10,padding:10}}>
 
                         {/*投保人*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>投保人:</Text>
                             </View>
@@ -329,7 +329,7 @@ class Life extends Component{
                         </View>
 
                         {/*被保险人*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>被保险人:</Text>
                             </View>
@@ -358,7 +358,7 @@ class Life extends Component{
                         </View>
 
                         {/*受益人*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
 
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>受益人:</Text>
@@ -389,7 +389,7 @@ class Life extends Component{
 
 
                         {/*需要的保障*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
 
                             <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>需要的保障:</Text>
@@ -423,7 +423,7 @@ class Life extends Component{
                         </View>
 
                         {/*有无社保*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
 
                             <View style={{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>有无社保:</Text>
@@ -464,7 +464,7 @@ class Life extends Component{
                         </View>
 
                         {/*有无商业保险*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
 
                             <View style={{flex:6,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>有无商业保险:</Text>
@@ -505,7 +505,7 @@ class Life extends Component{
                         </View>
 
                         {/*计划保费*/}
-                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:12}]}>
+                        <View style={[styles.row,{borderBottomWidth:1,borderColor:'#aaa',borderBottomColor:'#aaa',padding:10}]}>
 
                             <View style={{flex:3,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{fontSize:16,flex:3,textAlign:'left',color:'#343434'}}>计划保费:</Text>

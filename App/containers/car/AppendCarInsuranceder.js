@@ -781,16 +781,16 @@ class AppendCarInsuranceder extends Component{
                 >
                     <View tabLabel='已有被保险人' tabIcon="user" style={{flex:1}}>
                         {/*body*/}
-                        <View style={{padding:20,paddingLeft:0,paddingRight:0,height:height-height*234/736}}>
+                        <View style={{padding:20,paddingLeft:0,paddingRight:0,height:height-270}}>
                             {listView}
                         </View>
 
                         <TouchableOpacity style={{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/6,marginLeft:width/4,
-                                    padding:8,marginTop:0,borderRadius:10,justifyContent:'center'}}
+                                    padding:8,marginTop:0,borderRadius:10,justifyContent:'center',paddingBottom:15}}
                                           onPress={()=>{
                                         this.applyCarInsurance();
                                       }}>
-                            <View style={{paddingBottom:15,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Text style={{color:'#fff',fontSize:15}}>提交车险意向</Text>
                             </View>
                         </TouchableOpacity>

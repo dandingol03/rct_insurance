@@ -216,7 +216,7 @@ class Home extends Component{
                     />
                 </View>
 
-                <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:parseInt(height*260/736),
+                <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',position:'absolute',top:parseInt(height*200/736),
                 backgroundColor:'rgba(255, 255, 255, 0.5)',margin:5,padding:5}}>
                     <View style={{flexDirection:'row',justifyContent: 'center',alignItems: 'center',paddingRight:10,}}>
                         <Text>注册人数:</Text>

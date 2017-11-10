@@ -307,12 +307,12 @@ class CarManage extends Component{
 
 
                     {/*车辆列表*/}
-                    <View style={{padding:8,paddingLeft:0,paddingRight:0,height:height-274}}>
+                    <View style={{padding:8,paddingLeft:0,paddingRight:0,height:height-260}}>
                         {listView}
                     </View>
 
                     <TouchableOpacity style={[styles.row,{borderBottomWidth:0,backgroundColor:'#00c9ff',width:width*3/5,marginLeft:width/5,
-                            padding:10,borderRadius:10,justifyContent:'center'}]}
+                            padding:10,borderRadius:10,justifyContent:'center',marginTop:10}]}
                                       onPress={()=>{
                                              this.setState({modalVisible:true});
                                           }}>
